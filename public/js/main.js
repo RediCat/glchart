@@ -10,13 +10,12 @@ function main() {
   };
 
   let scene = scope.scene = new THREE.Scene();
-  scope.renderer = createRenderer(scope);
+  let renderer = scope.renderer = createRenderer(scope);
   let camera = scope.camera = createCamera(scope);
-  scope.data = createRandomData(10000, 100);
-  let line = scope.line = createLineFromData(scope);
+  let line = scope.line = createLine();
 
   scene.add(line);
-  scene.render(scene, camera);
+  renderer.render(scene, camera);
 }
 
 function createRenderer(scope) {
@@ -54,11 +53,11 @@ function createRandomData(size, max) {
   return data;
 }
 
-function createLineFromData(scope) {
+function createLine() {
 
   let geometry = new THREE.Geometry();
 
-  _.forEach(scope.dataset, (point) => {
+  _.forEach(createRandomData(10000, 100), (point) => {
     geometry.vertices.push(new Vector3(point.x, point.y, 0));
   });
 
