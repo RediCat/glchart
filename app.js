@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const _ = require('lodash');
 
 const app = express();
 let publicPath = path.join(__dirname, 'public');
