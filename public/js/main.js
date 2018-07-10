@@ -25,6 +25,10 @@ main();
  *
  * 5. Render the line: Render the scene using the previously created
  * camera.
+ *
+ * 6. Setup Hammer.js: Setup panning gesture using Hammer.js. It's a
+ * little buggy right but it's just for the purpose of working on
+ * mobile and desktop.
  */
 function main() {
   let scope = {
@@ -40,6 +44,8 @@ function main() {
   // render the chart
   scene.add(line);
   renderer.render(scene, camera);
+
+  setupGestures(scope);
 }
 
 function createRenderer(scope) {
@@ -81,11 +87,21 @@ function createLine() {
 
   let geometry = new THREE.Geometry();
 
-  _.forEach(createRandomData(10000, 100), (point) => {
+  _.forEach(createRandomData(100000, 100), (point) => {
     geometry.vertices.push(new Vector3(point.x, point.y, 0));
   });
 
   let material = new THREE.LineBasicMaterial({ color: 0x0000ff });
 
   return new THREE.Line(geometry, material);
+}
+
+function setupGestures(scope) {
+  let hammer = scope.hammer = new Hammer(scope.renderer.domElement);
+  hammer.on('panright panleft', (ev) => pan(scope, ev.deltaX));
+}
+
+function pan(scope, deltaX) {
+  scope.camera.position.x -= deltaX * 0.1;
+  scope.renderer.render(scope.scene, scope.camera);
 }
