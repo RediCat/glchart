@@ -1,0 +1,23 @@
+{
+  "name": "webgl_chart",
+  "description": "WebGL based chart rendering",
+  "main": "index.js",
+  "authors": [
+    "cvelez <christian.velez@redcatpropware.com>"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "plotly.js": "^1.39.1",
+    "threejs": "*",
+    "lodash": "^4.17.10"
+  }
+}
