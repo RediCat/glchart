@@ -3,6 +3,29 @@ const Vector2 = THREE.Vector2;
 
 main();
 
+/***************
+ * From a top level what's happening:
+ *
+ * 1. Creating a Scene: This acts as the top level scene. Scene are mere
+ * collections of drawable objects or other scenes.
+ *
+ * 2. Create a WebGL Renderer:  Create the renderer and set its size in
+ * pixels and its pixel ratio. This is important for high pixel
+ * density/"retina" displays. When this renderer is created a canvas
+ * element is created from where the drawable context is fetched.
+ * For this element to appear on the page, it needs to be added to the
+ * DOM.
+ *
+ * 3. Create a Camera: We create an orthographic camera, vs a perspective
+ * camera, since we want to draw the chart in 2d. We position the camera
+ * at the (0, 0, 1) point and to look at the center.
+ *
+ * 4. Create the Line Object: Create a THREE.Line object from a random
+ * dataset.
+ *
+ * 5. Render the line: Render the scene using the previously created
+ * camera.
+ */
 function main() {
   let scope = {
     size: new Vector2(800, 200),
@@ -14,6 +37,7 @@ function main() {
   let camera = scope.camera = createCamera(scope);
   let line = scope.line = createLine();
 
+  // render the chart
   scene.add(line);
   renderer.render(scene, camera);
 }
@@ -34,7 +58,7 @@ function createCamera(scope) {
 
   let camera = new THREE.OrthographicCamera(0, scope.size.x, 0, scope.size.y, scope.zBounds.x, scope.zBounds.y);
 
-  camera.position.set(0, 0, 100);
+  camera.position.set(0, 0, 1);
   camera.lookAt(new Vector3(0, 0, 0));
 
   return camera;
