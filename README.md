@@ -19,3 +19,8 @@ Prototype of 2D charts using Three.js with a WebGL backend.
         node app.js
 
 5. Open http://localhost:8080/ on any WebGL capable browser.
+
+### Usage
+
+Every time the page is rendered a new chart is created of random points.
+Panning using gestures is supported on desktop and mobile.
