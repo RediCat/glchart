@@ -1,7 +1,7 @@
 {
-  "name": "webgl_chart",
+  "name": "webgl-chart",
   "version": "0.0.1",
-  "description": "WebGL based chart rendering",
+  "description": "GPU powered charts.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

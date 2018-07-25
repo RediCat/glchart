@@ -1,7 +1,7 @@
-threejs_chart
-=============
+webgl-chart
+===========
 
-Prototype of 2D charts using Three.js with a WebGL backend.
+GPU powered charts.
 
 ### Installing
 

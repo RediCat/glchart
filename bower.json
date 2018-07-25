@@ -1,6 +1,6 @@
 {
-  "name": "webgl_chart",
-  "description": "WebGL based chart rendering",
+  "name": "webgl-chart",
+  "description": "GPU powered charts.",
   "main": "index.js",
   "authors": [
     "cvelez <christian.velez@redcatpropware.com>"
