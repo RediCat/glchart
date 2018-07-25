@@ -1,4 +1,4 @@
-`WebGlChart` Class
+`Chart` Class
 ==================
 
 ## Options
