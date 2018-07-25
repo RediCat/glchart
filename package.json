@@ -2,13 +2,23 @@
   "name": "webgl-chart",
   "version": "0.0.1",
   "description": "GPU powered charts.",
-  "main": "index.js",
+  "repository": "chrisvm/webgl-chart",
+  "jsnext:main": "build/webgl-chart.module.js",
+  "module": "build/webgl-chart.module.js",
+  "main": "build/webgl-chart.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rollup -c",
+    "sandbox": "npm run build && electron ./tools/sandbox/main.js"
   },
-  "author": "",
+  "author": "chrisvm",
   "license": "ISC",
-  "dependencies": {
-    "express": "^4.16.3"
+  "devDependencies": {
+    "electron": "^2.0.2",
+    "hammerjs": "^2.0.8",
+    "lodash": "^4.17.10",
+    "rollup": "^0.63.4",
+    "rollup-plugin-commonjs": "^9.1.3",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "three": "^0.94.0"
   }
 }
