@@ -12,7 +12,8 @@ class WebGlChart {
       throw 'Hammer.js appears to be missing.'
     }
 
-    this.options = options;
+    this._setupDefaultOptions(options);
+
     this.scene = new THREE.Scene();
     this.datasetLines = [];
 
@@ -21,12 +22,21 @@ class WebGlChart {
     this._setupGestures();
   }
 
+  _setupDefaultOptions(options)
+  {
+    this.options = {
+      size: _.get(options, 'size', new Vector2(400, 200)),
+      cameraBounds: _.get(options, 'cameraBounds', new Vector2(1, 100)),
+      pixelRatio: _.get(options, 'pixelRatio', window.devicePixelRatio)
+    };
+  }
+
   _createRenderer()
   {
     this.renderer = new THREE.WebGLRenderer();
 
     this.renderer.setSize(this.options.size.x, this.options.size.y);
-    this.renderer.setPixelRatio(_.get(this.options, 'pixelRatio', window.devicePixelRatio));
+    this.renderer.setPixelRatio(this.options.pixelRatio);
     this.domElement = this.renderer.domElement;
   }
 
