@@ -2,7 +2,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import commonJS from 'rollup-plugin-commonjs'
 
 export default {
-	input: 'src/webgl-chart.js',
+	input: 'src/glchart.js',
 	external: ['three', 'lodash', 'hammerjs'],
 	plugins: [
 		resolve(),
@@ -14,7 +14,7 @@ export default {
 		{
 			format: 'umd',
 			name: 'glchart',
-			file: 'build/webgl-chart.js',
+			file: 'build/glchart.js',
 			indent: '\t',
 			globals: {
 				'three': 'THREE',
@@ -24,7 +24,7 @@ export default {
 		},
 		{
 			format: 'es',
-			file: 'build/webgl-chart.module.js',
+			file: 'build/glchart.module.js',
 			indent: '\t',
 			globals: {
 				'three': 'THREE',

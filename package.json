@@ -1,11 +1,11 @@
 {
-  "name": "webgl-chart",
+  "name": "glchart",
   "version": "0.0.1",
   "description": "GPU powered charts.",
-  "repository": "chrisvm/webgl-chart",
-  "jsnext:main": "build/webgl-chart.module.js",
-  "module": "build/webgl-chart.module.js",
-  "main": "build/webgl-chart.js",
+  "repository": "chrisvm/glchart",
+  "jsnext:main": "build/glchart.module.js",
+  "module": "build/glchart.module.js",
+  "main": "build/glchart.js",
   "scripts": {
     "build": "rollup -c",
     "sandbox": "npm run build && electron ./tools/sandbox/main.js"
