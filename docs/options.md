@@ -1,4 +1,7 @@
-### Options object
+`WebGlChart` Class
+==================
+
+## Options
 
 #### `pixelRatio` : `float` : default = `window.devicePixelRatio`
 The pixel ratio passed to the `THREE.WebGLRenderer.setPixelRatio` method.
@@ -14,7 +17,7 @@ points that is shown by the camera.
 #### `size` : `THREE.Vector2` : default = `THREE.Vector2(400, 200)`
 The size of the canvas created for drawing context.
 
-### Methods
+## Methods
 
 `addDataset(dataset)` : `void`
 

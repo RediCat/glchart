@@ -22,6 +22,11 @@ class WebGlChart {
     this._setupGestures();
   }
 
+  /**
+   * Setups options defults so no checking is needed in rest of the class.
+   * @param options The options passed through the constructor.
+   * @private
+   */
   _setupDefaultOptions(options)
   {
     this.options = {
@@ -31,6 +36,10 @@ class WebGlChart {
     };
   }
 
+  /**
+   * Creates the renderer.
+   * @private
+   */
   _createRenderer()
   {
     this.renderer = new THREE.WebGLRenderer();
@@ -40,6 +49,10 @@ class WebGlChart {
     this.domElement = this.renderer.domElement;
   }
 
+  /**
+   * Creates the orthographic camera.
+   * @private
+   */
   _createCamera()
   {
     let size = this.options.size, cameraBounds = this.options.cameraBounds;
@@ -49,12 +62,21 @@ class WebGlChart {
     this.camera.lookAt(new Vector3(0, 0, 0));
   }
 
+  /**
+   * Setups Hammer.js gestures.
+   * @private
+   */
   _setupGestures()
   {
     this.hammer = new Hammer(this.domElement);
     this.hammer.on('panright panleft', (ev) => this._hammerPanHandler(ev));
   }
 
+  /**
+   * Handles the panning event of Hammer.js
+   * @param ev The hammer.js event object.
+   * @private
+   */
   _hammerPanHandler(ev)
   {
     this.camera.position.x -= ev.deltaX * 0.1;
