@@ -3,7 +3,10 @@ import _ from 'lodash';
 import Hammer from 'hammerjs';
 var Vector3 = THREE.Vector3;
 
-class Chart {
+const _defaultBackgroundColor = 0xffffff;
+
+class Chart
+{
 	constructor(options)
 	{
 		this.datasets = [];
@@ -26,11 +29,11 @@ class Chart {
 			cameraBounds: _.get(options, 'cameraBounds', new Vector2(1, 100)),
 			pixelRatio: _.get(options, 'pixelRatio', window.devicePixelRatio),
 			useAlpha: _.get(options, 'useAlpha', true),
-			backgroundColor: _.get(options, 'backgroundColor', new THREE.Color(0x000000))
+			backgroundColor: _.get(options, 'backgroundColor', new THREE.Color(_defaultBackgroundColor))
 		};
 
 		if (!this.options.backgroundColor instanceof THREE.Color) {
-			this.options.backgroundColor = new THREE.Color(0x000000);
+			this.options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
 			Console.warn('Chart.options.backgroundColor is not of type THREE.Color, using default.')
 		}
 	}
