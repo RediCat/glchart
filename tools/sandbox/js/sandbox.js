@@ -35,7 +35,8 @@ function main() {
 	};
 
 	let chart = new glchart.Chart(options);
-	let randomDataset = new glchart.Dataset(createRandomData(100000, 100));
+	let data = createRandomData(100000, 100);
+	let randomDataset = new glchart.Dataset({data: data});
 	chart.addDataset(randomDataset);
 
 	document.body.appendChild(chart.domElement);
