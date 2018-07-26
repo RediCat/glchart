@@ -15,10 +15,12 @@
   "devDependencies": {
     "electron": "^2.0.2",
     "hammerjs": "^2.0.8",
+    "load-bmfont": "^1.3.0",
     "lodash": "^4.17.10",
     "rollup": "^0.63.4",
     "rollup-plugin-commonjs": "^9.1.3",
     "rollup-plugin-node-resolve": "^3.3.0",
-    "three": "^0.94.0"
+    "three": "^0.94.0",
+    "three-bmfont-text": "^2.3.0"
   }
 }
