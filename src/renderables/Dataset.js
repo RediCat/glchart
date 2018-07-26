@@ -20,7 +20,7 @@ class Dataset
 	_setupDefaultOptions(options)
 	{
 		if (!_.has(options, 'data')) {
-			throw 'options.data was not defined.'
+			throw 'options.data was not defined.';
 		}
 		this.options = options;
 	}
