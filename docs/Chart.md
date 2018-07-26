@@ -22,6 +22,11 @@ The size of the canvas created for drawing context.
 #### `useAlpha` : `bool` : default = `true`
 Allow alpha usage in the webgl renderer created to draw the charts.
 
+---
+
+#### `backgroundColor` : `THREE.Color` : default = `THREE.Color(0x000000)`
+The color to use to clear the screen/background color. 
+
 ## Methods
 
 `addDataset(dataset)` : `void`

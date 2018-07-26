@@ -6,11 +6,9 @@ var Vector3 = THREE.Vector3;
 class Chart {
 	constructor(options)
 	{
-		this._setupDefaultOptions(options);
-
-		this.scene = new THREE.Scene();
 		this.datasets = [];
-
+		this._setupDefaultOptions(options);
+		this._createScene();
 		this._createRenderer();
 		this._createCamera();
 		this._setupGestures();
@@ -27,8 +25,24 @@ class Chart {
 			size: _.get(options, 'size', new Vector2(400, 200)),
 			cameraBounds: _.get(options, 'cameraBounds', new Vector2(1, 100)),
 			pixelRatio: _.get(options, 'pixelRatio', window.devicePixelRatio),
-			useAlpha: _.get(options, 'useAlpha', true)
+			useAlpha: _.get(options, 'useAlpha', true),
+			backgroundColor: _.get(options, 'backgroundColor', new THREE.Color(0x000000))
 		};
+
+		if (!this.options.backgroundColor instanceof THREE.Color) {
+			this.options.backgroundColor = new THREE.Color(0x000000);
+			Console.warn('Chart.options.backgroundColor is not of type THREE.Color, using default.')
+		}
+	}
+
+	/**
+	 * Create the top level scene.
+	 * @private
+	 */
+	_createScene()
+	{
+		this.scene = new THREE.Scene();
+		this.scene.background = this.options.backgroundColor;
 	}
 
 	/**
