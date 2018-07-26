@@ -17,6 +17,11 @@ points that is shown by the camera.
 #### `size` : `THREE.Vector2` : default = `THREE.Vector2(400, 200)`
 The size of the canvas created for drawing context.
 
+---
+
+#### `useAlpha` : `bool` : default = `true`
+Allow alpha usage in the webgl renderer created to draw the charts.
+
 ## Methods
 
 `addDataset(dataset)` : `void`

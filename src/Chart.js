@@ -26,7 +26,8 @@ class Chart {
 		this.options = {
 			size: _.get(options, 'size', new Vector2(400, 200)),
 			cameraBounds: _.get(options, 'cameraBounds', new Vector2(1, 100)),
-			pixelRatio: _.get(options, 'pixelRatio', window.devicePixelRatio)
+			pixelRatio: _.get(options, 'pixelRatio', window.devicePixelRatio),
+			useAlpha: _.get(options, 'useAlpha', true)
 		};
 	}
 
@@ -36,7 +37,9 @@ class Chart {
 	 */
 	_createRenderer()
 	{
-		this.renderer = new THREE.WebGLRenderer();
+		this.renderer = new THREE.WebGLRenderer({
+			alpha: this.options.useAlpha
+		});
 
 		this.renderer.setSize(this.options.size.x, this.options.size.y);
 		this.renderer.setPixelRatio(this.options.pixelRatio);
