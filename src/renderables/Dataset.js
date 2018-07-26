@@ -5,11 +5,9 @@ class Dataset
 {
 	constructor(options)
 	{
-		if (!_.has(options, 'data')) {
-			throw 'options.data was not defined.'
-		}
+		this._setupDefaultOptions(options);
 
-		this.data = options.data;
+		this.data = this.options.data;
 		let geometry = new THREE.Geometry();
 		_.forEach(this.data, (point) => {
 			geometry.vertices.push(new THREE.Vector3(point.x, point.y, 0));
@@ -17,6 +15,14 @@ class Dataset
 
 		let material = new THREE.LineBasicMaterial({color: 0x0000ff});
 		this.renderable = new THREE.Line(geometry, material);
+	}
+
+	_setupDefaultOptions(options)
+	{
+		if (!_.has(options, 'data')) {
+			throw 'options.data was not defined.'
+		}
+		this.options = options;
 	}
 }
 

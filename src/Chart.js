@@ -18,7 +18,7 @@ class Chart
 	}
 
 	/**
-	 * Setups options defults so no checking is needed in rest of the class.
+	 * Setups options defaults so no checking is needed in rest of the class.
 	 * @param options The options passed through the constructor.
 	 * @private
 	 */
