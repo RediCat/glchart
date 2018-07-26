@@ -9,7 +9,7 @@ class Chart {
 		this._setupDefaultOptions(options);
 
 		this.scene = new THREE.Scene();
-		this.datasetLines = [];
+		this.datasets = [];
 
 		this._createRenderer();
 		this._createCamera();
@@ -89,16 +89,8 @@ class Chart {
 
 	addDataset(dataset)
 	{
-		let geometry = new THREE.Geometry();
-		_.forEach(dataset, (point) => {
-			geometry.vertices.push(new Vector3(point.x, point.y, 0));
-		});
-
-		let material = new THREE.LineBasicMaterial({ color: 0x0000ff });
-		let line = new THREE.Line(geometry, material);
-
-		this.scene.add(line);
-		this.datasetLines.push(line);
+		this.scene.add(dataset.renderable);
+		this.datasets.push(dataset);
 		this._render();
 	}
 
