@@ -34,9 +34,9 @@ function main() {
 		cameraBounds: new Vector2(1, 1000)
 	};
 
-	let randomData = createRandomData(100000, 100);
 	let chart = new glchart.Chart(options);
-	chart.addDataset(randomData);
+	let randomDataset = new glchart.Dataset(createRandomData(100000, 100));
+	chart.addDataset(randomDataset);
 
 	document.body.appendChild(chart.domElement);
 }
