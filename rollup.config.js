@@ -1,10 +1,14 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonJS from 'rollup-plugin-commonjs'
+import builtins from 'rollup-plugin-node-builtins';
+import globals from 'rollup-plugin-node-globals';
 
 export default {
 	input: 'src/glchart.js',
 	external: ['three', 'lodash', 'hammerjs'],
 	plugins: [
+		globals(),
+		builtins(),
 		resolve(),
 		commonJS({
 			include: 'node_modules/**'
