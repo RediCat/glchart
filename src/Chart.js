@@ -1,7 +1,6 @@
 import THREE from 'three';
 import _ from 'lodash';
 import Hammer from 'hammerjs';
-var Vector3 = THREE.Vector3;
 
 const _defaultBackgroundColor = 0xffffff;
 
@@ -25,8 +24,8 @@ class Chart
 	_setupDefaultOptions(options)
 	{
 		this.options = {
-			size: _.get(options, 'size', new Vector2(400, 200)),
-			cameraBounds: _.get(options, 'cameraBounds', new Vector2(1, 100)),
+			size: _.get(options, 'size', new THREE.Vector2(400, 200)),
+			cameraBounds: _.get(options, 'cameraBounds', new THREE.Vector2(1, 100)),
 			pixelRatio: _.get(options, 'pixelRatio', window.devicePixelRatio),
 			useAlpha: _.get(options, 'useAlpha', true),
 			backgroundColor: _.get(options, 'backgroundColor', new THREE.Color(_defaultBackgroundColor))
@@ -73,7 +72,7 @@ class Chart
 		this.camera = new THREE.OrthographicCamera(0, size.x, 0, size.y, cameraBounds.x, cameraBounds.y);
 
 		this.camera.position.set(0, 0, 1);
-		this.camera.lookAt(new Vector3(0, 0, 0));
+		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 	}
 
 	/**
