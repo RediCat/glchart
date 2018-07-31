@@ -1,7 +1,7 @@
-import createTextGeometry from 'three-bmfont-text'
-import loadFont from 'load-bmfont'
+import createTextGeometry from 'three-bmfont-text';
 import _ from 'lodash';
 import THREE from 'three';
+const loadFont = require('load-bmfont');
 
 class BitmapText
 {
@@ -15,11 +15,13 @@ class BitmapText
 	{
 		if (!_.has(options, 'fontPath')) {
 			throw 'options.fontPath was not defined';
-		} else if (!_.has(options, 'texturePath')) {
+		}
+
+		if (!_.has(options, 'texturePath')) {
 			throw 'options.texturePath was not defined';
 		}
 
-		this.options = options;
+		this.options = _.cloneDeep(options);
 		this.options.width = _.get(options, 'width', 200);
 		this.options.align = _.get(options, 'align', 'left');
 		this.options.color = _.get(options, 'color', 0xaaaaaa);
@@ -28,29 +30,29 @@ class BitmapText
 	_loadFont()
 	{
 		loadFont(this.options.fontPath, (err, font) => {
-				if (err) {
-					throw `Error while loading font: ${err}`;
-				}
+			if (err) {
+				throw err;
+			}
 
-				this.font = font;
+			this.font = font;
 
-				let geometry = createTextGeometry({
-					width: this.options.width,
-					align: this.options.align,
-					font: font
+			let geometry = createTextGeometry({
+				width: this.options.width,
+				align: this.options.align,
+				font: font
+			});
+
+			let textureLoader = new THREE.TextureLoader();
+
+			textureLoader.load(this.options.texturePath, (texture) => {
+				let material = new THREE.MeshBasicMaterial({
+					map: texture,
+					transparent: true,
+					color: this.options.color
 				});
 
-				let textureLoader = new THREE.TextureLoader();
-
-				textureLoader.load(this.options.texturePath, (texture) => {
-					let material = new THREE.MeshBasicMaterial({
-						map: texture,
-						transparent: true,
-						color: this.options.color
-					});
-
-					this.mesh = new THREE.Mesh(geometry, material)
-				});
+				this.mesh = new THREE.Mesh(geometry, material)
+			});
 		});
 	}
 }
