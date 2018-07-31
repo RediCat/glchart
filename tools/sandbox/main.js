@@ -6,14 +6,13 @@ const url = require('url');
 
 let mainWindow;
 
-function createWindow() {
-	let windowOpts = {
-		webPreferences: {
-			nodeIntegration: true
-		}
-	};
-	mainWindow = new BrowserWindow(windowOpts);
-	mainWindow.setMenu(null);
+function createWindow()
+{
+	mainWindow = new BrowserWindow({
+        webPreferences: {
+            nodeIntegration: true
+        }
+    });
 
 	let rootUrl = url.format({
 		pathname: path.join(__dirname, 'index.html'),
@@ -25,7 +24,25 @@ function createWindow() {
 	mainWindow.on('closed', () => mainWindow = null);
 }
 
-app.on('ready', createWindow);
+function setupFileProtocol()
+{
+	let protoRegistrationSuccess = (request, callback) => {
+        // remove the 'file://' uri scheme component
+        const url = request.url.substr(7);
+        callback({path: path.normalize(`${__dirname}/${url}`)});
+    };
+
+	let protoRegistrationError = (err) => {
+		console.error(`file protocol registration failed: ${err}.`);
+	};
+
+	electron.protocol.interceptFileProtocol('file', protoRegistrationSuccess, protoRegistrationError);
+}
+
+app.on('ready', () => {
+	//setupFileProtocol();
+    createWindow();
+});
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
