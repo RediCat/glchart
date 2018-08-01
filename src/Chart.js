@@ -9,6 +9,7 @@ class Chart
 	constructor(options)
 	{
 		this.datasets = [];
+		this.fonts = {};
 		this._setupDefaultOptions(options);
 		this._createScene();
 		this._createRenderer();
@@ -23,13 +24,12 @@ class Chart
 	 */
 	_setupDefaultOptions(options)
 	{
-		this.options = {
-			size: _.get(options, 'size', new THREE.Vector2(400, 200)),
-			cameraBounds: _.get(options, 'cameraBounds', new THREE.Vector2(1, 100)),
-			pixelRatio: _.get(options, 'pixelRatio', window.devicePixelRatio),
-			useAlpha: _.get(options, 'useAlpha', true),
-			backgroundColor: _.get(options, 'backgroundColor', new THREE.Color(_defaultBackgroundColor))
-		};
+		this.options = _.cloneDeep(options);
+		this.options.size = _.get(options, 'size', new THREE.Vector2(400, 200));
+		this.options.cameraBounds = _.get(options, 'cameraBounds', new THREE.Vector2(1, 100));
+		this.options.pixelRatio = _.get(options, 'pixelRatio', window.devicePixelRatio);
+        this.options.useAlpha = _.get(options, 'useAlpha', true);
+        this.options.backgroundColor = _.get(options, 'backgroundColor', new THREE.Color(_defaultBackgroundColor));
 
 		if (!this.options.backgroundColor instanceof THREE.Color) {
 			this.options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
@@ -97,8 +97,8 @@ class Chart
 	}
 
 	/**
-	 * This stub is used for allowing auto rendering when adding datasets, changing datasets, etc. This
-	 * is used when the user wants finer grained control over the when we render the charts.
+	 * This stub is internally used to have a point of control where all
+	 * calls to render are routed.
 	 * @private
 	 */
 	_render()
@@ -110,6 +110,13 @@ class Chart
 	{
 		this.scene.add(dataset.renderable);
 		this.datasets.push(dataset);
+		this._render();
+	}
+
+	addFont(font)
+	{
+		this.fonts[font.name] = font;
+		this.scene.add(font.mesh);
 		this._render();
 	}
 

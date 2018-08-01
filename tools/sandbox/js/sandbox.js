@@ -8,18 +8,27 @@ function main() {
 
 	let chart = new glchart.Chart(options);
 
-	// create random data to add to the dataset instance
-    let data = createRandomData(100000, 100);
-	let randomDataset = new glchart.Dataset({data: data});
-	chart.addDataset(randomDataset);
+    // create BitmapFont instance
+    new glchart.BitmapFont({
+		name: 'Lato',
+        fontPath: 'assets/Lato-Regular-16.fnt',
+        texturePath: '../../assets/lato.png'
+    }, (bitmapText, err) => {
+    	if (bitmapText == null) {
+    		console.error(err);
+    		return;
+		}
 
-	// create BitmapText instance
-	let bitmapText = new glchart.BitmapText({
-		fontPath: 'assets/Lato-Regular-16.fnt',
-		texturePath: '../../assets/lato.png'
+		bitmapText.updateText('Hello World!');
+
+        // create random data to add to the dataset instance
+        let data = createRandomData(100000, 100);
+        let randomDataset = new glchart.Dataset({data: data});
+
+        chart.addFont(bitmapText);
+        chart.addDataset(randomDataset);
+        document.body.appendChild(chart.domElement);
 	});
-
-	document.body.appendChild(chart.domElement);
 }
 
 function createRandomData(size, max) {
