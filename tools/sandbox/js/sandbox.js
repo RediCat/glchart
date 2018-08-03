@@ -13,22 +13,17 @@ function main() {
 		name: 'Lato',
         fontPath: 'assets/Lato-Regular-16.fnt',
         texturePath: '../../assets/lato.png'
-    }, (bitmapText, err) => {
-    	if (bitmapText == null) {
-    		console.error(err);
-    		return;
-		}
-
-		bitmapText.updateText('Hello World!');
+    }).on('load', (bitmapFont) => {
+        bitmapFont.updateText('Hello World!');
 
         // create random data to add to the dataset instance
         let data = createRandomData(100000, 100);
         let randomDataset = new glchart.Dataset({data: data});
 
-        chart.addFont(bitmapText);
+        chart.addFont(bitmapFont);
         chart.addDataset(randomDataset);
         document.body.appendChild(chart.domElement);
-	});
+    });
 }
 
 function createRandomData(size, max) {

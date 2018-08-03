@@ -1,6 +1,7 @@
 import THREE from 'three';
 import _ from 'lodash';
 import Hammer from 'hammerjs';
+import EventEmitter from 'events';
 
 const _defaultBackgroundColor = 0xffffff;
 
@@ -10,6 +11,7 @@ class Chart
 	{
 		this.datasets = [];
 		this.fonts = {};
+        this._events = new EventEmitter();
 		this._setupDefaultOptions(options);
 		this._createScene();
 		this._createRenderer();
@@ -123,6 +125,11 @@ class Chart
 	render()
 	{
 		this.renderer.render(this.scene, this.camera);
+	}
+
+	on(eventName, cb)
+	{
+		
 	}
 }
 
