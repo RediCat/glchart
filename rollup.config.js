@@ -7,28 +7,21 @@ export default {
 	input: 'src/glchart.js',
 	external: ['three', 'lodash', 'hammerjs'],
 	plugins: [
-		globals(),
-		builtins(),
-		resolve(),
 		commonJS({
 			include: 'node_modules/**'
-		})
+		}),
+		globals(),
+		builtins(),
+		resolve({
+			jsnext: true,
+			browser: true
+		}),
 	],
 	output: [
 		{
 			format: 'umd',
 			name: 'glchart',
 			file: 'build/glchart.js',
-			indent: '\t',
-			globals: {
-				'three': 'THREE',
-				'lodash': '_',
-				'hammerjs': 'Hammer'
-			},
-		},
-		{
-			format: 'es',
-			file: 'build/glchart.module.js',
 			indent: '\t',
 			globals: {
 				'three': 'THREE',

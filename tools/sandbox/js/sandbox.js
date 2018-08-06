@@ -1,19 +1,20 @@
 main();
 
 function main() {
-	let options = {
+	let chart = new glchart.Chart({
 		size: new THREE.Vector2(800, 200),
-		cameraBounds: new THREE.Vector2(1, 1000)
-	};
-
-	let chart = new glchart.Chart(options);
+		cameraBounds: new THREE.Vector2(1, 1000),
+		backgroundColor: 0x000000
+	});
 
     // create BitmapFont instance
     new glchart.BitmapFont({
 		name: 'Lato',
-        fontPath: 'assets/Lato-Regular-16.fnt',
-        texturePath: '../../assets/lato.png'
+        fontPath: '/assets/Lato-Regular-16.fnt',
+        texturePath: '/assets/lato.png'
     }).on('load', (bitmapFont) => {
+    	console.log('loaded bitmap font');
+
         bitmapFont.updateText('Hello World!');
 
         // create random data to add to the dataset instance
@@ -21,9 +22,11 @@ function main() {
         let randomDataset = new glchart.Dataset({data: data});
 
         chart.addFont(bitmapFont);
-        chart.addDataset(randomDataset);
+        //chart.addDataset(randomDataset);
         document.body.appendChild(chart.domElement);
-    });
+    }).on('error', (err) => {
+    	console.error(err);
+	});
 }
 
 function createRandomData(size, max) {

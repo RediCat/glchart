@@ -9,14 +9,15 @@ class Chart
 {
 	constructor(options)
 	{
-		this.datasets = [];
-		this.fonts = {};
+		this._datasets = [];
+		this._fonts = {};
         this._events = new EventEmitter();
 		this._setupDefaultOptions(options);
 		this._createScene();
 		this._createRenderer();
 		this._createCamera();
 		this._setupGestures();
+		this._events.emit('load', this);
 	}
 
 	/**
@@ -111,13 +112,13 @@ class Chart
 	addDataset(dataset)
 	{
 		this.scene.add(dataset.renderable);
-		this.datasets.push(dataset);
+		this._datasets.push(dataset);
 		this._render();
 	}
 
 	addFont(font)
 	{
-		this.fonts[font.name] = font;
+		this._fonts[font.name] = font;
 		this.scene.add(font.mesh);
 		this._render();
 	}
@@ -129,7 +130,15 @@ class Chart
 
 	on(eventName, cb)
 	{
-		
+		// If registering for load event, already loaded,
+		// so call without registering.
+		if (eventName === 'load') {
+			cb(this);
+			return;
+		}
+
+		this._events.on(eventName, cb);
+		return this;
 	}
 }
 

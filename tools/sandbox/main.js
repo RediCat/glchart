@@ -10,12 +10,13 @@ function createWindow()
 {
 	mainWindow = new BrowserWindow({
         webPreferences: {
-            nodeIntegration: true
+			nodeIntegration: true,
+			webSecurity: false,
         }
     });
 
 	let rootUrl = url.format({
-		pathname: path.join(__dirname, 'index.html'),
+		pathname: '/tools/sandbox/index.html',
 		protocol: 'file:',
 		slashes: true
 	});
@@ -28,19 +29,18 @@ function setupFileProtocol()
 {
 	let protoRegistrationSuccess = (request, callback) => {
         // remove the 'file://' uri scheme component
-        const url = request.url.substr(7);
-        callback({path: path.normalize(`${__dirname}/${url}`)});
+        let url = request.url.substr(7);
+		url = path.normalize(`${__dirname}/../../${url}`);
+
+        console.log(url);
+        callback({path: url});
     };
 
-	let protoRegistrationError = (err) => {
-		console.error(`file protocol registration failed: ${err}.`);
-	};
-
-	electron.protocol.interceptFileProtocol('file', protoRegistrationSuccess, protoRegistrationError);
+	electron.protocol.interceptFileProtocol('file', protoRegistrationSuccess);
 }
 
 app.on('ready', () => {
-	//setupFileProtocol();
+	setupFileProtocol();
     createWindow();
 });
 
