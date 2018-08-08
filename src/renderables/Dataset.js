@@ -13,7 +13,10 @@ class Dataset
 			geometry.vertices.push(new THREE.Vector3(point.x, point.y, 0));
 		});
 
-		let material = new THREE.LineBasicMaterial({color: 0x0000ff});
+		let material = new THREE.LineBasicMaterial({
+			color: 0x0000ff,
+			side: THREE.DoubleSide,
+		});
 		this.renderable = new THREE.Line(geometry, material);
 	}
 

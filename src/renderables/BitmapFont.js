@@ -15,17 +15,18 @@ class BitmapFont
 
 	_setupDefaultOptions(options)
 	{
-	    let requiredOptions = ['name', 'fontPath', 'texturePath'];
-	    _.forEach(requiredOptions, (requiredOption) => {
-	        if (!_.has(options, requiredOption)) {
-	            throw `options.${requiredOption} was not defined`;
-            }
-        });
+		let requiredOptions = ['name', 'fontPath', 'texturePath'];
+		_.forEach(requiredOptions, (requiredOption) => {
+			if (!_.has(options, requiredOption)) {
+				throw `options.${requiredOption} was not defined`;
+			}
+		});
 
 		this.options = _.cloneDeep(options);
+		this.options.text = _.get(options, 'text', '');
 		this.options.width = _.get(options, 'width', 200);
 		this.options.align = _.get(options, 'align', 'center');
-		this.options.color = _.get(options, 'color', 0x000000);
+		this.options.color = _.get(options, 'color', 0xffffff);
 
 		this.name = this.options.name;
 	}
@@ -38,24 +39,27 @@ class BitmapFont
 			}
 
 			this.font = font;
+
 			this.textGeometry = createTextGeometry({
 				width: this.options.width,
 				align: this.options.align,
-				font: this.font
+				font: this.font,
+				text: this.options.text
 			});
 
 			let textureOnLoad = (texture) => {
-				console.log('loaded texture');
-                this.material = new THREE.MeshBasicMaterial({
-                    map: texture,
-                    transparent: true,
-                    color: this.options.color,
-					side: THREE.DoubleSide,
-                });
+				this.texture = texture;
 
-                this.mesh = new THREE.Mesh(this.textGeometry, this.material);
-                this._events.emit('load', this);
-            };
+				this.material = new THREE.MeshBasicMaterial({
+					map: texture,
+					transparent: false,
+					color: this.options.color,
+					side: THREE.DoubleSide,
+				});
+
+				this.renderable = new THREE.Mesh(this.textGeometry, this.material);
+				this._events.emit('load', this);
+			};
 
 			let textureOnError = (err) => {
 				this._events.emit('error', err);
@@ -68,7 +72,7 @@ class BitmapFont
 	updateText(text)
 	{
 		this.textGeometry.update(text);
-		this.mesh = new THREE.Mesh(this.textGeometry, this.material);
+		this.renderable = new THREE.Mesh(this.textGeometry, this.material);
 	}
 
 	on(eventName, cb)

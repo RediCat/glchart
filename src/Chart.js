@@ -16,7 +16,8 @@ class Chart
 		this._createScene();
 		this._createRenderer();
 		this._createCamera();
-		this._setupGestures();
+		//this._setupGestures();
+		this._animate();
 		this._events.emit('load', this);
 	}
 
@@ -33,6 +34,7 @@ class Chart
 		this.options.pixelRatio = _.get(options, 'pixelRatio', window.devicePixelRatio);
         this.options.useAlpha = _.get(options, 'useAlpha', true);
         this.options.backgroundColor = _.get(options, 'backgroundColor', new THREE.Color(_defaultBackgroundColor));
+        this.options.orthographic = _.get(options, 'orthographic', true);
 
 		if (!this.options.backgroundColor instanceof THREE.Color) {
 			this.options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
@@ -72,10 +74,24 @@ class Chart
 	_createCamera()
 	{
 		let size = this.options.size, cameraBounds = this.options.cameraBounds;
-		this.camera = new THREE.OrthographicCamera(0, size.x, 0, size.y, cameraBounds.x, cameraBounds.y);
 
-		this.camera.position.set(0, 0, 1);
-		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+		if (this.options.orthographic) {
+			this.camera = new THREE.OrthographicCamera(0, size.x, 0, size.y, cameraBounds.x, cameraBounds.y);
+		} else {
+			let aspect = this.options.size.x / this.options.size.y;
+			this.camera = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 1000);
+		}
+
+		this.camera.position.set(0, 10, -10);
+		this.camera.lookAt(new THREE.Vector3(0, 10, 0));
+		this.control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+	}
+
+	_animate()
+	{
+		requestAnimationFrame(() => this._animate());
+		this.control.update();
+		this._render();
 	}
 
 	/**
@@ -119,7 +135,7 @@ class Chart
 	addFont(font)
 	{
 		this._fonts[font.name] = font;
-		this.scene.add(font.mesh);
+		this.scene.add(font.renderable);
 		this._render();
 	}
 
