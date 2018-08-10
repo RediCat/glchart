@@ -84,8 +84,8 @@ class Chart
 			this.camera = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 1000);
 		}
 
-		this.camera.position.set(0, 100, 10);
-		this.camera.lookAt(new THREE.Vector3(0, 100, 0));
+		this.camera.position.set(0, 0, 1);
+		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 	}
 
 	_setupDevEnvironment()

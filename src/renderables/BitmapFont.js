@@ -2,7 +2,7 @@ import createTextGeometry from 'three-bmfont-text';
 import _ from 'lodash';
 import THREE from 'three';
 import EventEmitter from 'events';
-import loadFont from 'load-bmfont';
+import {RenderableUtils} from './RenderableUtils.js';
 
 class BitmapFont
 {
@@ -16,16 +16,12 @@ class BitmapFont
 	_setupDefaultOptions(options)
 	{
 		let requiredOptions = ['name', 'fontPath', 'texturePath'];
-		_.forEach(requiredOptions, (requiredOption) => {
-			if (!_.has(options, requiredOption)) {
-				throw `options.${requiredOption} was not defined`;
-			}
-		});
+		RenderableUtils.AssertRequiredFields(options, requiredOptions, 'BitmapFont.options');
 
 		this.options = _.cloneDeep(options);
 		this.options.text = _.get(options, 'text', '');
 		this.options.width = _.get(options, 'width', 200);
-		this.options.align = _.get(options, 'align', 'center');
+		this.options.align = _.get(options, 'align', 'left');
 		this.options.color = _.get(options, 'color', 0xffffff);
 
 		this.name = this.options.name;
@@ -33,40 +29,34 @@ class BitmapFont
 
 	_load()
 	{
-		loadFont(this.options.fontPath, (err, font) => {
-			if (err) {
-				throw err;
-			}
-
+		let onLoad = (font, texture) => {
 			this.font = font;
+			this.texture = texture;
 
-			let textureOnLoad = (texture) => {
-				this.texture = texture;
+			this.material = new THREE.MeshBasicMaterial({
+				map: texture,
+				transparent: true,
+				color: this.options.color,
+				side: THREE.DoubleSide,
+			});
 
-				this.material = new THREE.MeshBasicMaterial({
-					map: texture,
-					transparent: false,
-					color: this.options.color,
-					side: THREE.DoubleSide,
-				});
+			this.textGeometry = createTextGeometry({
+				width: this.options.width,
+				align: this.options.align,
+				font: this.font,
+				text: this.options.text,
+				flipY: texture.flipY
+			});
 
-				this.textGeometry = createTextGeometry({
-					width: this.options.width,
-					align: this.options.align,
-					font: this.font,
-					text: this.options.text
-				});
+			this.renderable = new THREE.Mesh(this.textGeometry, this.material);
+			this._events.emit('load', this);
+		};
 
-				this.renderable = new THREE.Mesh(this.textGeometry, this.material);
-				this._events.emit('load', this);
-			};
+		let onError = (err) => {
+			this._events.emit('error', err);
+		};
 
-			let textureOnError = (err) => {
-				this._events.emit('error', err);
-			};
-
-			new THREE.TextureLoader().load(this.options.texturePath, textureOnLoad, undefined, textureOnError);
-		});
+		RenderableUtils.LoadFont(this.options.fontPath, this.options.texturePath, onLoad, onError);
 	}
 
 	updateText(text)
