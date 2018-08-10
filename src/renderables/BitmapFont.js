@@ -40,13 +40,6 @@ class BitmapFont
 
 			this.font = font;
 
-			this.textGeometry = createTextGeometry({
-				width: this.options.width,
-				align: this.options.align,
-				font: this.font,
-				text: this.options.text
-			});
-
 			let textureOnLoad = (texture) => {
 				this.texture = texture;
 
@@ -55,6 +48,13 @@ class BitmapFont
 					transparent: false,
 					color: this.options.color,
 					side: THREE.DoubleSide,
+				});
+
+				this.textGeometry = createTextGeometry({
+					width: this.options.width,
+					align: this.options.align,
+					font: this.font,
+					text: this.options.text
 				});
 
 				this.renderable = new THREE.Mesh(this.textGeometry, this.material);

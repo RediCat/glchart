@@ -16,9 +16,11 @@ class Chart
 		this._createScene();
 		this._createRenderer();
 		this._createCamera();
+
 		//this._setupGestures();
+		this._setupDevEnvironment();
+
 		this._animate();
-		this._events.emit('load', this);
 	}
 
 	/**
@@ -82,9 +84,15 @@ class Chart
 			this.camera = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 1000);
 		}
 
-		this.camera.position.set(0, 10, -10);
-		this.camera.lookAt(new THREE.Vector3(0, 10, 0));
+		this.camera.position.set(0, 100, 10);
+		this.camera.lookAt(new THREE.Vector3(0, 100, 0));
+	}
+
+	_setupDevEnvironment()
+	{
 		this.control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+		this.axesHelper = new THREE.AxesHelper(5);
+		this.scene.add(this.axesHelper);
 	}
 
 	_animate()
