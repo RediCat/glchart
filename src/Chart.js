@@ -2,6 +2,8 @@ import THREE from 'three';
 import _ from 'lodash';
 import Hammer from 'hammerjs';
 import EventEmitter from 'events';
+import {BitmapFont} from './renderables/BitmapFont.js';
+import {Dataset} from './renderables/Dataset.js';
 
 const _defaultBackgroundColor = 0xffffff;
 
@@ -75,10 +77,14 @@ class Chart
 	 */
 	_createCamera()
 	{
-		let size = this.options.size, cameraBounds = this.options.cameraBounds;
+		let size = this.options.size,
+			cameraBounds = this.options.cameraBounds;
 
 		if (this.options.orthographic) {
-			this.camera = new THREE.OrthographicCamera(0, size.x, 0, size.y, cameraBounds.x, cameraBounds.y);
+			let left = size.x / -2, right = size.x / 2,
+				top = size.y / 2, bottom = size.y / -2,
+				near = cameraBounds.x, far = cameraBounds.y;
+			this.camera = new THREE.OrthographicCamera(left, right, top, bottom, near, far);
 		} else {
 			let aspect = this.options.size.x / this.options.size.y;
 			this.camera = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 1000);
@@ -133,17 +139,17 @@ class Chart
 		this.render();
 	}
 
-	addDataset(dataset)
+	add(renderable)
 	{
-		this.scene.add(dataset.renderable);
-		this._datasets.push(dataset);
-		this._render();
-	}
-
-	addFont(font)
-	{
-		this._fonts[font.name] = font;
-		this.scene.add(font.renderable);
+		if (renderable instanceof Dataset) {
+			this._datasets.push(renderable);
+			this.scene.add(renderable.renderable);
+		} else if (renderable instanceof BitmapFont) {
+			this._fonts[renderable.name] = renderable;
+			this.scene.add(renderable.renderable);
+		} else {
+			throw 'chart.add: Instance not of supported type.';
+		}
 		this._render();
 	}
 

@@ -17,7 +17,10 @@ class Dataset
 			color: 0x0000ff,
 			side: THREE.DoubleSide,
 		});
-		this.renderable = new THREE.Line(geometry, material);
+
+		this.line = new THREE.Line(geometry, material);
+		this.renderable = new THREE.Object3D();
+		this.renderable.add(this.line);
 	}
 
 	_setupDefaultOptions(options)

@@ -4,7 +4,8 @@ function main()
 {
 	let chart = new glchart.Chart({
 		size: new THREE.Vector2(800, 200),
-		cameraBounds: new THREE.Vector2(1, 1000),
+		cameraBounds: new THREE.Vector2(-100, 100),
+		orthographic: true,
 	});
 
 	// create BitmapFont instance
@@ -22,8 +23,8 @@ function main()
 		let data = createRandomData(1000, 100);
 		let randomDataset = new glchart.Dataset({data: data});
 
-		chart.addDataset(randomDataset);
-		chart.addFont(bitmapFont);
+		chart.add(randomDataset);
+		chart.add(bitmapFont);
 
 		document.body.appendChild(chart.domElement);
 	}).on('error', (err) => {
