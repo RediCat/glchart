@@ -48,7 +48,10 @@ class BitmapFont
 				flipY: texture.flipY
 			});
 
-			this.renderable = new THREE.Mesh(this.textGeometry, this.material);
+			this.mesh = new THREE.Mesh(this.textGeometry, this.material);
+			this.renderable = new THREE.Object3D();
+			this.renderable.add(this.mesh);
+			this.renderable.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI);
 			this._events.emit('load', this);
 		};
 
