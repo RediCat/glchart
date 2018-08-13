@@ -10,10 +10,11 @@ class Axis
 
 	_setupDefaultOptions(options)
 	{
-		if (!_.has(options, 'name')) {
-			throw 'options.name was not defined';
-		}
+		let requiredOptions = ['name'];
+		RenderableUtils.AssertRequiredFields(options, requiredOptions, 'Axis.options');
 
-		this.options = options;
+		this.options = _.cloneDeep(options);
 	}
 }
+
+export {Axis};

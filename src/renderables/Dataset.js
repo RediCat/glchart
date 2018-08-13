@@ -1,5 +1,6 @@
 import THREE from 'three';
 import _ from 'lodash';
+import {RenderableUtils} from "./RenderableUtils";
 
 class Dataset
 {
@@ -25,10 +26,8 @@ class Dataset
 
 	_setupDefaultOptions(options)
 	{
-		if (!_.has(options, 'data')) {
-			throw 'options.data was not defined.';
-		}
-		this.options = options;
+		let requiredOptions = ['data'];
+		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options');
 	}
 }
 

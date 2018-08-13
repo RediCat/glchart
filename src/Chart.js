@@ -4,6 +4,7 @@ import Hammer from 'hammerjs';
 import EventEmitter from 'events';
 import {BitmapFont} from './renderables/BitmapFont.js';
 import {Dataset} from './renderables/Dataset.js';
+import {Axis} from './renderables/Axis.js';
 
 const _defaultBackgroundColor = 0xffffff;
 
@@ -12,6 +13,7 @@ class Chart
 	constructor(options)
 	{
 		this._datasets = [];
+		this._axes = [];
 		this._fonts = {};
         this._events = new EventEmitter();
 		this._setupDefaultOptions(options);
@@ -146,6 +148,9 @@ class Chart
 			this.scene.add(renderable.renderable);
 		} else if (renderable instanceof BitmapFont) {
 			this._fonts[renderable.name] = renderable;
+			this.scene.add(renderable.renderable);
+		} else if (renderable instanceof Axis) {
+			this._axes.push(renderable);
 			this.scene.add(renderable.renderable);
 		} else {
 			throw 'chart.add: Instance not of supported type.';

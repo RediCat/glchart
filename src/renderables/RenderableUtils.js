@@ -32,6 +32,18 @@ class RenderableUtils
 			}
 		});
 	}
+
+	static CreateOptions(obj, required, objName, defaults)
+	{
+		RenderableUtils.AssertRequiredFields(obj, required, objName);
+		let ret = _.cloneDeep(obj);
+		if (defaults !== undefined && defaults !== null) {
+			_.forEach(defaults, (v, k) => {
+				ret[k] = _.get(obj, k, v);
+			});
+		}
+		return ret;
+	}
 }
 
 export {RenderableUtils};

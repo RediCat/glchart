@@ -15,14 +15,14 @@ class BitmapFont
 
 	_setupDefaultOptions(options)
 	{
-		let requiredOptions = ['name', 'fontPath', 'texturePath'];
-		RenderableUtils.AssertRequiredFields(options, requiredOptions, 'BitmapFont.options');
-
-		this.options = _.cloneDeep(options);
-		this.options.text = _.get(options, 'text', '');
-		this.options.width = _.get(options, 'width', 200);
-		this.options.align = _.get(options, 'align', 'left');
-		this.options.color = _.get(options, 'color', 0xffffff);
+		let requiredOptions = ['name', 'fontPath', 'texturePath'],
+			optName = 'BitmapFont.options';
+		this.options = RenderableUtils.CreateOptions(options, requiredOptions, optName, {
+			text: '',
+			width: 200,
+			align: 'left',
+			color: 0xffffff
+		});
 
 		this.name = this.options.name;
 	}
