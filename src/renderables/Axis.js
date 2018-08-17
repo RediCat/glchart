@@ -15,6 +15,8 @@ class Axis
 
 		this.options = _.cloneDeep(options);
 	}
+
+
 }
 
 export {Axis};
