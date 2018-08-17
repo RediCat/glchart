@@ -1,10 +1,12 @@
-import THREE from 'three';
 import _ from 'lodash';
+import {RenderableNode} from "./RenderableNode";
 
-class Axis
+//todo: add support for 'added' event
+class Axis extends RenderableNode
 {
 	constructor(options)
 	{
+		super();
 		this._setupDefaultOptions(options);
 	}
 
@@ -15,8 +17,6 @@ class Axis
 
 		this.options = _.cloneDeep(options);
 	}
-
-
 }
 
 export {Axis};

@@ -2,23 +2,17 @@ import THREE from 'three';
 import _ from 'lodash';
 import Hammer from 'hammerjs';
 import EventEmitter from 'events';
-import {BitmapFont} from './renderables/BitmapFont.js';
-import {Dataset} from './renderables/Dataset.js';
-import {Axis} from './renderables/Axis.js';
 import {RenderableNode} from "./renderables/RenderableNode";
 
 const _defaultBackgroundColor = 0xffffff;
 
-class Chart extends RenderableNode
+class Chart
 {
 	constructor(options)
 	{
-		super();
-		this._datasets = [];
-		this._axes = [];
-		this._fonts = {};
         this._events = new EventEmitter();
 		this._setupDefaultOptions(options);
+		this._createScene();
 		this._createRenderer();
 		this._createCamera();
 
@@ -47,8 +41,12 @@ class Chart extends RenderableNode
 			this.options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
 			Console.warn('Chart.options.backgroundColor is not of type THREE.Color, using default.')
 		}
+	}
 
-		this.scene.background = this.options.backgroundColor;
+	_createScene()
+	{
+		this._scene = new THREE.Scene();
+		this._scene.background = this.options.backgroundColor;
 	}
 
 	/**
@@ -93,7 +91,7 @@ class Chart extends RenderableNode
 	{
 		this.control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 		this.axesHelper = new THREE.AxesHelper(5);
-		this.scene.add(this.axesHelper);
+		this._scene.add(this.axesHelper);
 	}
 
 	_animate()
@@ -134,24 +132,27 @@ class Chart extends RenderableNode
 		this.render();
 	}
 
-	add(renderable)
+	add(node)
 	{
-		super.add(renderable);
-		if (renderable instanceof Dataset) {
-			this._datasets.push(renderable);
-		} else if (renderable instanceof BitmapFont) {
-			this._fonts[renderable.name] = renderable;
-		} else if (renderable instanceof Axis) {
-			this._axes.push(renderable);
-		} else {
-			throw 'chart.add: Instance not of supported type.';
+		if (!node instanceof RenderableNode) {
+			throw 'Error: chart.add called with parameter not of type RenderableNode';
 		}
+		this._scene.add(node.renderable);
+		this._render();
+	}
+
+	remove(node)
+	{
+		if (!node instanceof RenderableNode) {
+			throw 'Error: chart.add called with parameter not of type RenderableNode';
+		}
+		this._scene.remove(node.renderable);
 		this._render();
 	}
 
 	render()
 	{
-		this.renderer.render(this.scene, this.camera);
+		this.renderer.render(this._scene, this.camera);
 	}
 
 	on(eventName, cb)

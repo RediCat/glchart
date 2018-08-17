@@ -1,26 +1,34 @@
-import _ from 'lodash';
 import THREE from 'three';
+import EventEmitter from 'events';
 
+//todo: add 'added' event support for Axis class
 class RenderableNode {
 	constructor()
 	{
-		this._nodes = [];
-		this._renderables = [];
-		this._scene = new THREE.Scene();
+		this._group = new THREE.Group();
 	}
 
 	add(node)
 	{
-		this._nodes.push(node);
-		if (_.has(node, 'renderable')) {
-			this._renderables.push(node);
-			this._scene.add(node.renderable);
+		if (node instanceof RenderableNode) {
+			this._group.add(node.renderable);
+		} else {
+			this._group.add(node);
 		}
 	}
 
-	get scene()
+	remove(node)
 	{
-		return this._scene;
+		if (node instanceof RenderableNode) {
+			this._group.remove(node.renderable);
+		} else {
+			this._group.remove(node);
+		}
+	}
+
+	get renderable()
+	{
+		return this._group;
 	}
 }
 

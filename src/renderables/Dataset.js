@@ -1,11 +1,13 @@
 import THREE from 'three';
 import _ from 'lodash';
 import {RenderableUtils} from "./RenderableUtils";
+import {RenderableNode} from "./RenderableNode";
 
-class Dataset
+class Dataset extends RenderableNode
 {
 	constructor(options)
 	{
+		super();
 		this._setupDefaultOptions(options);
 
 		this.data = this.options.data;
@@ -40,8 +42,7 @@ class Dataset
 		});
 
 		this.line = new THREE.Line(geometry, material);
-		this.renderable = new THREE.Object3D();
-		this.renderable.add(this.line);
+		this.add(this.line);
 	}
 }
 

@@ -1,13 +1,14 @@
 import createTextGeometry from 'three-bmfont-text';
-import _ from 'lodash';
 import THREE from 'three';
 import EventEmitter from 'events';
 import {RenderableUtils} from './RenderableUtils.js';
+import {RenderableNode} from "./RenderableNode";
 
-class BitmapFont
+class BitmapFont extends RenderableNode
 {
 	constructor(options)
 	{
+		super();
 		this._events = new EventEmitter();
 		this._setupDefaultOptions(options);
 		this._load();
@@ -31,7 +32,6 @@ class BitmapFont
 	{
 		let onLoad = (font, texture) => {
 			this.font = font;
-			this.texture = texture;
 
 			this.material = new THREE.MeshBasicMaterial({
 				map: texture,
@@ -49,8 +49,7 @@ class BitmapFont
 			});
 
 			this.mesh = new THREE.Mesh(this.textGeometry, this.material);
-			this.renderable = new THREE.Object3D();
-			this.renderable.add(this.mesh);
+			this.add(this.mesh);
 			this.renderable.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI);
 			this._events.emit('load', this);
 		};
@@ -65,7 +64,9 @@ class BitmapFont
 	updateText(text)
 	{
 		this.textGeometry.update(text);
-		this.renderable = new THREE.Mesh(this.textGeometry, this.material);
+		this.remove(this.mesh);
+		this.mesh = new THREE.Mesh(this.textGeometry, this.material);
+		this.add(this.mesh);
 	}
 
 	on(eventName, cb)
