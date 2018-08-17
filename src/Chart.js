@@ -5,19 +5,20 @@ import EventEmitter from 'events';
 import {BitmapFont} from './renderables/BitmapFont.js';
 import {Dataset} from './renderables/Dataset.js';
 import {Axis} from './renderables/Axis.js';
+import {RenderableNode} from "./renderables/RenderableNode";
 
 const _defaultBackgroundColor = 0xffffff;
 
-class Chart
+class Chart extends RenderableNode
 {
 	constructor(options)
 	{
+		super();
 		this._datasets = [];
 		this._axes = [];
 		this._fonts = {};
         this._events = new EventEmitter();
 		this._setupDefaultOptions(options);
-		this._createScene();
 		this._createRenderer();
 		this._createCamera();
 
@@ -46,15 +47,7 @@ class Chart
 			this.options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
 			Console.warn('Chart.options.backgroundColor is not of type THREE.Color, using default.')
 		}
-	}
 
-	/**
-	 * Create the top level scene.
-	 * @private
-	 */
-	_createScene()
-	{
-		this.scene = new THREE.Scene();
 		this.scene.background = this.options.backgroundColor;
 	}
 
@@ -143,15 +136,13 @@ class Chart
 
 	add(renderable)
 	{
+		super.add(renderable);
 		if (renderable instanceof Dataset) {
 			this._datasets.push(renderable);
-			this.scene.add(renderable.renderable);
 		} else if (renderable instanceof BitmapFont) {
 			this._fonts[renderable.name] = renderable;
-			this.scene.add(renderable.renderable);
 		} else if (renderable instanceof Axis) {
 			this._axes.push(renderable);
-			this.scene.add(renderable.renderable);
 		} else {
 			throw 'chart.add: Instance not of supported type.';
 		}
