@@ -9,7 +9,6 @@ class BitmapFont extends RenderableNode
 	constructor(options)
 	{
 		super();
-		this._events = new EventEmitter();
 		this._setupDefaultOptions(options);
 		this._load();
 	}
@@ -51,11 +50,11 @@ class BitmapFont extends RenderableNode
 			this.mesh = new THREE.Mesh(this.textGeometry, this.material);
 			this.add(this.mesh);
 			this.renderable.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI);
-			this._events.emit('load', this);
+			this.emit('load', this);
 		};
 
 		let onError = (err) => {
-			this._events.emit('error', err);
+			this.emit('error', err);
 		};
 
 		RenderableUtils.LoadFont(this.options.fontPath, this.options.texturePath, onLoad, onError);
@@ -67,12 +66,6 @@ class BitmapFont extends RenderableNode
 		this.remove(this.mesh);
 		this.mesh = new THREE.Mesh(this.textGeometry, this.material);
 		this.add(this.mesh);
-	}
-
-	on(eventName, cb)
-	{
-		this._events.on(eventName, cb);
-		return this;
 	}
 }
 

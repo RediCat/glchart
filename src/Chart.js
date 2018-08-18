@@ -161,7 +161,7 @@ class Chart
 		// so call without registering.
 		if (eventName === 'load') {
 			cb(this);
-			return;
+			return this;
 		}
 
 		this._events.on(eventName, cb);
