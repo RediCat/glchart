@@ -1,18 +1,21 @@
 import THREE from 'three';
 import EventEmitter from 'events';
 
+
 class RenderableNode
 {
 	constructor()
 	{
 		this._group = new THREE.Group();
 		this._events = new EventEmitter();
+		this._parent = null;
 	}
 
 	add(node)
 	{
 		if (node instanceof RenderableNode) {
 			this._group.add(node.renderable);
+			node._parent = this;
 			node._events.emit('parentAdded', this, node);
 		} else {
 			this._group.add(node);
@@ -24,6 +27,7 @@ class RenderableNode
 	{
 		if (node instanceof RenderableNode) {
 			this._group.remove(node.renderable);
+			node._parent = null;
 			node._events.emit('parentRemoved', this, node);
 		} else {
 			this._group.remove(node);
