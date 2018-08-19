@@ -36,9 +36,9 @@ class Axis extends RenderableNode
 		};
 
 		if (parent.stats.yBounds.min >= 0) {
-			this._createSingleVerticalAxis();
+			this._createSingleVerticalAxis(parent);
 		} else {
-			this._createFullVerticalAxis();
+			this._createFullVerticalAxis(parent);
 		}
 	}
 
@@ -51,12 +51,15 @@ class Axis extends RenderableNode
 		this.stats = null;
 	}
 
-	_createSingleVerticalAxis()
+	_createSingleVerticalAxis(parent)
 	{
-
+		let geometry = new THREE.Geometry();
+		// xaxis line
+		geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+		geometry.vertices.push(new THREE.Vector3(parent.stats.xBound.max, 0, 0));
 	}
 
-	_createFullVerticalAxis()
+	_createFullVerticalAxis(parent)
 	{
 
 	}
