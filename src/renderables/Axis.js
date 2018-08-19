@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import {RenderableNode} from "./RenderableNode";
+import {RenderableUtils} from "./RenderableUtils";
 import {Dataset} from './Dataset';
 
 

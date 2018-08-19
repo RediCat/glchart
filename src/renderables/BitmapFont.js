@@ -1,8 +1,8 @@
 import createTextGeometry from 'three-bmfont-text';
 import THREE from 'three';
-import EventEmitter from 'events';
-import {RenderableUtils} from './RenderableUtils.js';
-import {RenderableNode} from "./RenderableNode";
+import {RenderableUtils} from './RenderableUtils';
+import {RenderableNode} from './RenderableNode';
+
 
 class BitmapFont extends RenderableNode
 {

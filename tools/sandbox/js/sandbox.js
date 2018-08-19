@@ -24,8 +24,10 @@ function main()
 		let randomDataset = new glchart.Dataset({data: data});
 
 		// create Axis info
-		let axis = new glchart.Axis();
-		randomDataset.add(axis);
+		randomDataset.add(new glchart.Axis({
+			name: 'RandomData',
+			xLabel: 'X', yLabel: 'Y'
+		}));
 
 		chart.add(randomDataset);
 		chart.add(bitmapFont);

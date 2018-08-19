@@ -44,7 +44,7 @@ class RenderableNode
 
 	emit(type, ...args)
 	{
-		Reflect.apply(this._events.emit, this._events, args);
+		this._events.emit(type, ...args);
 	}
 }
 
