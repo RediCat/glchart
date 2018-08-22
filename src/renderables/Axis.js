@@ -2,7 +2,6 @@ import {RenderableNode} from "./RenderableNode";
 import {RenderableUtils} from "./RenderableUtils";
 import {Dataset} from './Dataset';
 
-
 class Axis extends RenderableNode
 {
 	constructor(options)
@@ -18,7 +17,11 @@ class Axis extends RenderableNode
 		let requiredOptions = ['name'];
 		let defaultOptions = {
 			stepCoefX: 10,
-			stepCoefY: 10
+			stepCoefY: 10,
+			xLabel: '',
+			yLabel: '',
+			color: 0x00FF00,
+			zIndex: 1
 		};
 		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Axis.options', defaultOptions);
 		this.stats = null;
@@ -31,8 +34,8 @@ class Axis extends RenderableNode
 		}
 
 		this.stats = {
-			stepSizeX: Math.floor(parent.stats.xBounds.max/this.options.stepCoefX),
-			stepSizeY: Math.floor(parent.stats.yBounds.max/this.options.stepCoefX)
+			stepSizeX: Math.floor(parent.stats.xBounds.max / this.options.stepCoefX),
+			stepSizeY: Math.floor(parent.stats.yBounds.max / this.options.stepCoefX)
 		};
 
 		if (parent.stats.yBounds.min >= 0) {
@@ -53,10 +56,21 @@ class Axis extends RenderableNode
 
 	_createSingleVerticalAxis(parent)
 	{
-		let geometry = new THREE.Geometry();
-		// xaxis line
-		geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-		geometry.vertices.push(new THREE.Vector3(parent.stats.xBound.max, 0, 0));
+		// x axis line
+		let xAxisLineVerts = [
+			[0, 0],
+			[parent.stats.xBounds.max, 0]
+		];
+		let xAxisLine = RenderableUtils.CreateLine(xAxisLineVerts, this.options.color);
+		this.add(xAxisLine);
+
+		// y axis line
+		let yAxisLineVerts = [
+			[0, 0],
+			[0, parent.stats.yBounds.max + 20]
+		];
+		let yAxisLine = RenderableUtils.CreateLine(yAxisLineVerts, this.options.color);
+		this.add(yAxisLine);
 	}
 
 	_createFullVerticalAxis(parent)

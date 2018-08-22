@@ -1,6 +1,11 @@
 import loadFont from 'load-bmfont';
-import THREE from "three";
-import _ from "lodash";
+import THREE from 'three';
+import createLineMesh from 'three-line-2d';
+import basic from 'three-line-2d/shaders/basic';
+import _ from 'lodash';
+
+const Line = createLineMesh(THREE);
+const BasicShader = basic(THREE);
 
 class RenderableUtils
 {
@@ -43,6 +48,19 @@ class RenderableUtils
 			});
 		}
 		return ret;
+	}
+
+	static CreateLine(verts, color)
+	{
+		let geometry = Line(verts, { distances: true });
+
+		let shaderMat = new THREE.ShaderMaterial(BasicShader({
+			side: THREE.DoubleSide,
+			diffuse: color,
+			thickness: 1
+		}));
+
+		return new THREE.Mesh(geometry, shaderMat);
 	}
 }
 

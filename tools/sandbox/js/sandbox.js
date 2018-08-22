@@ -26,7 +26,7 @@ function main()
 		// create Axis info
 		randomDataset.add(new glchart.Axis({
 			name: 'RandomData',
-			xLabel: 'X', yLabel: 'Y'
+			xLabel: 'X', yLabel: 'Y',
 		}));
 
 		chart.add(randomDataset);
@@ -45,7 +45,7 @@ function createRandomData(size, max)
 	let data = [];
 
 	for (let x = 0; x < size; x++) {
-		data.push(new THREE.Vector2(x, Math.random() * max));
+		data.push([x * 10, Math.random() * max]);
 	}
 
 	return data;
