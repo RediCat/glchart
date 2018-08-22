@@ -30,12 +30,13 @@ class Dataset extends RenderableNode
 	_createGeometry()
 	{
 		_.forEach(this.data, (point) => {
-			this.stats.xBounds.min = Math.min(this.stats.xBounds.min, point.x);
-			this.stats.xBounds.max = Math.max(this.stats.xBounds.max, point.x);
-			this.stats.yBounds.min = Math.min(this.stats.yBounds.min, point.y);
-			this.stats.yBounds.max = Math.max(this.stats.yBounds.max, point.y);
+			this.stats.xBounds.min = Math.min(this.stats.xBounds.min, point[0]);
+			this.stats.xBounds.max = Math.max(this.stats.xBounds.max, point[0]);
+			this.stats.yBounds.min = Math.min(this.stats.yBounds.min, point[1]);
+			this.stats.yBounds.max = Math.max(this.stats.yBounds.max, point[1]);
 		});
 
+		console.log(this.stats);
 		this.line = RenderableUtils.CreateLine(this.data, this.options.color);
 		this.add(this.line);
 	}

@@ -50,14 +50,18 @@ class RenderableUtils
 		return ret;
 	}
 
-	static CreateLine(verts, color)
+	static CreateLine(verts, color, thickness)
 	{
+		if (thickness === undefined || thickness === null) {
+			thickness = 1;
+		}
+
 		let geometry = Line(verts, { distances: true });
 
 		let shaderMat = new THREE.ShaderMaterial(BasicShader({
 			side: THREE.DoubleSide,
 			diffuse: color,
-			thickness: 1
+			thickness: thickness
 		}));
 
 		return new THREE.Mesh(geometry, shaderMat);
