@@ -61,17 +61,18 @@ class Chart
 			(parentElement = document.querySelector(this.options.parentElement)) !== null) {
 
 			let canvasElem = document.createElement('canvas');
-			parentElement.appendChild(canvasElem);
 			this.renderer = new THREE.WebGLRenderer({
 				canvas: canvasElem,
 				alpha: this.options.useAlpha,
 				antialias: true
 			});
+			parentElement.appendChild(canvasElem);
 		} else {
 			this.renderer = new THREE.WebGLRenderer({
 				alpha: this.options.useAlpha,
 				antialias: true
 			});
+			document.body.appendChild(this.renderer.domElement);
 		}
 
 		this.renderer.setSize(this.options.size.x, this.options.size.y);

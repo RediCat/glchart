@@ -21,7 +21,7 @@ function main()
 		console.log(bitmapFont);
 
 		// create random data to add to the dataset instance
-		let data = createRandomData(10000, 100);
+		let data = createRandomData(1000, 100);
 		let randomDataset = new glchart.Dataset({data: data});
 
 		// create Axis info
@@ -32,8 +32,6 @@ function main()
 
 		chart.add(randomDataset);
 		chart.add(bitmapFont);
-
-		document.body.appendChild(chart.domElement);
 	}).on('error', (err) => {
 		console.error(err);
 	});
