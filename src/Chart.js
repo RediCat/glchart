@@ -1,7 +1,7 @@
 import THREE from 'three';
-import _ from 'lodash';
 import Hammer from 'hammerjs';
 import EventEmitter from 'events';
+import {RenderableUtils} from "./renderables/RenderableUtils";
 import {RenderableNode} from "./renderables/RenderableNode";
 
 const _defaultBackgroundColor = 0xffffff;
@@ -16,10 +16,8 @@ class Chart
 		this._createRenderer();
 		this._createCamera();
 
-		//this._setupGestures();
-		this._setupDevEnvironment();
-
-		this._animate();
+		this._setupGestures();
+		//this._setupDevEnvironment();
 	}
 
 	/**
@@ -29,13 +27,16 @@ class Chart
 	 */
 	_setupDefaultOptions(options)
 	{
-		this.options = _.cloneDeep(options);
-		this.options.size = _.get(options, 'size', new THREE.Vector2(400, 200));
-		this.options.cameraBounds = _.get(options, 'cameraBounds', new THREE.Vector2(1, 100));
-		this.options.pixelRatio = _.get(options, 'pixelRatio', window.devicePixelRatio);
-        this.options.useAlpha = _.get(options, 'useAlpha', true);
-        this.options.backgroundColor = _.get(options, 'backgroundColor', new THREE.Color(_defaultBackgroundColor));
-        this.options.orthographic = _.get(options, 'orthographic', true);
+		let defaultOptions = {
+			size: new THREE.Vector2(400, 200),
+			cameraBounds: new THREE.Vector2(1, 100),
+			pixelRatio: window.devicePixelRatio,
+			useAlpha: true,
+			backgroundColor: new THREE.Color(_defaultBackgroundColor),
+			orthographic: true,
+			parentElement: null
+		};
+		this.options = RenderableUtils.CreateOptions(options, null, 'Chart.options', defaultOptions);
 
 		if (!this.options.backgroundColor instanceof THREE.Color) {
 			this.options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
@@ -55,9 +56,23 @@ class Chart
 	 */
 	_createRenderer()
 	{
-		this.renderer = new THREE.WebGLRenderer({
-			alpha: this.options.useAlpha
-		});
+		let parentElement;
+		if (this.options.parentElement !== null &&
+			(parentElement = document.querySelector(this.options.parentElement)) !== null) {
+
+			let canvasElem = document.createElement('canvas');
+			parentElement.appendChild(canvasElem);
+			this.renderer = new THREE.WebGLRenderer({
+				canvas: canvasElem,
+				alpha: this.options.useAlpha,
+				antialias: true
+			});
+		} else {
+			this.renderer = new THREE.WebGLRenderer({
+				alpha: this.options.useAlpha,
+				antialias: true
+			});
+		}
 
 		this.renderer.setSize(this.options.size.x, this.options.size.y);
 		this.renderer.setPixelRatio(this.options.pixelRatio);
@@ -92,6 +107,7 @@ class Chart
 		this.control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 		this.axesHelper = new THREE.AxesHelper(5);
 		this._scene.add(this.axesHelper);
+		this._animate();
 	}
 
 	_animate()

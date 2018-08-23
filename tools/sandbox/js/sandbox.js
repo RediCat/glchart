@@ -6,6 +6,7 @@ function main()
 		size: new THREE.Vector2(800, 200),
 		cameraBounds: new THREE.Vector2(-100, 100),
 		orthographic: true,
+		parentElement: '#renderingArea'
 	});
 
 	// create BitmapFont instance
@@ -20,7 +21,7 @@ function main()
 		console.log(bitmapFont);
 
 		// create random data to add to the dataset instance
-		let data = createRandomData(1000, 100);
+		let data = createRandomData(10000, 100);
 		let randomDataset = new glchart.Dataset({data: data});
 
 		// create Axis info

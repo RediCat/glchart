@@ -26,6 +26,10 @@ class RenderableUtils
 
 	static AssertRequiredFields(obj, requiredFields, objName)
 	{
+		if (requiredFields === null || requiredFields.length === 0) {
+			return;
+		}
+
 		let name = objName;
 		if (objName === undefined) {
 			name = 'obj';
