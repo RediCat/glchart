@@ -14,7 +14,6 @@ class Axis extends RenderableNode
 
 	_setupDefaultOptions(options)
 	{
-		let requiredOptions = ['name'];
 		let defaultOptions = {
 			stepCoefX: 10,
 			stepCoefY: 10,
