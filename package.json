@@ -14,7 +14,7 @@
   "license": "ISC",
   "devDependencies": {
     "adaptive-bezier-curve": "^1.0.3",
-    "electron": "^2.0.2",
+    "electron": "^2.0.8",
     "electron-serve": "^0.2.0",
     "hammerjs": "^2.0.8",
     "load-bmfont": "^1.3.0",
