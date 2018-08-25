@@ -20,9 +20,9 @@ class Axis extends RenderableNode
 			stepCoefY: 10,
 			xLabel: '',
 			yLabel: '',
-			color: 0xAABBFF
+			lineColor: 0xAABBFF
 		};
-		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Axis.options', defaultOptions);
+		this.options = RenderableUtils.CreateOptions(options, null, 'Axis.options', defaultOptions);
 		this.stats = null;
 	}
 
@@ -68,7 +68,7 @@ class Axis extends RenderableNode
 			[0, 0],
 			[0, parent.stats.yBounds.max + 20]
 		];
-		let yAxisLine = RenderableUtils.CreateLine(yAxisLineVerts, this.options.color, 2);
+		let yAxisLine = RenderableUtils.CreateLine(yAxisLineVerts, this.options.lineColor, 2);
 		this.add(yAxisLine);
 	}
 
