@@ -3,10 +3,23 @@ main();
 function main()
 {
 	let chart = new glchart.Chart({
-		size: new THREE.Vector2(800, 200),
-		cameraBounds: new THREE.Vector2(-100, 100),
-		orthographic: true,
-		parentElement: '#renderingArea'
+		chart: {
+			size: new THREE.Vector2(800, 200),
+			cameraBounds: new THREE.Vector2(-100, 100),
+			orthographic: true,
+			parentElement: '#renderingArea',
+			fontColor: 0x0000ff,
+			title: 'RandomData'
+		},
+		axis: {
+			lineColor: 0xaabbff
+		},
+		datasets: [
+			{
+				name: 'Value 1',
+				data: createRandomData(1000, 100)
+			}
+		]
 	});
 
 	// create BitmapFont instance
@@ -17,16 +30,12 @@ function main()
 		color: 0x0000ff,
 		text: 'Random Data'
 	}).on('load', (bitmapFont) => {
-		console.log('loaded bitmap font');
-		console.log(bitmapFont);
-
 		// create random data to add to the dataset instance
 		let data = createRandomData(1000, 100);
 		let randomDataset = new glchart.Dataset({data: data});
 
 		// create Axis info
 		randomDataset.add(new glchart.Axis({
-			name: 'RandomData',
 			xLabel: 'X', yLabel: 'Y',
 		}));
 
