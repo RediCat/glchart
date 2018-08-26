@@ -15,7 +15,7 @@ class BitmapFont extends RenderableNode
 
 	_setupDefaultOptions(options)
 	{
-		let requiredOptions = ['name', 'fontPath', 'texturePath'],
+		let requiredOptions = ['fontPath', 'texturePath'],
 			optName = 'BitmapFont.options';
 		this.options = RenderableUtils.CreateOptions(options, requiredOptions, optName, {
 			text: '',
@@ -23,8 +23,6 @@ class BitmapFont extends RenderableNode
 			align: 'left',
 			color: 0xffffff
 		});
-
-		this.name = this.options.name;
 	}
 
 	_load()

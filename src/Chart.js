@@ -29,7 +29,6 @@ class Chart
 	{
 		let defaultOptions = {
 			size: new THREE.Vector2(400, 200),
-			cameraBounds: new THREE.Vector2(1, 100),
 			pixelRatio: window.devicePixelRatio,
 			useAlpha: true,
 			backgroundColor: new THREE.Color(_defaultBackgroundColor),
@@ -92,7 +91,7 @@ class Chart
 		if (this.options.orthographic) {
 			let left = size.x / -2, right = size.x / 2,
 				top = size.y / 2, bottom = size.y / -2,
-				near = cameraBounds.x, far = cameraBounds.y;
+				near = 1, far = 100;
 			this.camera = new THREE.OrthographicCamera(left, right, top, bottom, near, far);
 		} else {
 			let aspect = this.options.size.x / this.options.size.y;
@@ -101,6 +100,8 @@ class Chart
 
 		this.camera.position.set(0, 0, 1);
 		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+		this.camera.position.add(new THREE.Vector3(size.x / 2, size.y / 2));
+		this.camera.updateProjectionMatrix();
 	}
 
 	_setupDevEnvironment()
