@@ -5,7 +5,6 @@ function main()
 	let chart = new glchart.Chart({
 		chart: {
 			size: new THREE.Vector2(800, 200),
-			cameraBounds: new THREE.Vector2(-100, 100),
 			orthographic: true,
 			parentElement: '#renderingArea',
 			fontColor: 0x0000ff,

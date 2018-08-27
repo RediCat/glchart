@@ -85,8 +85,7 @@ class Chart extends EventNode
 	 */
 	_createCamera()
 	{
-		let size = this.options.size,
-			cameraBounds = this.options.cameraBounds;
+		let size = this.options.size;
 
 		if (this.options.orthographic) {
 			let left = size.x / -2, right = size.x / 2,
