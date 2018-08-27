@@ -1,6 +1,7 @@
-.idea/workspace.xml
-.idea/usage.statistics.xml
-.idea/tasks.xml
+.idea
+!.idea/workspace.xml
+!.idea/usage.statistics.xml
+!.idea/tasks.xml
 node_modules/
 bower_components/
 .DS_Store
