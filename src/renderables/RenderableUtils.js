@@ -26,7 +26,7 @@ class RenderableUtils
 
 	static AssertRequiredFields(obj, requiredFields, objName)
 	{
-		if (requiredFields === null || requiredFields.length === 0) {
+		if (obj === undefined || obj === null || requiredFields === null || requiredFields.length === 0) {
 			return;
 		}
 
@@ -45,12 +45,20 @@ class RenderableUtils
 	static CreateOptions(obj, required, objName, defaults)
 	{
 		RenderableUtils.AssertRequiredFields(obj, required, objName);
-		let ret = _.cloneDeep(obj);
+
+		let ret;
+		if (obj === undefined || obj === null) {
+			ret = {};
+		} else {
+			ret = ret = _.cloneDeep(obj);
+		}
+
 		if (defaults !== undefined && defaults !== null) {
 			_.forEach(defaults, (v, k) => {
 				ret[k] = _.get(obj, k, v);
 			});
 		}
+
 		return ret;
 	}
 

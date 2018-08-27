@@ -19,7 +19,7 @@ class Axis extends RenderableNode
 			stepCoefY: 10,
 			xLabel: '',
 			yLabel: '',
-			lineColor: 0xAABBFF
+			lineColor: 0xAABBFF,
 		};
 		this.options = RenderableUtils.CreateOptions(options, null, 'Axis.options', defaultOptions);
 		this.stats = null;
@@ -71,6 +71,7 @@ class Axis extends RenderableNode
 		this.add(yAxisLine);
 	}
 
+	// todo: implement _createFullVerticalAxis method
 	_createFullVerticalAxis(parent)
 	{
 	}

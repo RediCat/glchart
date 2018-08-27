@@ -31,16 +31,6 @@ function main()
 		color: 0x0000ff,
 		text: 'Random Data'
 	}).on('load', (bitmapFont) => {
-		// create random data to add to the dataset instance
-		let data = createRandomData(1000, 100);
-		let randomDataset = new glchart.Dataset({data: data});
-
-		// create Axis info
-		randomDataset.add(new glchart.Axis({
-			xLabel: 'X', yLabel: 'Y',
-		}));
-
-		chart.add(randomDataset);
 		chart.add(bitmapFont);
 	}).on('error', (err) => {
 		console.error(err);

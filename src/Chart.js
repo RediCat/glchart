@@ -1,31 +1,33 @@
 import THREE from 'three';
 import Hammer from 'hammerjs';
-import EventEmitter from 'events';
+import {Axis} from './renderables/Axis';
+import {Dataset} from "./renderables/Dataset";
 import {RenderableUtils} from "./renderables/RenderableUtils";
 import {RenderableNode} from "./renderables/RenderableNode";
 
 const _defaultBackgroundColor = 0xffffff;
 
-class Chart extends EventNode
+class Chart extends RenderableNode
 {
-	constructor(options)
+	constructor(globalOptions)
 	{
-		super();
-		this._setupDefaultOptions(options);
+		super(true);
+		this._allowRendering = false;
+		this._globals = globalOptions;
+
+		this._setupDefaultOptions();
 		this._createScene();
 		this._createRenderer();
 		this._createCamera();
-
 		this._setupGestures();
-		//this._setupDevEnvironment();
+		this._createAxis();
+		this._createDatasets();
+
+		this._allowRendering = true;
+		this.render();
 	}
 
-	/**
-	 * Setups options defaults so no checking is needed in rest of the class.
-	 * @param options The options passed through the constructor.
-	 * @private
-	 */
-	_setupDefaultOptions(options)
+	_setupDefaultOptions()
 	{
 		let defaultOptions = {
 			size: new THREE.Vector2(400, 200),
@@ -33,9 +35,11 @@ class Chart extends EventNode
 			useAlpha: true,
 			backgroundColor: new THREE.Color(_defaultBackgroundColor),
 			orthographic: true,
+			fontColor: 0x000000,
+			title: '',
 			parentElement: null
 		};
-		this.options = RenderableUtils.CreateOptions(options, null, 'Chart.options', defaultOptions);
+		this.options = RenderableUtils.CreateOptions(this._globals.chart, null, 'options.chart', defaultOptions);
 
 		if (!this.options.backgroundColor instanceof THREE.Color) {
 			this.options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
@@ -49,10 +53,6 @@ class Chart extends EventNode
 		this._scene.background = this.options.backgroundColor;
 	}
 
-	/**
-	 * Creates the renderer.
-	 * @private
-	 */
 	_createRenderer()
 	{
 		let parentElement;
@@ -79,10 +79,6 @@ class Chart extends EventNode
 		this.domElement = this.renderer.domElement;
 	}
 
-	/**
-	 * Creates the orthographic camera.
-	 * @private
-	 */
 	_createCamera()
 	{
 		let size = this.options.size;
@@ -103,13 +99,27 @@ class Chart extends EventNode
 		this.camera.updateProjectionMatrix();
 	}
 
-	_setupDevEnvironment()
+	_createAxis()
 	{
-		this.control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-		this.axesHelper = new THREE.AxesHelper(5);
-		this._scene.add(this.axesHelper);
-		this._animate();
+		this._axis = new Axis(this._globals.axis);
+		this.add(this._axis);
 	}
+
+	_createDatasets()
+	{
+		_.forEach(this._globals.datasets, (datasetOptions) => {
+			let dataset = new Dataset(datasetOptions);
+			this.add(dataset);
+		});
+	}
+
+	// _setupDevEnvironment()
+	// {
+	// 	this.control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+	// 	this.axesHelper = new THREE.AxesHelper(5);
+	// 	this._scene.add(this.axesHelper);
+	// 	this._animate();
+	// }
 
 	_animate()
 	{
@@ -118,34 +128,23 @@ class Chart extends EventNode
 		this._render();
 	}
 
-	/**
-	 * Setups Hammer.js gestures.
-	 * @private
-	 */
 	_setupGestures()
 	{
 		this.hammer = new Hammer(this.domElement);
 		this.hammer.on('panright panleft', (ev) => this._hammerPanHandler(ev));
 	}
 
-	/**
-	 * Handles the panning event of Hammer.js
-	 * @param ev The hammer.js event object.
-	 * @private
-	 */
 	_hammerPanHandler(ev)
 	{
 		this.camera.position.x -= ev.deltaX * 0.1;
 		this._render();
 	}
 
-	/**
-	 * This stub is internally used to have a point of control where all
-	 * calls to render are routed.
-	 * @private
-	 */
 	_render()
 	{
+		if (!this._allowRendering) {
+			return;
+		}
 		this.render();
 	}
 
@@ -155,6 +154,7 @@ class Chart extends EventNode
 			throw 'Error: chart.add called with parameter not of type RenderableNode';
 		}
 		this._scene.add(node.renderable);
+		this._renderableAdded(node);
 		this._render();
 	}
 
@@ -164,6 +164,7 @@ class Chart extends EventNode
 			throw 'Error: chart.add called with parameter not of type RenderableNode';
 		}
 		this._scene.remove(node.renderable);
+		this._renderableRemoved(node);
 		this._render();
 	}
 
