@@ -12,7 +12,9 @@ function main()
 			title: 'RandomData'
 		},
 		axis: {
-			lineColor: 0xaabbff
+			lineColor: 0xaabbff,
+			xLabel: 'X',
+			yLabel: 'Y'
 		},
 		datasets: [
 			{

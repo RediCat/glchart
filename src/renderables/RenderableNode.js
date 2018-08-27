@@ -1,13 +1,13 @@
 import THREE from 'three';
-import EventEmitter from 'events';
+import {EventNode} from '../EventNode';
 
 
-class RenderableNode
+class RenderableNode extends EventNode
 {
 	constructor()
 	{
+		super();
 		this._group = new THREE.Group();
-		this._events = new EventEmitter();
 		this._parent = null;
 	}
 
@@ -16,11 +16,11 @@ class RenderableNode
 		if (node instanceof RenderableNode) {
 			this._group.add(node.renderable);
 			node._parent = this;
-			node._events.emit('parentAdded', this, node);
+			this.emit('parentAdded', this, node);
 		} else {
 			this._group.add(node);
 		}
-		this._events.emit('childAdded', this, node);
+		this.emit('childAdded', this, node);
 	}
 
 	remove(node)
@@ -28,27 +28,16 @@ class RenderableNode
 		if (node instanceof RenderableNode) {
 			this._group.remove(node.renderable);
 			node._parent = null;
-			node._events.emit('parentRemoved', this, node);
+			node.emit('parentRemoved', this, node);
 		} else {
 			this._group.remove(node);
 		}
-		this._events.emit('childRemoved', this, node);
+		this.emit('childRemoved', this, node);
 	}
 
 	get renderable()
 	{
 		return this._group;
-	}
-
-	on(eventName, cb)
-	{
-		this._events.on(eventName, cb);
-		return this;
-	}
-
-	emit(type, ...args)
-	{
-		this._events.emit(type, ...args);
 	}
 }
 

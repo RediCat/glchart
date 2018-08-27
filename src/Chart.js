@@ -6,11 +6,11 @@ import {RenderableNode} from "./renderables/RenderableNode";
 
 const _defaultBackgroundColor = 0xffffff;
 
-class Chart
+class Chart extends EventNode
 {
 	constructor(options)
 	{
-        this._events = new EventEmitter();
+		super();
 		this._setupDefaultOptions(options);
 		this._createScene();
 		this._createRenderer();
@@ -181,9 +181,7 @@ class Chart
 			cb(this);
 			return this;
 		}
-
-		this._events.on(eventName, cb);
-		return this;
+		return super.on(eventName, cb);
 	}
 }
 
