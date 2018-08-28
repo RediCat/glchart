@@ -22,6 +22,7 @@ class Chart extends RenderableNode
 		this._setupGestures();
 		this._createAxis();
 		this._createDatasets();
+		this._createFontFactory();
 
 		this._allowRendering = true;
 		this.render();
@@ -39,7 +40,7 @@ class Chart extends RenderableNode
 			title: '',
 			parentElement: null
 		};
-		this.options = RenderableUtils.CreateOptions(this._globals.chart, null, 'options.chart', defaultOptions);
+		this.options = RenderableUtils.CreateOptions(this._globals.charf, null, 'options.chart', defaultOptions);
 
 		if (!this.options.backgroundColor instanceof THREE.Color) {
 			this.options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
@@ -111,6 +112,11 @@ class Chart extends RenderableNode
 			let dataset = new Dataset(datasetOptions);
 			this.add(dataset);
 		});
+	}
+
+	_createFontFactory()
+	{
+		this._fontFactory = new FontFactory();
 	}
 
 	// _setupDevEnvironment()

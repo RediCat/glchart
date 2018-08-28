@@ -2,6 +2,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import commonJS from 'rollup-plugin-commonjs'
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
+import fileAsBlob from 'rollup-plugin-file-as-blob';
 
 export default {
 	input: 'src/glchart.js',
@@ -16,6 +17,7 @@ export default {
 			jsnext: true,
 			browser: true
 		}),
+		fileAsBlob(),
 	],
 	output: [
 		{

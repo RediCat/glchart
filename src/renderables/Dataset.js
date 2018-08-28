@@ -22,6 +22,7 @@ class Dataset extends RenderableNode
 	{
 		let requiredOptions = ['data'];
 		let defaultOptions = {
+			name: null,
 			color: 0x000000
 		};
 		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options', defaultOptions);

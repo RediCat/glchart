@@ -25,7 +25,6 @@ function main()
 
 	// create BitmapFont instance
 	new glchart.BitmapFont({
-		name: 'Lato',
 		fontPath: '/assets/Lato-Regular-16.fnt',
 		texturePath: '/assets/lato.png',
 		color: 0x0000ff,

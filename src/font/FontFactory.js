@@ -1,32 +1,26 @@
 import createTextGeometry from 'three-bmfont-text';
 import THREE from 'three';
-import {RenderableUtils} from './RenderableUtils';
-import {RenderableNode} from './RenderableNode';
 
 
-class BitmapFont extends RenderableNode
+class FontFactory
 {
-	constructor(options)
+	constructor()
 	{
-		super();
-		this._setupDefaultOptions(options);
-		this._load();
-	}
+		let fontFiles = {
+			lato: {
+				font: '/src/font/assets/Lato-Regular-24.fnt',
+				texture: '/src/font/assets/lato.png'
+			}
+		};
 
-	_setupDefaultOptions(options)
-	{
-		let requiredOptions = ['fontPath', 'texturePath'],
-			optName = 'BitmapFont.options';
-		this.options = RenderableUtils.CreateOptions(options, requiredOptions, optName, {
-			text: '',
-			width: 200,
-			align: 'left',
-			color: 0xffffff
+		this._fonts = {};
+		_.forOwn(fontFiles, (fontDesc, fontName) => {
+			
 		});
-	}
 
-	_load()
-	{
+
+
+
 		let onLoad = (font, texture) => {
 			this.font = font;
 
@@ -48,7 +42,6 @@ class BitmapFont extends RenderableNode
 			this.mesh = new THREE.Mesh(this.textGeometry, this.material);
 			this.add(this.mesh);
 			this.renderable.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI);
-			this.emit('load', this);
 		};
 
 		let onError = (err) => {
@@ -56,6 +49,19 @@ class BitmapFont extends RenderableNode
 		};
 
 		RenderableUtils.LoadFont(this.options.fontPath, this.options.texturePath, onLoad, onError);
+	}
+
+
+	_setupDefaultOptions(options)
+	{
+		let requiredOptions = ['fontPath', 'texturePath'],
+			optName = 'BitmapFont.options';
+		this.options = RenderableUtils.CreateOptions(options, requiredOptions, optName, {
+			text: '',
+			width: 200,
+			align: 'left',
+			color: 0xffffff
+		});
 	}
 
 	updateText(text)
@@ -67,4 +73,4 @@ class BitmapFont extends RenderableNode
 	}
 }
 
-export {BitmapFont}
+export {FontFactory}
