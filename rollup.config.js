@@ -3,6 +3,7 @@ import commonJS from 'rollup-plugin-commonjs'
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
 import fileAsBlob from 'rollup-plugin-file-as-blob';
+import string from 'rollup-plugin-string';
 
 export default {
 	input: 'src/glchart.js',
@@ -17,7 +18,12 @@ export default {
 			jsnext: true,
 			browser: true
 		}),
-		fileAsBlob(),
+		fileAsBlob({
+			include: '**/**.png'
+		}),
+		string({
+			include: '**/**.fnt'
+		})
 	],
 	output: [
 		{
