@@ -1,4 +1,3 @@
-import loadFont from 'load-bmfont';
 import THREE from 'three';
 import createLineMesh from 'three-line-2d';
 import basic from 'three-line-2d/shaders/basic';
@@ -9,21 +8,6 @@ const BasicShader = basic(THREE);
 
 class RenderableUtils
 {
-	static LoadFont(fontPath, texturePath, onSuccess, onError)
-	{
-		loadFont(fontPath, (err, font) => {
-			if (err) {
-				onError(err);
-				return;
-			}
-
-			let textureOnLoad = (texture) => onSuccess(font, texture);
-			let textureOnError = (err) => onError(err);
-
-			new THREE.TextureLoader().load(texturePath, textureOnLoad, undefined, textureOnError);
-		});
-	}
-
 	static AssertRequiredFields(obj, requiredFields, objName)
 	{
 		if (obj === undefined || obj === null || requiredFields === null || requiredFields.length === 0) {

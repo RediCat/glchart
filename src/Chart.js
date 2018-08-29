@@ -2,6 +2,7 @@ import THREE from 'three';
 import Hammer from 'hammerjs';
 import {Axis} from './renderables/Axis';
 import {Dataset} from "./renderables/Dataset";
+import {FontFactory} from "./font/FontFactory";
 import {RenderableUtils} from "./renderables/RenderableUtils";
 import {RenderableNode} from "./renderables/RenderableNode";
 
@@ -15,17 +16,22 @@ class Chart extends RenderableNode
 		this._allowRendering = false;
 		this._globals = globalOptions;
 
-		this._setupDefaultOptions();
-		this._createScene();
-		this._createRenderer();
-		this._createCamera();
-		this._setupGestures();
-		this._createAxis();
-		this._createDatasets();
-		this._createFontFactory();
+		this._createFontFactory().then(() => {
+			this._setupDefaultOptions();
+			this._createScene();
+			this._createRenderer();
+			this._createCamera();
+			this._setupGestures();
+			this._createAxis();
+			this._createDatasets();
 
-		this._allowRendering = true;
-		this.render();
+			this._allowRendering = true;
+			this.render();
+			this.emit('load');
+
+			let testText = this._fontFactory.create('lato', 'Random Data', 0x0000ff);
+			this.add(testText);
+		});
 	}
 
 	_setupDefaultOptions()
@@ -116,7 +122,12 @@ class Chart extends RenderableNode
 
 	_createFontFactory()
 	{
-		this._fontFactory = new FontFactory();
+		return new Promise((resolve, reject) => {
+			this._fontFactory = new FontFactory();
+			this._fontFactory.loadFonts()
+				.catch((err) => reject(err))
+				.then(() => {resolve()});
+		});
 	}
 
 	// _setupDevEnvironment()
@@ -156,7 +167,7 @@ class Chart extends RenderableNode
 
 	add(node)
 	{
-		if (!node instanceof RenderableNode) {
+		if (!(node instanceof RenderableNode)) {
 			throw 'Error: chart.add called with parameter not of type RenderableNode';
 		}
 		this._scene.add(node.renderable);
@@ -177,17 +188,6 @@ class Chart extends RenderableNode
 	render()
 	{
 		this.renderer.render(this._scene, this.camera);
-	}
-
-	on(eventName, cb)
-	{
-		// If registering for load event, already loaded,
-		// so call without registering.
-		if (eventName === 'load') {
-			cb(this);
-			return this;
-		}
-		return super.on(eventName, cb);
 	}
 }
 

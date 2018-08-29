@@ -2,7 +2,7 @@ main();
 
 function main()
 {
-	let chart = new glchart.Chart({
+	new glchart.Chart({
 		chart: {
 			size: new THREE.Vector2(800, 200),
 			orthographic: true,
@@ -21,18 +21,6 @@ function main()
 				data: createRandomData(1000, 100)
 			}
 		]
-	});
-
-	// create BitmapFont instance
-	new glchart.BitmapFont({
-		fontPath: '/assets/Lato-Regular-16.fnt',
-		texturePath: '/assets/lato.png',
-		color: 0x0000ff,
-		text: 'Random Data'
-	}).on('load', (bitmapFont) => {
-		chart.add(bitmapFont);
-	}).on('error', (err) => {
-		console.error(err);
 	});
 }
 

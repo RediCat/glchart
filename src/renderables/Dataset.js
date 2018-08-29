@@ -37,7 +37,6 @@ class Dataset extends RenderableNode
 			this.stats.yBounds.max = Math.max(this.stats.yBounds.max, point[1]);
 		});
 
-		console.log(this.stats);
 		this.line = RenderableUtils.CreateLine(this.data, this.options.color);
 		this.add(this.line);
 	}

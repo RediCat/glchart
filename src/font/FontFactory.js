@@ -1,76 +1,65 @@
-import createTextGeometry from 'three-bmfont-text';
-import THREE from 'three';
+import {Font} from "./Font";
 
+import latoFont from './assets/Lato-Regular-24.fnt';
+import latoTexture from './assets/lato.png';
 
 class FontFactory
 {
 	constructor()
 	{
-		let fontFiles = {
+		this._fonts = {};
+	}
+
+	loadFonts()
+	{
+		let fonts = {
 			lato: {
-				font: '/src/font/assets/Lato-Regular-24.fnt',
-				texture: '/src/font/assets/lato.png'
+				font: latoFont,
+				texture: latoTexture,
 			}
 		};
 
-		this._fonts = {};
-		_.forOwn(fontFiles, (fontDesc, fontName) => {
-			
+		let promises = [];
+		_.forOwn(fonts, (fontDesc, fontName) => {
+			let font = new Font(fontDesc),
+				promise = font.load();
+			this._fonts[fontName] = font;
+			promises.push(promise);
 		});
 
-
-
-
-		let onLoad = (font, texture) => {
-			this.font = font;
-
-			this.material = new THREE.MeshBasicMaterial({
-				map: texture,
-				transparent: true,
-				color: this.options.color,
-				side: THREE.DoubleSide,
-			});
-
-			this.textGeometry = createTextGeometry({
-				width: this.options.width,
-				align: this.options.align,
-				font: this.font,
-				text: this.options.text,
-				flipY: texture.flipY
-			});
-
-			this.mesh = new THREE.Mesh(this.textGeometry, this.material);
-			this.add(this.mesh);
-			this.renderable.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI);
-		};
-
-		let onError = (err) => {
-			this.emit('error', err);
-		};
-
-		RenderableUtils.LoadFont(this.options.fontPath, this.options.texturePath, onLoad, onError);
+		return Promise.all(promises);
 	}
 
-
-	_setupDefaultOptions(options)
+	create(fontName, text, color, width, align)
 	{
-		let requiredOptions = ['fontPath', 'texturePath'],
-			optName = 'BitmapFont.options';
-		this.options = RenderableUtils.CreateOptions(options, requiredOptions, optName, {
-			text: '',
-			width: 200,
-			align: 'left',
-			color: 0xffffff
-		});
+		let fontObj = this._fonts[fontName];
+
+		if (fontObj === null || fontObj === undefined) {
+			throw `Error: Font with name ${fontName} not found.`;
+		}
+
+		if (color === undefined) {
+			color = fontObj.options.color;
+		}
+
+		if (width === undefined) {
+			width = fontObj.options.width;
+		}
+
+		if (align === undefined) {
+			align = fontObj.options.align;
+		}
+
+		return fontObj.createMesh(text, color, width, align);
 	}
 
-	updateText(text)
-	{
-		this.textGeometry.update(text);
-		this.remove(this.mesh);
-		this.mesh = new THREE.Mesh(this.textGeometry, this.material);
-		this.add(this.mesh);
-	}
+	// updateText(text)
+	// {
+	// 	this.textGeometry.update(text);
+	// 	this.remove(this.mesh);
+	// 	this.mesh = new THREE.Mesh(this.textGeometry, this.material);
+	// 	this.add(this.mesh);
+	// }
 }
 
 export {FontFactory}
