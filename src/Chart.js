@@ -44,9 +44,10 @@ class Chart extends RenderableNode
 			orthographic: true,
 			fontColor: 0x000000,
 			title: '',
-			parentElement: null
+			parentElement: ''
 		};
-		this.options = RenderableUtils.CreateOptions(this._globals.charf, null, 'options.chart', defaultOptions);
+
+		this.options = RenderableUtils.CreateOptions(this._globals.chart, null, 'options.chart', defaultOptions);
 
 		if (!this.options.backgroundColor instanceof THREE.Color) {
 			this.options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
@@ -62,11 +63,18 @@ class Chart extends RenderableNode
 
 	_createRenderer()
 	{
-		let parentElement;
-		if (this.options.parentElement !== null &&
-			(parentElement = document.querySelector(this.options.parentElement)) !== null) {
+		// Search for the parentElement, if selector specified
+		let parentElement = null;
+		if (this.options.parentElement !== '') {
+			parentElement = document.querySelector(this.options.parentElement);
+		}
 
+		if (parentElement !== null) {
+			// Create canvas element with configured size.
 			let canvasElem = document.createElement('canvas');
+			canvasElem.width = this.options.size.x;
+			canvasElem.height = this.options.size.y;
+
 			this.renderer = new THREE.WebGLRenderer({
 				canvas: canvasElem,
 				alpha: this.options.useAlpha,
@@ -81,7 +89,7 @@ class Chart extends RenderableNode
 			document.body.appendChild(this.renderer.domElement);
 		}
 
-		this.renderer.setSize(this.options.size.x, this.options.size.y);
+		this.renderer.setSize(this.options.size.x, this.options.size.y, true);
 		this.renderer.setPixelRatio(this.options.pixelRatio);
 		this.domElement = this.renderer.domElement;
 	}

@@ -21,8 +21,6 @@ class Font
 	load()
 	{
 		return new Promise((resolve, reject) => {
-			console.log(this.options.font);
-			console.log(this);
 			this.font = parse(this.options.font);
 
 			let image = new Image();

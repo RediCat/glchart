@@ -26,7 +26,7 @@ class RenderableUtils
 		});
 	}
 
-	static CreateOptions(obj, required, objName, defaults)
+	static CreateOptions(obj, required, objName, defaultOpts)
 	{
 		RenderableUtils.AssertRequiredFields(obj, required, objName);
 
@@ -37,8 +37,8 @@ class RenderableUtils
 			ret = ret = _.cloneDeep(obj);
 		}
 
-		if (defaults !== undefined && defaults !== null) {
-			_.forEach(defaults, (v, k) => {
+		if (defaultOpts !== undefined && defaultOpts !== null) {
+			_.forEach(defaultOpts, (v, k) => {
 				ret[k] = _.get(obj, k, v);
 			});
 		}
