@@ -9,13 +9,13 @@ class Dataset extends RenderableNode
 		super();
 		this._setupDefaultOptions(options);
 
-		this.data = this.options.data;
 		this.stats = {
 			xBounds: { min: null, max: null },
 			yBounds: { min: null, max: null }
 		};
 
 		this._calcStats();
+		this._createNormalizeData();
 		this._createGeometry();
 	}
 
@@ -31,35 +31,47 @@ class Dataset extends RenderableNode
 
 	_calcStats()
 	{
-		_.forEach(this.data, (point) => {
+		/**
+		 * todo: check if this algo suffers from overflow problems
+		 */
+		let lastValue = null;
+		let	deltaValueSum = 0.0;
+		_.forEach(this.options.data, (point) => {
+			if (lastValue === null) {
+				lastValue = point[0] * 1.0;
+				deltaValueSum += lastValue;
+			} else {
+				deltaValueSum += (point[0] * 1.0) - lastValue;
+				lastValue = point[0] * 1.0;
+			}
+
 			this.stats.xBounds.min = Math.min(this.stats.xBounds.min, point[0]);
 			this.stats.xBounds.max = Math.max(this.stats.xBounds.max, point[0]);
 			this.stats.yBounds.min = Math.min(this.stats.yBounds.min, point[1]);
 			this.stats.yBounds.max = Math.max(this.stats.yBounds.max, point[1]);
 		});
+		this.stats.xAvgDelta = deltaValueSum / this.options.data.length;
+		console.log(this.stats);
+	}
+
+	_createNormalizeData()
+	{
+		this.normalizedData = [];
+		let maxValue = this.stats.yBounds.max;
+		_.forEach(this.options.data, (value) => {
+			this.normalizedData.push([value[0], value[1] / maxValue]);
+		});
 	}
 
 	_createGeometry(scale)
 	{
-		let scaling = false;
-		if (scale !== undefined) {
-			scaling = true;
-		}
-
-		if (scaling) {
-			if (scale === 1 && this.originalData !== undefined) {
-				this.data = this.originalData;
-				this.originalData = null;
-			} else {
-				this.originalData = this.data;
-				let scaleFunc = (value) => [scale * value[0], value[1]];
-				this.data = this.data.map(scaleFunc);
-				console.log(this.data);
-			}
+		if (scale === undefined) {
+			scale = 1;
 		}
 
 		// we assume only one line is child of our group
-		this.line = RenderableUtils.CreateLine(this.data, this.options.color);
+		let transformFunc = (point) => [point[0] * scale, point[1] * this.stats.yBounds.max];
+		this.line = RenderableUtils.CreateLine(this.normalizedData.map(transformFunc), this.options.color);
 		this.add(this.line);
 	}
 

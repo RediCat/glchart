@@ -18,7 +18,7 @@ function main()
 		datasets: [
 			{
 				name: 'Value 1',
-				data: createRandomData(1000, 100)
+				data: createRandomData(10000, 100)
 			}
 		]
 	});
