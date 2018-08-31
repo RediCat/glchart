@@ -3,6 +3,7 @@ import Hammer from 'hammerjs';
 import {Axis} from './renderables/Axis';
 import {Dataset} from "./renderables/Dataset";
 import {FontFactory} from "./font/FontFactory";
+import {LayoutUtils} from "./LayoutUtils";
 import {RenderableUtils} from "./renderables/RenderableUtils";
 import {RenderableNode} from "./renderables/RenderableNode";
 
@@ -110,7 +111,7 @@ class Chart extends RenderableNode
 
 		this.camera.position.set(0, 0, 1);
 		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-		this.camera.position.add(new THREE.Vector3(size.x / 2, size.y / 2));
+		LayoutUtils.SetupCameraPosition(this._globals, this.camera);
 		this.camera.updateProjectionMatrix();
 	}
 
@@ -124,6 +125,7 @@ class Chart extends RenderableNode
 	{
 		_.forEach(this._globals.datasets, (datasetOptions) => {
 			let dataset = new Dataset(datasetOptions);
+			dataset.setScale(10);
 			this.add(dataset);
 		});
 	}

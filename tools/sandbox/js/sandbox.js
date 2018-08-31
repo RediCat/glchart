@@ -13,7 +13,7 @@ function main()
 		axis: {
 			lineColor: 0xaabbff,
 			xLabel: 'X',
-			yLabel: 'Y'
+			yLabel: 'Y',
 		},
 		datasets: [
 			{
@@ -31,7 +31,7 @@ function createRandomData(size, max)
 	let data = [];
 
 	for (let x = 0; x < size; x++) {
-		data.push([x * 10, Math.random() * max]);
+		data.push([x, Math.random() * max]);
 	}
 
 	return data;
