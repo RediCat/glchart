@@ -2,6 +2,7 @@ import THREE from 'three';
 import createLineMesh from 'three-line-2d';
 import basic from 'three-line-2d/shaders/basic';
 import _ from 'lodash';
+import crypto from 'crypto';
 
 const Line = createLineMesh(THREE);
 const BasicShader = basic(THREE);
@@ -61,6 +62,13 @@ class RenderableUtils
 		}));
 
 		return new THREE.Mesh(geometry, shaderMat);
+	}
+
+	static CreateUuid()
+	{
+		return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+			(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+		);
 	}
 }
 

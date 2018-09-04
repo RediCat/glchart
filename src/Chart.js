@@ -3,7 +3,6 @@ import Hammer from 'hammerjs';
 import {Axis} from './renderables/Axis';
 import {Dataset} from "./renderables/Dataset";
 import {FontFactory} from "./font/FontFactory";
-import {LayoutUtils} from "./LayoutUtils";
 import {RenderableUtils} from "./renderables/RenderableUtils";
 import {RenderableNode} from "./renderables/RenderableNode";
 
@@ -12,30 +11,6 @@ const _defaultBackgroundColor = 0xffffff;
 class Chart extends RenderableNode
 {
 	constructor(globalOptions)
-	{
-		super(true);
-		this._allowRendering = false;
-		this._globals = globalOptions;
-
-		this._createFontFactory().then(() => {
-			this._setupDefaultOptions();
-			this._createScene();
-			this._createRenderer();
-			this._createCamera();
-			this._setupGestures();
-			this._createAxis();
-			this._createDatasets();
-
-			this._allowRendering = true;
-			this.render();
-			this.emit('load');
-
-			let testText = this._fontFactory.create('lato', 'Random Data', 0x0000ff);
-			this.add(testText);
-		});
-	}
-
-	_setupDefaultOptions()
 	{
 		let defaultOptions = {
 			size: new THREE.Vector2(400, 200),
@@ -48,18 +23,64 @@ class Chart extends RenderableNode
 			parentElement: ''
 		};
 
-		this.options = RenderableUtils.CreateOptions(this._globals.chart, null, 'options.chart', defaultOptions);
+		let options = RenderableUtils.CreateOptions(globalOptions.chart, null, 'options.chart', defaultOptions);
 
-		if (!this.options.backgroundColor instanceof THREE.Color) {
-			this.options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
+		if (!options.backgroundColor instanceof THREE.Color) {
+			options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
 			Console.warn('Chart.options.backgroundColor is not of type THREE.Color, using default.')
 		}
-	}
 
-	_createScene()
-	{
-		this._scene = new THREE.Scene();
-		this._scene.background = this.options.backgroundColor;
+		super({
+			view: null,
+			backgroundColor: options.backgroundColor,
+			size: options.size,
+		});
+
+		// todo: make this layout reactive.
+		this.layout = {
+			title: {
+				left: 0,
+				top: 0,
+				width: 1.0,
+				height: 0.15
+			},
+			graph: {
+				left: 0.1,
+				top: 0.15,
+				width: 0.9,
+				height: 0.6
+			},
+			xAxis: {
+				left: 0.1,
+				top: 0.75,
+				width: 0.9,
+				height: 0.25
+			},
+			yAxis: {
+				left: 0,
+				top: 0.15,
+				width: 0.1,
+				height: 0.6
+			},
+		};
+
+		this._allowRendering = false;
+		this.globals = globalOptions;
+		this.options = options;
+
+		this._createFontFactory().then(() => {
+			this._createRenderer();
+			this._setupGestures();
+			this._createAxis();
+			this._createDatasets();
+
+			this._allowRendering = true;
+			this.render();
+			this.emit('load');
+
+			let testText = this._fontFactory.create('lato', 'Random Data', 0x0000ff);
+			this.add(testText);
+		});
 	}
 
 	_createRenderer()
@@ -95,35 +116,22 @@ class Chart extends RenderableNode
 		this.domElement = this.renderer.domElement;
 	}
 
-	_createCamera()
-	{
-		let size = this.options.size;
-
-		if (this.options.orthographic) {
-			let left = size.x / -2, right = size.x / 2,
-				top = size.y / 2, bottom = size.y / -2,
-				near = 1, far = 100;
-			this.camera = new THREE.OrthographicCamera(left, right, top, bottom, near, far);
-		} else {
-			let aspect = this.options.size.x / this.options.size.y;
-			this.camera = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 1000);
-		}
-
-		this.camera.position.set(0, 0, 1);
-		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-		LayoutUtils.SetupCameraPosition(this._globals, this.camera);
-		this.camera.updateProjectionMatrix();
-	}
+	// _createCamera()
+	// {
+	// 	let size = this.options.size;
+	// 	this.camera.position.add(new THREE.Vector3(size.x / 2, size.y / 2));
+	// 	this.camera.updateProjectionMatrix();
+	// }
 
 	_createAxis()
 	{
-		this._axis = new Axis(this._globals.axis);
+		this._axis = new Axis(this.globals.axis);
 		this.add(this._axis);
 	}
 
 	_createDatasets()
 	{
-		_.forEach(this._globals.datasets, (datasetOptions) => {
+		_.forEach(this.globals.datasets, (datasetOptions) => {
 			let dataset = new Dataset(datasetOptions);
 			dataset.setScale(10);
 			this.add(dataset);
@@ -175,6 +183,11 @@ class Chart extends RenderableNode
 		this.render();
 	}
 
+	render()
+	{
+		super.render(this.renderer);
+	}
+
 	add(node)
 	{
 		if (!(node instanceof RenderableNode)) {
@@ -193,11 +206,6 @@ class Chart extends RenderableNode
 		this._scene.remove(node.renderable);
 		this._renderableRemoved(node);
 		this._render();
-	}
-
-	render()
-	{
-		this.renderer.render(this._scene, this.camera);
 	}
 }
 
