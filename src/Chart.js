@@ -36,31 +36,33 @@ class Chart extends RenderableNode
 			size: options.size,
 		});
 
-		// todo: make this layout reactive.
-		this.layout = {
+		this._datasets = {};
+
+		// todo: make this views reactive.
+		this.views = {
 			title: {
 				left: 0,
 				top: 0,
 				width: 1.0,
-				height: 0.15
+				height: 0.15,
 			},
 			graph: {
 				left: 0.1,
 				top: 0.15,
 				width: 0.9,
-				height: 0.6
+				height: 0.6,
 			},
 			xAxis: {
 				left: 0.1,
 				top: 0.75,
 				width: 0.9,
-				height: 0.25
+				height: 0.25,
 			},
 			yAxis: {
 				left: 0,
 				top: 0.15,
 				width: 0.1,
-				height: 0.6
+				height: 0.6,
 			},
 		};
 
@@ -71,15 +73,17 @@ class Chart extends RenderableNode
 		this._createFontFactory().then(() => {
 			this._createRenderer();
 			this._setupGestures();
-			this._createAxis();
-			this._createDatasets();
+
+			//this._createTitleView();
+			//this._createAxisView();
+			this._createGraphViews();
 
 			this._allowRendering = true;
 			this.render();
 			this.emit('load');
 
-			let testText = this._fontFactory.create('lato', 'Random Data', 0x0000ff);
-			this.add(testText);
+			// let testText = this._fontFactory.create('lato', 'Random Data', 0x0000ff);
+			// this.add(testText);
 		});
 	}
 
@@ -116,26 +120,33 @@ class Chart extends RenderableNode
 		this.domElement = this.renderer.domElement;
 	}
 
-	// _createCamera()
-	// {
-	// 	let size = this.options.size;
-	// 	this.camera.position.add(new THREE.Vector3(size.x / 2, size.y / 2));
-	// 	this.camera.updateProjectionMatrix();
-	// }
-
-	_createAxis()
+	_createAxisView()
 	{
-		this._axis = new Axis(this.globals.axis);
-		this.add(this._axis);
+
+		this._xAxis = new Axis(_.merge(this.globals.axis.x, this.views.xAxis));
+		this._yAxis = new Axis(_.merge(this.globals.axis.y, this.views.yAxis));
 	}
 
-	_createDatasets()
+	_createGraphViews()
 	{
 		_.forEach(this.globals.datasets, (datasetOptions) => {
-			let dataset = new Dataset(datasetOptions);
+			let datasetOpts = _.merge(datasetOptions, {
+				view: this.views.graph,
+				size: this.options.size,
+				backgroundColor: this.options.backgroundColor,
+				orthographic: this.options.orthographic,
+			});
+
+			let dataset = new Dataset(datasetOpts);
+
 			dataset.setScale(10);
-			this.add(dataset);
+			this._datasets[dataset._id] = dataset;
 		});
+	}
+
+	_createTitleView()
+	{
+
 	}
 
 	_createFontFactory()
@@ -150,7 +161,7 @@ class Chart extends RenderableNode
 
 	// _setupDevEnvironment()
 	// {
-	// 	this.control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+	// 	this.control = new THREE.OrbitControls(this._camera, this.renderer.domElement);
 	// 	this.axesHelper = new THREE.AxesHelper(5);
 	// 	this._scene.add(this.axesHelper);
 	// 	this._animate();
@@ -171,7 +182,9 @@ class Chart extends RenderableNode
 
 	_hammerPanHandler(ev)
 	{
-		this.camera.position.x -= ev.deltaX * 0.1;
+		_.forEach(this._datasets, (dataset) => {
+			dataset._camera.position.x -= ev.deltaX * 0.1;
+		});
 		this._render();
 	}
 
@@ -185,7 +198,12 @@ class Chart extends RenderableNode
 
 	render()
 	{
-		super.render(this.renderer);
+		//this._xAxis.render(this.renderer);
+		//this._yAxis.render(this.renderer);
+
+		_.forEach(this._datasets, (dataset) => {
+			dataset.render(this.renderer);
+		});
 	}
 
 	add(node)

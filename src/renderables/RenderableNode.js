@@ -16,8 +16,15 @@ class RenderableNode extends EventNode
 			this._scene.background = options.backgroundColor;
 		}
 
+		this._ortho = true;
+		if (options.orthographic !== undefined) {
+			this._ortho = options.orthographic;
+		}
+
 		this._parent = null;
 		if (options.view !== null) {
+			this._size = options.size;
+			this._view = options.view;
 			this._createCamera(options);
 		}
 	}
@@ -46,12 +53,22 @@ class RenderableNode extends EventNode
 
 	render(renderer)
 	{
-		renderer.render(this._scene, this.camera);
-	}
+		let size = this._size,
+			view = this._view;
 
-	get renderable()
-	{
-		return this._scene;
+		let	left = Math.floor(size.x * view.left),
+			top = Math.floor(size.y * view.top),
+			width = Math.floor(size.x * view.width),
+			height = Math.floor(size.y * view.height);
+
+		renderer.setViewport(left, top, width, height);
+		renderer.setScissor(left, top, width, height);
+		renderer.setScissorTest(true);
+
+		this._camera.aspect = width / height;
+		this._camera.updateProjectionMatrix();
+
+		renderer.render(this._scene, this._camera);
 	}
 
 	_renderableAdded(node)
@@ -81,15 +98,25 @@ class RenderableNode extends EventNode
 
 	_createCamera(options)
 	{
+		let size = this._size, camera;
+		console.log(options);
 		if (options.orthographic) {
 			let left = size.x / -2, right = size.x / 2,
 				top = size.y / 2, bottom = size.y / -2,
 				near = 1, far = 100;
-			this.camera = new THREE.OrthographicCamera(left, right, top, bottom, near, far);
+			camera = new THREE.OrthographicCamera(left, right, top, bottom, near, far);
 		} else {
-			let aspect = this.options.size.x / this.options.size.y;
-			this.camera = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 1000);
+			let aspect = size.x / size.y;
+			camera = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 1000);
 		}
+
+		camera.up.set(0, 1, 0);
+		camera.position.set(0, 0, 1);
+		camera.lookAt(new THREE.Vector3(0, 0, 0));
+		camera.position.add(new THREE.Vector3(size.x / 2, size.y / 2));
+		camera.updateProjectionMatrix();
+
+		this._camera = camera;
 	}
 }
 

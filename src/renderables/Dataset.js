@@ -6,8 +6,21 @@ class Dataset extends RenderableNode
 {
 	constructor(options)
 	{
-		super();
-		this._setupDefaultOptions(options);
+		let requiredOptions = ['data', 'view'];
+		let defaultOptions = {
+			name: null,
+			color: 0x000000
+		};
+		let opts = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options', defaultOptions);
+
+		super({
+			view: opts.view,
+			size: opts.size,
+			orthographic: opts.orthographic,
+			backgroundColor: opts.backgroundColor
+		});
+
+		this.options = opts;
 
 		this.stats = {
 			xBounds: { min: null, max: null },
@@ -19,16 +32,6 @@ class Dataset extends RenderableNode
 		this._createGeometry();
 	}
 
-	_setupDefaultOptions(options)
-	{
-		let requiredOptions = ['data'];
-		let defaultOptions = {
-			name: null,
-			color: 0x000000
-		};
-		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options', defaultOptions);
-	}
-
 	_calcStats()
 	{
 		/**
@@ -36,7 +39,9 @@ class Dataset extends RenderableNode
 		 */
 		let lastValue = null;
 		let	deltaValueSum = 0.0;
+
 		_.forEach(this.options.data, (point) => {
+
 			if (lastValue === null) {
 				lastValue = point[0] * 1.0;
 				deltaValueSum += lastValue;
@@ -50,8 +55,8 @@ class Dataset extends RenderableNode
 			this.stats.yBounds.min = Math.min(this.stats.yBounds.min, point[1]);
 			this.stats.yBounds.max = Math.max(this.stats.yBounds.max, point[1]);
 		});
+
 		this.stats.xAvgDelta = deltaValueSum / this.options.data.length;
-		console.log(this.stats);
 	}
 
 	_createNormalizeData()
