@@ -4,37 +4,44 @@ import {Axis} from './renderables/Axis';
 import {Dataset} from "./renderables/Dataset";
 import {FontFactory} from "./font/FontFactory";
 import {RenderableUtils} from "./renderables/RenderableUtils";
-import {RenderableNode} from "./renderables/RenderableNode";
 
 const _defaultBackgroundColor = 0xffffff;
+const _minimumHeight = 200;
 
-class Chart extends RenderableNode
+class Chart
 {
 	constructor(globalOptions)
 	{
 		let defaultOptions = {
-			size: new THREE.Vector2(400, 200),
+			size: null,
 			pixelRatio: window.devicePixelRatio,
 			useAlpha: true,
 			backgroundColor: new THREE.Color(_defaultBackgroundColor),
 			orthographic: true,
 			fontColor: 0x000000,
 			title: '',
-			parentElement: ''
 		};
 
 		let options = RenderableUtils.CreateOptions(globalOptions.chart, null, 'options.chart', defaultOptions);
 
+		// Verify given color is an instance of THREE.Color.
 		if (!options.backgroundColor instanceof THREE.Color) {
 			options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
 			Console.warn('Chart.options.backgroundColor is not of type THREE.Color, using default.')
 		}
 
-		super({
-			view: null,
-			backgroundColor: options.backgroundColor,
-			size: options.size,
-		});
+		// If no size was given, use the given parent element.
+		// If no parent element given, throw error.
+		if (options.size === null) {
+			let domInfo = RenderableUtils.GetElementInfo(options.parentElement);
+			options.size = domInfo.size;
+
+			// Verify minimum height is satisfied.
+			if (options.size.y < _minimumHeight) {
+				console.warn(`Minimum height of ${_minimumHeight}px is not satisfied. Forcing to ${_minimumHeight}px.`);
+				options.size.y = _minimumHeight;
+			}
+		}
 
 		this._datasets = {};
 
@@ -87,15 +94,16 @@ class Chart extends RenderableNode
 		});
 	}
 
+
+
 	_createRenderer()
 	{
 		// Search for the parentElement, if selector specified
-		let parentElement = null;
-		if (this.options.parentElement !== '') {
-			parentElement = document.querySelector(this.options.parentElement);
-		}
+		let parentElementInfo = RenderableUtils.GetElementInfo(this.options.parentElement);
 
-		if (parentElement !== null) {
+		if (parentElementInfo !== null) {
+			let parentElement = parentElementInfo.element;
+
 			// Create canvas element with configured size.
 			let canvasElem = document.createElement('canvas');
 			canvasElem.width = this.options.size.x;
@@ -118,6 +126,14 @@ class Chart extends RenderableNode
 		this.renderer.setSize(this.options.size.x, this.options.size.y, true);
 		this.renderer.setPixelRatio(this.options.pixelRatio);
 		this.domElement = this.renderer.domElement;
+
+		// If constant size given, no responsive capabilities are used.
+		RenderableUtils.AddEvent(window, 'resize', () => { this._onResizeEvent(); });
+	}
+
+	_onResizeEvent()
+	{
+		let size
 	}
 
 	_createAxisView()
@@ -167,12 +183,12 @@ class Chart extends RenderableNode
 	// 	this._animate();
 	// }
 
-	_animate()
-	{
-		requestAnimationFrame(() => this._animate());
-		this.control.update();
-		this._render();
-	}
+	// _animate()
+	// {
+	// 	requestAnimationFrame(() => this._animate());
+	// 	this.control.update();
+	// 	this._render();
+	// }
 
 	_setupGestures()
 	{
@@ -204,26 +220,6 @@ class Chart extends RenderableNode
 		_.forEach(this._datasets, (dataset) => {
 			dataset.render(this.renderer);
 		});
-	}
-
-	add(node)
-	{
-		if (!(node instanceof RenderableNode)) {
-			throw 'Error: chart.add called with parameter not of type RenderableNode';
-		}
-		this._scene.add(node.renderable);
-		this._renderableAdded(node);
-		this._render();
-	}
-
-	remove(node)
-	{
-		if (!node instanceof RenderableNode) {
-			throw 'Error: chart.add called with parameter not of type RenderableNode';
-		}
-		this._scene.remove(node.renderable);
-		this._renderableRemoved(node);
-		this._render();
 	}
 }
 

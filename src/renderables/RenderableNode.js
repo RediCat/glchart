@@ -51,6 +51,15 @@ class RenderableNode extends EventNode
 		}
 	}
 
+	updateView(size)
+	{
+		if (!(size instanceof THREE.Vector2)) {
+			throw 'Error: size not of type THREE.Vector2';
+		}
+
+		this._size = size;
+	}
+
 	render(renderer)
 	{
 		let size = this._size,

@@ -70,6 +70,35 @@ class RenderableUtils
 			(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
 		);
 	}
+
+	static AddEvent(obj, type, cb)
+	{
+		if (obj == null || typeof(obj) == undefined) return;
+		if (obj.addEventListener) {
+			obj.addEventListener(type, cb, false);
+		} else if (obj.attachEvent) {
+			obj.attachEvent('on' + type, cb);
+		} else {
+			obj['on' + type] = cb;
+		}
+	}
+
+	static GetElementInfo(element)
+	{
+		let elementInfo = null;
+		if (element !== '') {
+			let foundElement = document.querySelector(element);
+			if (foundElement !== null) {
+				elementInfo = {
+					element: foundElement,
+					size: new THREE.Vector2(foundElement.clientWidth, foundElement.clientHeight),
+				};
+
+			}
+		}
+		return elementInfo;
+	}
+
 }
 
 export {RenderableUtils};

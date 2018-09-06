@@ -4,7 +4,7 @@ function main()
 {
 	new glchart.Chart({
 		chart: {
-			size: new THREE.Vector2(800, 200),
+			//size: new THREE.Vector2(800, 200),
 			orthographic: true,
 			parentElement: '#renderingArea',
 			fontColor: 0x0000ff,
