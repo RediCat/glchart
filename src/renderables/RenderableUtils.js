@@ -91,7 +91,7 @@ class RenderableUtils
 			if (foundElement !== null) {
 				elementInfo = {
 					element: foundElement,
-					size: new THREE.Vector2(foundElement.clientWidth, foundElement.clientHeight),
+					size: new THREE.Vector2(foundElement.width, foundElement.height),
 				};
 
 			}

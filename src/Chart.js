@@ -4,14 +4,20 @@ import {Axis} from './renderables/Axis';
 import {Dataset} from "./renderables/Dataset";
 import {FontFactory} from "./font/FontFactory";
 import {RenderableUtils} from "./renderables/RenderableUtils";
+import {EventNode} from "./EventNode";
 
 const _defaultBackgroundColor = 0xffffff;
 const _minimumHeight = 200;
+const _minimumHeightWarning = _.once(() => {
+	console.warn(`Minimum height of ${_minimumHeight}px is not satisfied. Forcing to ${_minimumHeight}px.`);
+});
 
-class Chart
+class Chart extends EventNode
 {
 	constructor(globalOptions)
 	{
+		super();
+
 		let defaultOptions = {
 			size: null,
 			pixelRatio: window.devicePixelRatio,
@@ -30,20 +36,8 @@ class Chart
 			Console.warn('Chart.options.backgroundColor is not of type THREE.Color, using default.')
 		}
 
-		// If no size was given, use the given parent element.
-		// If no parent element given, throw error.
-		if (options.size === null) {
-			let domInfo = RenderableUtils.GetElementInfo(options.parentElement);
-			options.size = domInfo.size;
-
-			// Verify minimum height is satisfied.
-			if (options.size.y < _minimumHeight) {
-				console.warn(`Minimum height of ${_minimumHeight}px is not satisfied. Forcing to ${_minimumHeight}px.`);
-				options.size.y = _minimumHeight;
-			}
-		}
-
 		this._datasets = {};
+		this._renderables = [];
 
 		// todo: make this views reactive.
 		this.views = {
@@ -88,57 +82,78 @@ class Chart
 			this._allowRendering = true;
 			this.render();
 			this.emit('load');
-
-			// let testText = this._fontFactory.create('lato', 'Random Data', 0x0000ff);
-			// this.add(testText);
 		});
 	}
 
+	_calculateRendererSize()
+	{
+		// If no size was given, use the given parent element.
+		// If no parent element given, throw error.
+		let size = this.globals.chart.size;
+		if (size === null || size === undefined) {
+			let domInfo = RenderableUtils.GetElementInfo(this.globals.chart.parentElement);
+			size = domInfo.size;
+		}
 
+		// Verify minimum height is satisfied.
+		if (size.y < _minimumHeight) {
+			_minimumHeightWarning();
+			size.y = _minimumHeight;
+		}
+
+		this.options.size = size;
+	}
 
 	_createRenderer()
 	{
+		this._calculateRendererSize();
+
 		// Search for the parentElement, if selector specified
 		let parentElementInfo = RenderableUtils.GetElementInfo(this.options.parentElement);
 
 		if (parentElementInfo !== null) {
-			let parentElement = parentElementInfo.element;
+			this._parentElement = parentElementInfo.element;
 
 			// Create canvas element with configured size.
 			let canvasElem = document.createElement('canvas');
-			canvasElem.width = this.options.size.x;
-			canvasElem.height = this.options.size.y;
+			// canvasElem.width = this.options.size.x;
+			// canvasElem.height = this.options.size.y;
 
 			this.renderer = new THREE.WebGLRenderer({
 				canvas: canvasElem,
 				alpha: this.options.useAlpha,
 				antialias: true
 			});
-			parentElement.appendChild(canvasElem);
+
+			this._parentElement.appendChild(canvasElem);
+			this.renderer.setSize(this.options.size.x, this.options.size.y, true);
+
+			// If constant size given, no responsive capabilities are used.
+			RenderableUtils.AddEvent(window, 'resize', () => { this._onResizeEvent(); });
 		} else {
 			this.renderer = new THREE.WebGLRenderer({
 				alpha: this.options.useAlpha,
 				antialias: true
 			});
 			document.body.appendChild(this.renderer.domElement);
+			this.renderer.setSize(this.options.size.x, this.options.size.y, true);
 		}
 
-		this.renderer.setSize(this.options.size.x, this.options.size.y, true);
 		this.renderer.setPixelRatio(this.options.pixelRatio);
-		this.domElement = this.renderer.domElement;
-
-		// If constant size given, no responsive capabilities are used.
-		RenderableUtils.AddEvent(window, 'resize', () => { this._onResizeEvent(); });
+		this._domElement = this.renderer.domElement;
 	}
 
 	_onResizeEvent()
 	{
-		let size
+		console.log('Resized event');
+		this._calculateRendererSize();
+		this.renderer.setSize(this.options.size.x, this.options.size.y);
+		_.forEach(this._renderables, (renderable) => renderable.updateView(this.options.size));
+		this.render();
 	}
 
 	_createAxisView()
 	{
-
 		this._xAxis = new Axis(_.merge(this.globals.axis.x, this.views.xAxis));
 		this._yAxis = new Axis(_.merge(this.globals.axis.y, this.views.yAxis));
 	}
@@ -157,6 +172,7 @@ class Chart
 
 			dataset.setScale(10);
 			this._datasets[dataset._id] = dataset;
+			this._renderables.push(dataset);
 		});
 	}
 
@@ -175,24 +191,9 @@ class Chart
 		});
 	}
 
-	// _setupDevEnvironment()
-	// {
-	// 	this.control = new THREE.OrbitControls(this._camera, this.renderer.domElement);
-	// 	this.axesHelper = new THREE.AxesHelper(5);
-	// 	this._scene.add(this.axesHelper);
-	// 	this._animate();
-	// }
-
-	// _animate()
-	// {
-	// 	requestAnimationFrame(() => this._animate());
-	// 	this.control.update();
-	// 	this._render();
-	// }
-
 	_setupGestures()
 	{
-		this.hammer = new Hammer(this.domElement);
+		this.hammer = new Hammer(this._domElement);
 		this.hammer.on('panright panleft', (ev) => this._hammerPanHandler(ev));
 	}
 
