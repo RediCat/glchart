@@ -166,7 +166,6 @@ class Chart extends EventNode
 
 			let dataset = new Dataset(datasetOpts);
 
-			dataset.setScale(10);
 			this._datasets[dataset._id] = dataset;
 			this._renderables.push(dataset);
 		});

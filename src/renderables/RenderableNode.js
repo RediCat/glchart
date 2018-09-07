@@ -8,17 +8,21 @@ class RenderableNode extends EventNode
 	constructor(options)
 	{
 		super();
+
+		let required = ['view', 'size'],
+			defaultOptions = { backgroundColor: null };
+
+		this.options = RenderableUtils.CreateOptions(options, required, 'RenderableNode.options', defaultOptions);
+
 		this._id = Math.floor((1 + Math.random()) * 0xFFFFFFFF);
 		this._renderables = {};
-
 		this._scene = new THREE.Scene();
-		if (options.backgroundColor !== undefined) {
+		this._parent = null;
+
+		if (options.backgroundColor !== null) {
 			this._scene.background = options.backgroundColor;
 		}
 
-		this._parent = null;
-		this._size = options.size;
-		this._view = options.view;
 		this._createCamera();
 	}
 
@@ -50,13 +54,13 @@ class RenderableNode extends EventNode
 			throw 'Error: size not of type THREE.Vector2';
 		}
 
-		this._size = size;
+		this.options.size = size;
 	}
 
 	render(renderer)
 	{
-		let size = this._size,
-			view = this._view;
+		let size = this.options.size,
+			view = this.options.view;
 
 		let	left = Math.floor(size.x * view.left),
 			top = Math.floor(size.y * view.top),
@@ -102,7 +106,7 @@ class RenderableNode extends EventNode
 	{
 		let left = 0, right = 100,
 			top = 100, bottom = 0,
-			near = 1, far = 100;
+			near = 0, far = 1;
 
 		let camera = new THREE.OrthographicCamera(left, right, top, bottom, near, far);
 

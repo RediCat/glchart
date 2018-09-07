@@ -6,20 +6,16 @@ class Dataset extends RenderableNode
 {
 	constructor(options)
 	{
-		let requiredOptions = ['data', 'view'];
+		super(options);
+
+		let requiredOptions = ['data'];
 		let defaultOptions = {
 			name: null,
-			color: 0x000000
+			color: 0x000000,
+			unit: 1,
 		};
-		let opts = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options', defaultOptions);
 
-		super({
-			view: opts.view,
-			size: opts.size,
-			backgroundColor: opts.backgroundColor
-		});
-
-		this.options = opts;
+		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options', defaultOptions);
 
 		this.stats = {
 			xBounds: { min: null, max: null },
@@ -27,7 +23,7 @@ class Dataset extends RenderableNode
 		};
 
 		this._calcStats();
-		this._createNormalizeData();
+		this._createNormalizedData(30);
 		this._createGeometry();
 	}
 
@@ -58,23 +54,20 @@ class Dataset extends RenderableNode
 		this.stats.xAvgDelta = deltaValueSum / this.options.data.length;
 	}
 
-	_createNormalizeData()
+	_createNormalizedData()
 	{
 		this.normalizedData = [];
 		let maxValue = this.stats.yBounds.max;
 		_.forEach(this.options.data, (value) => {
-			this.normalizedData.push([value[0], value[1] / maxValue]);
+			this.normalizedData.push([value[0] / this.options.unit, value[1] / maxValue]);
 		});
 	}
 
-	_createGeometry(scale)
+	_createGeometry()
 	{
-		if (scale === undefined) {
-			scale = 1;
-		}
-
 		// we assume only one line is child of our group
-		let transformFunc = (point) => [point[0] * scale, point[1] * this.stats.yBounds.max];
+		let unit = this.options.unit, maxY = this.stats.yBounds.max;
+		let transformFunc = (point) => [point[0], point[1] * maxY];
 		this.line = RenderableUtils.CreateLine(this.normalizedData.map(transformFunc), this.options.color);
 		this.add(this.line);
 	}
