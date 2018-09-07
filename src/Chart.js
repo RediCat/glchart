@@ -23,7 +23,6 @@ class Chart extends EventNode
 			pixelRatio: window.devicePixelRatio,
 			useAlpha: true,
 			backgroundColor: new THREE.Color(_defaultBackgroundColor),
-			orthographic: true,
 			fontColor: 0x000000,
 			title: '',
 		};
@@ -116,8 +115,8 @@ class Chart extends EventNode
 
 			// Create canvas element with configured size.
 			let canvasElem = document.createElement('canvas');
-			// canvasElem.width = this.options.size.x;
-			// canvasElem.height = this.options.size.y;
+			canvasElem.width = this.options.size.x;
+			canvasElem.height = this.options.size.y;
 
 			this.renderer = new THREE.WebGLRenderer({
 				canvas: canvasElem,
@@ -126,7 +125,6 @@ class Chart extends EventNode
 			});
 
 			this._parentElement.appendChild(canvasElem);
-			this.renderer.setSize(this.options.size.x, this.options.size.y, true);
 
 			// If constant size given, no responsive capabilities are used.
 			RenderableUtils.AddEvent(window, 'resize', () => { this._onResizeEvent(); });
@@ -145,8 +143,7 @@ class Chart extends EventNode
 
 	_onResizeEvent()
 	{
-		console.log('Resized event');
-		this._calculateRendererSize();
+		this.options.size.x = this._parentElement.clientWidth;
 		this.renderer.setSize(this.options.size.x, this.options.size.y);
 		_.forEach(this._renderables, (renderable) => renderable.updateView(this.options.size));
 		this.render();
@@ -165,7 +162,6 @@ class Chart extends EventNode
 				view: this.views.graph,
 				size: this.options.size,
 				backgroundColor: this.options.backgroundColor,
-				orthographic: this.options.orthographic,
 			});
 
 			let dataset = new Dataset(datasetOpts);

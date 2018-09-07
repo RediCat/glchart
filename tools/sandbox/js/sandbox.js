@@ -4,7 +4,6 @@ function main()
 {
 	new glchart.Chart({
 		chart: {
-			orthographic: true,
 			parentElement: '#renderingArea',
 			fontColor: 0x0000ff,
 			title: 'RandomData'

@@ -91,14 +91,13 @@ class RenderableUtils
 			if (foundElement !== null) {
 				elementInfo = {
 					element: foundElement,
-					size: new THREE.Vector2(foundElement.width, foundElement.height),
+					size: new THREE.Vector2(foundElement.clientWidth, foundElement.clientHeight),
 				};
 
 			}
 		}
 		return elementInfo;
 	}
-
 }
 
 export {RenderableUtils};

@@ -16,15 +16,10 @@ class RenderableNode extends EventNode
 			this._scene.background = options.backgroundColor;
 		}
 
-		this._ortho = true;
-		if (options.orthographic !== undefined) {
-			this._ortho = options.orthographic;
-		}
-
 		this._parent = null;
 		this._size = options.size;
 		this._view = options.view;
-		this._createCamera(options);
+		this._createCamera();
 	}
 
 	add(node)
@@ -103,18 +98,13 @@ class RenderableNode extends EventNode
 		this.emit('childRemoved', this, node);
 	}
 
-	_createCamera(options)
+	_createCamera()
 	{
-		let camera;
-		if (options.orthographic) {
-			let left = 0, right = 100,
-				top = 100, bottom = 0,
-				near = 1, far = 100;
-			camera = new THREE.OrthographicCamera(left, right, top, bottom, near, far);
-		} else {
-			let aspect = this._size.x / this._size.y;
-			camera = new THREE.PerspectiveCamera(50, 0.5 * aspect, 1, 1000);
-		}
+		let left = 0, right = 100,
+			top = 100, bottom = 0,
+			near = 1, far = 100;
+
+		let camera = new THREE.OrthographicCamera(left, right, top, bottom, near, far);
 
 		camera.up.set(0, 1, 0);
 		camera.position.set(0, 0, 1);

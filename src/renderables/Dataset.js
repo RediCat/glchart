@@ -16,7 +16,6 @@ class Dataset extends RenderableNode
 		super({
 			view: opts.view,
 			size: opts.size,
-			orthographic: opts.orthographic,
 			backgroundColor: opts.backgroundColor
 		});
 

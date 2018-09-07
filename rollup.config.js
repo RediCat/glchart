@@ -31,6 +31,7 @@ export default {
 			name: 'glchart',
 			file: 'build/glchart.js',
 			indent: '\t',
+			sourcemap: true,
 			globals: {
 				'three': 'THREE',
 				'lodash': '_',

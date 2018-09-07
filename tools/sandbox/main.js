@@ -6,6 +6,8 @@ const url = require('url');
 
 let mainWindow;
 
+app.commandLine.appendSwitch('remote-debugging-port', '9222');
+
 function createWindow()
 {
 	mainWindow = new BrowserWindow({
