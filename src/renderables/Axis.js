@@ -4,6 +4,7 @@ import {Dataset} from './Dataset';
 
 class Axis extends RenderableNode
 {
+	// todo: make this a view controlled by data given and assumptions based on the layout
 	constructor(options)
 	{
 		super(options);
