@@ -12,7 +12,7 @@ class Dataset extends RenderableNode
 		let defaultOptions = {
 			name: null,
 			color: 0x000000,
-			unit: 1,
+			unitPerPixel: 1,
 		};
 
 		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options', defaultOptions);
@@ -59,20 +59,18 @@ class Dataset extends RenderableNode
 		this.normalizedData = [];
 		let maxValue = this.stats.yBounds.max;
 		_.forEach(this.options.data, (value) => {
-			this.normalizedData.push([value[0] / this.options.unit, value[1] / maxValue]);
+			this.normalizedData.push([value[0] / this.options.unitPerPixel, value[1] / maxValue]);
 		});
 	}
 
 	_createGeometry()
 	{
-		// we assume only one line is child of our group
-		let unit = this.options.unit, maxY = this.stats.yBounds.max;
-		let transformFunc = (point) => [point[0], point[1] * maxY];
+		let transformFunc = (point) => [point[0], point[1] * this._camera.top];
 		this.line = RenderableUtils.CreateLine(this.normalizedData.map(transformFunc), this.options.color);
 		this.add(this.line);
 	}
 
-	setScale(scale)
+	setUnitsPerPixel(scale)
 	{
 		this.remove(this.line);
 		this.line = null;

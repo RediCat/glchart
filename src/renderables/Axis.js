@@ -6,23 +6,18 @@ class Axis extends RenderableNode
 {
 	constructor(options)
 	{
-		super();
-		this._setupDefaultOptions(options);
-		this.on('parentAdded', (parent) => { this._onParentAdded(parent); });
-		this.on('parentRemoved', (parent) => { this._onParentRemoved(parent); });
-	}
+		super(options);
 
-	_setupDefaultOptions(options)
-	{
 		let defaultOptions = {
-			stepCoefX: 10,
-			stepCoefY: 10,
 			xLabel: '',
 			yLabel: '',
 			lineColor: 0xAABBFF,
 		};
 		this.options = RenderableUtils.CreateOptions(options, null, 'Axis.options', defaultOptions);
 		this.stats = null;
+
+		this.on('parentAdded', (parent) => { this._onParentAdded(parent); });
+		this.on('parentRemoved', (parent) => { this._onParentRemoved(parent); });
 	}
 
 	_onParentAdded(parent)

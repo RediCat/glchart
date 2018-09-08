@@ -75,7 +75,7 @@ class Chart extends EventNode
 			this._setupGestures();
 
 			//this._createTitleView();
-			//this._createAxisView();
+			this._createAxisView();
 			this._createGraphViews();
 
 			this._allowRendering = true;
@@ -149,12 +149,6 @@ class Chart extends EventNode
 		this.render();
 	}
 
-	_createAxisView()
-	{
-		this._xAxis = new Axis(_.merge(this.globals.axis.x, this.views.xAxis));
-		this._yAxis = new Axis(_.merge(this.globals.axis.y, this.views.yAxis));
-	}
-
 	_createGraphViews()
 	{
 		_.forEach(this.globals.datasets, (datasetOptions) => {
@@ -169,6 +163,23 @@ class Chart extends EventNode
 			this._datasets[dataset._id] = dataset;
 			this._renderables.push(dataset);
 		});
+	}
+
+	_createAxisView()
+	{
+		let xAxisOptions = _.merge(this.globals.axis.x, {
+			view: this.views.xAxis,
+			size: this.options.size,
+			backgroundColor: this.options.backgroundColor,
+		});
+		this._xAxis = new Axis(xAxisOptions);
+
+		let yAxisOptions = _.merge(this.globals.axis.y, {
+			view: this.views.yAxis,
+			size: this.options.size,
+			backgroundColor: this.options.backgroundColor,
+		});
+		this._yAxis = new Axis(yAxisOptions);
 	}
 
 	_createTitleView()
@@ -210,8 +221,8 @@ class Chart extends EventNode
 
 	render()
 	{
-		//this._xAxis.render(this.renderer);
-		//this._yAxis.render(this.renderer);
+		this._xAxis.render(this.renderer);
+		this._yAxis.render(this.renderer);
 
 		_.forEach(this._datasets, (dataset) => {
 			dataset.render(this.renderer);

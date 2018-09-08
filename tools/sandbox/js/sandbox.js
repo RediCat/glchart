@@ -21,8 +21,8 @@ function main()
 		datasets: [
 			{
 				name: 'Value 1',
-				data: createRandomData(10000, 100),
-				unit: 1/10,
+				data: createRandomData(10000, 1456),
+				unitPerPixel: 1/5,
 			}
 		]
 	});
