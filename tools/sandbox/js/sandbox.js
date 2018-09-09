@@ -18,6 +18,7 @@ function main()
 				label: 'Y'
 			},
 		},
+		// todo: make unitPerPixel be a global for all the subdatasets.
 		datasets: [
 			{
 				name: 'Value 1',

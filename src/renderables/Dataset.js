@@ -13,6 +13,7 @@ class Dataset extends RenderableNode
 			name: null,
 			color: 0x000000,
 			unitPerPixel: 1,
+			scale: 1,
 		};
 
 		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options', defaultOptions);
@@ -23,8 +24,10 @@ class Dataset extends RenderableNode
 		};
 
 		this._calcStats();
-		this._createNormalizedData(30);
+		this._createNormalizedData();
 		this._createGeometry();
+
+		this._camera.scale.x = this.options.scale;
 	}
 
 	_calcStats()
@@ -68,13 +71,6 @@ class Dataset extends RenderableNode
 		let transformFunc = (point) => [point[0], point[1] * this._camera.top];
 		this.line = RenderableUtils.CreateLine(this.normalizedData.map(transformFunc), this.options.color);
 		this.add(this.line);
-	}
-
-	setUnitsPerPixel(scale)
-	{
-		this.remove(this.line);
-		this.line = null;
-		this._createGeometry(scale);
 	}
 }
 

@@ -200,15 +200,26 @@ class Chart extends EventNode
 	_setupGestures()
 	{
 		this.hammer = new Hammer(this._domElement);
-		this.hammer.on('panright panleft', (ev) => this._hammerPanHandler(ev));
+
+		// panning gesture
+		let panningGesture = (ev) => {
+			_.forEach(this._datasets, (dataset) => dataset.moveCamera(-ev.deltaX * 0.1));
+			this._render();
+		};
+
+		// zooming gesture
+		let zoomGesture = (ev) => {
+			_.forEach(this._datasets, (dataset) => dataset.zoomCamera(-ev.deltaY * 0.1));
+			this._render();
+		};
+
+		this.hammer.on('panright panleft', panningGesture);
+		this.hammer.on('panup pandown', zoomGesture);
 	}
 
 	_hammerPanHandler(ev)
 	{
-		_.forEach(this._datasets, (dataset) => {
-			dataset._camera.position.x -= ev.deltaX * 0.1;
-		});
-		this._render();
+
 	}
 
 	_render()

@@ -5,71 +5,40 @@ import {Dataset} from './Dataset';
 class Axis extends RenderableNode
 {
 	// todo: make this a view controlled by data given and assumptions based on the layout
+	// todo: create grid lines geometry without the range data
 	constructor(options)
 	{
 		super(options);
 
 		let defaultOptions = {
-			xLabel: '',
-			yLabel: '',
+			label: '',
 			lineColor: 0xAABBFF,
+			vertical: true,
+			steps: 2,
 		};
 		this.options = RenderableUtils.CreateOptions(options, null, 'Axis.options', defaultOptions);
 		this.stats = null;
 
-		this.on('parentAdded', (parent) => { this._onParentAdded(parent); });
-		this.on('parentRemoved', (parent) => { this._onParentRemoved(parent); });
-	}
-
-	_onParentAdded(parent)
-	{
-		if (!parent instanceof Dataset) {
-			throw 'Error: Parent of Axis not of type Dataset';
+		if (this.options.steps < 2) {
+			this.options.steps = 2;
 		}
 
-		this.stats = {
-			stepSizeX: Math.floor(parent.stats.xBounds.max / this.options.stepCoefX),
-			stepSizeY: Math.floor(parent.stats.yBounds.max / this.options.stepCoefX)
-		};
-
-		if (parent.stats.yBounds.min >= 0) {
-			this._createSingleVerticalAxis(parent);
-		} else {
-			this._createFullVerticalAxis(parent);
+		if (this.options.vertical) {
+			this._createVerticalGrid();
 		}
 	}
 
-	_onParentRemoved(parent)
+	_createVerticalGrid()
 	{
-		if (!parent instanceof Dataset) {
-			throw 'Error: Parent of Axis not of type Dataset';
-		}
-
-		this.stats = null;
-	}
-
-	_createSingleVerticalAxis(parent)
-	{
-		// x axis line
-		let xAxisLineVerts = [
-			[0, 0],
-			[parent.stats.xBounds.max, 0]
+		// vertical axis line
+		let verticalGridPoints = [
+			[1, 0],
+			[1, 10]
 		];
-		let xAxisLine = RenderableUtils.CreateLine(xAxisLineVerts, this.options.color, 2);
-		this.add(xAxisLine);
+		let verticalGrid = RenderableUtils.CreateLine(verticalGridPoints, this.options.color, 2);
+		this.add(verticalGrid);
 
-		// y axis line
-		let yAxisLineVerts = [
-			[0, 0],
-			[0, parent.stats.yBounds.max + 20]
-		];
-		let yAxisLine = RenderableUtils.CreateLine(yAxisLineVerts, this.options.lineColor, 2);
-		this.add(yAxisLine);
-	}
-
-	// todo: implement _createFullVerticalAxis method
-	_createFullVerticalAxis(parent)
-	{
+		// todo: draw the minimum 2 endpoints on top and bottom.
 	}
 }
 

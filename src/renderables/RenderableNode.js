@@ -3,14 +3,12 @@ import {EventNode} from '../EventNode';
 import {RenderableUtils} from "./RenderableUtils";
 
 
-class RenderableNode extends EventNode
-{
-	constructor(options)
-	{
+class RenderableNode extends EventNode {
+	constructor(options) {
 		super();
 
 		let required = ['view', 'size'],
-			defaultOptions = { backgroundColor: null };
+			defaultOptions = {backgroundColor: null};
 
 		this.options = RenderableUtils.CreateOptions(options, required, 'RenderableNode.options', defaultOptions);
 
@@ -26,8 +24,7 @@ class RenderableNode extends EventNode
 		this._createCamera();
 	}
 
-	add(node)
-	{
+	add(node) {
 		if (node instanceof RenderableNode) {
 			this._scene.add(node.renderable);
 			this._renderableAdded(node);
@@ -37,8 +34,7 @@ class RenderableNode extends EventNode
 		}
 	}
 
-	remove(node)
-	{
+	remove(node) {
 		if (node instanceof RenderableNode) {
 			this._scene.remove(node.renderable);
 			this._renderableRemoved(node);
@@ -48,8 +44,7 @@ class RenderableNode extends EventNode
 		}
 	}
 
-	updateView(size)
-	{
+	updateView(size) {
 		if (!(size instanceof THREE.Vector2)) {
 			throw 'Error: size not of type THREE.Vector2';
 		}
@@ -57,12 +52,11 @@ class RenderableNode extends EventNode
 		this.options.size = size;
 	}
 
-	render(renderer)
-	{
+	render(renderer) {
 		let size = this.options.size,
 			view = this.options.view;
 
-		let	left = Math.floor(size.x * view.left),
+		let left = Math.floor(size.x * view.left),
 			top = Math.floor(size.y * view.top),
 			width = Math.floor(size.x * view.width),
 			height = Math.floor(size.y * view.height);
@@ -77,33 +71,28 @@ class RenderableNode extends EventNode
 		renderer.render(this._scene, this._camera);
 	}
 
-	_renderableAdded(node)
-	{
+	_renderableAdded(node) {
 		this._renderables[node._id] = node;
 		node._parent = this;
 		this.emit('parentAdded', this, node);
 		this.emit('childAdded', this, node);
 	}
 
-	_object3dAdded(node)
-	{
+	_object3dAdded(node) {
 		this.emit('childAdded', this, node);
 	}
 
-	_renderableRemoved(node)
-	{
+	_renderableRemoved(node) {
 		this._renderables[node._id] = null;
 		node._parent = null;
 		node.emit('parentRemoved', this, node);
 	}
 
-	_object3dRemoved(node)
-	{
+	_object3dRemoved(node) {
 		this.emit('childRemoved', this, node);
 	}
 
-	_createCamera()
-	{
+	_createCamera() {
 		let left = 0, right = 100,
 			top = 100, bottom = 0,
 			near = 0, far = 1;
@@ -116,6 +105,22 @@ class RenderableNode extends EventNode
 		camera.updateProjectionMatrix();
 
 		this._camera = camera;
+	}
+
+	moveCamera(delta)
+	{
+		this._camera.position.x += delta;
+		if (this._camera.position.x < 0) {
+			this._camera.position.x = 0;
+		}
+	}
+
+	zoomCamera(delta)
+	{
+		this._camera.scale.x += delta;
+		if (this._camera.scale.x < 1.0) {
+			this._camera.scale.x = 1.0;
+		}
 	}
 }
 
