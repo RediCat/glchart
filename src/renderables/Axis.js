@@ -15,6 +15,7 @@ class Axis extends RenderableNode
 			lineColor: 0xAABBFF,
 			vertical: true,
 			steps: 2,
+			thickness: 2,
 		};
 		this.options = RenderableUtils.CreateOptions(options, null, 'Axis.options', defaultOptions);
 		this.stats = null;
@@ -30,15 +31,29 @@ class Axis extends RenderableNode
 
 	_createVerticalGrid()
 	{
+		let distanceToRight = 90;
+
 		// vertical axis line
 		let verticalGridPoints = [
-			[1, 0],
-			[1, 10]
+			[100, 0],
+			[100, 100]
 		];
-		let verticalGrid = RenderableUtils.CreateLine(verticalGridPoints, this.options.color, 2);
+		let verticalGrid = RenderableUtils.CreateLine(verticalGridPoints, this.options.lineColor, this.options.thickness);
 		this.add(verticalGrid);
 
-		// todo: draw the minimum 2 endpoints on top and bottom.
+		let topLinePoints = [
+			[distanceToRight, 100],
+			[100, 100],
+		];
+		let topLine = RenderableUtils.CreateLine(topLinePoints, this.options.lineColor, this.options.thickness);
+		this.add(topLine);
+
+		let bottomLinePoints = [
+			[distanceToRight, 0],
+			[100, 0],
+		];
+		let bottomLine = RenderableUtils.CreateLine(bottomLinePoints, this.options.lineColor, this.options.thickness);
+		this.add(bottomLine);
 	}
 }
 

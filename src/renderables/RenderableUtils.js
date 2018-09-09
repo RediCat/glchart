@@ -53,7 +53,7 @@ class RenderableUtils
 			thickness = 1;
 		}
 
-		let geometry = Line(verts, { distances: true });
+		let geometry = Line(verts);
 
 		let shaderMat = new THREE.ShaderMaterial(BasicShader({
 			side: THREE.DoubleSide,

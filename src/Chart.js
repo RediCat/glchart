@@ -167,13 +167,6 @@ class Chart extends EventNode
 
 	_createAxisView()
 	{
-		let xAxisOptions = _.merge(this.globals.axis.x, {
-			view: this.views.xAxis,
-			size: this.options.size,
-			backgroundColor: this.options.backgroundColor,
-		});
-		this._xAxis = new Axis(xAxisOptions);
-
 		let yAxisOptions = _.merge(this.globals.axis.y, {
 			view: this.views.yAxis,
 			size: this.options.size,
@@ -217,11 +210,6 @@ class Chart extends EventNode
 		this.hammer.on('panup pandown', zoomGesture);
 	}
 
-	_hammerPanHandler(ev)
-	{
-
-	}
-
 	_render()
 	{
 		if (!this._allowRendering) {
@@ -232,7 +220,6 @@ class Chart extends EventNode
 
 	render()
 	{
-		this._xAxis.render(this.renderer);
 		this._yAxis.render(this.renderer);
 
 		_.forEach(this._datasets, (dataset) => {

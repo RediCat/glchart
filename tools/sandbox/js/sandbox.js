@@ -14,7 +14,7 @@ function main()
 				label: 'X',
 			},
 			y: {
-				lineColor: 0xaabbff,
+				lineColor: 0x000000,
 				label: 'Y'
 			},
 		},
@@ -23,6 +23,7 @@ function main()
 			{
 				name: 'Value 1',
 				data: createRandomData(10000, 1456),
+				color: 0x0000FF,
 				unitPerPixel: 1/5,
 			}
 		]

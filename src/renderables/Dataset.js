@@ -13,7 +13,6 @@ class Dataset extends RenderableNode
 			name: null,
 			color: 0x000000,
 			unitPerPixel: 1,
-			scale: 1,
 		};
 
 		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options', defaultOptions);
@@ -26,8 +25,6 @@ class Dataset extends RenderableNode
 		this._calcStats();
 		this._createNormalizedData();
 		this._createGeometry();
-
-		this._camera.scale.x = this.options.scale;
 	}
 
 	_calcStats()
