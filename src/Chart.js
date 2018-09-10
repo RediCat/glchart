@@ -1,6 +1,6 @@
 import THREE from 'three';
 import Hammer from 'hammerjs';
-import {VerticalAxis} from './renderables/Axis';
+import {HorizontalAxis, VerticalAxis} from './renderables/Axis';
 import {Dataset} from "./renderables/Dataset";
 import {FontFactory} from "./font/FontFactory";
 import {RenderableUtils} from "./renderables/RenderableUtils";
@@ -75,7 +75,7 @@ class Chart extends EventNode
 			this._setupGestures();
 
 			//this._createTitleView();
-			this._createAxisView();
+			this._createAxisViews();
 			this._createGraphViews();
 
 			this._allowRendering = true;
@@ -165,7 +165,7 @@ class Chart extends EventNode
 		});
 	}
 
-	_createAxisView()
+	_createAxisViews()
 	{
 		let yAxisOptions = _.merge(this.globals.axis.y, {
 			view: this.views.yAxis,
@@ -175,6 +175,15 @@ class Chart extends EventNode
 		});
 		this._yAxis = new VerticalAxis(yAxisOptions);
 		this._renderables.push(this._yAxis);
+
+		let xAxisOptions = _.merge(this.globals.axis.x, {
+			view: this.views.xAxis,
+			size: this.options.size,
+			fontFactory: this._fontFactory,
+			backgroundColor: this.options.backgroundColor,
+		});
+		this._xAxis = new HorizontalAxis(xAxisOptions);
+		this._renderables.push(this._xAxis);
 	}
 
 	_createTitleView()

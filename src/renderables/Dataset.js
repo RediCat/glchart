@@ -25,10 +25,6 @@ class Dataset extends RenderableView
 		this._calcStats();
 		this._createNormalizedData();
 		this._createGeometry();
-
-		this._camera.bottom = -10;
-		this._camera.top = 110;
-		this._camera.updateProjectionMatrix();
 	}
 
 	_calcStats()
@@ -69,9 +65,30 @@ class Dataset extends RenderableView
 
 	_createGeometry()
 	{
-		let transformFunc = (point) => [point[0], point[1] * this._camera.top];
+		let transformFunc = (point) => [point[0], point[1] * 80 + 10];
 		this.line = RenderableUtils.CreateLine(this.normalizedData.map(transformFunc), this.options.color, 0.5);
 		this.add(this.line);
+	}
+
+	moveCamera(delta)
+	{
+		this._camera.position.x += delta;
+		if (this._camera.position.x < 0) {
+			this._camera.position.x = 0;
+		}
+	}
+
+	zoomCamera(delta)
+	{
+		this.empty();
+		this.options.unitPerPixel += delta * 0.01;
+
+		if (this.options.unitPerPixel < 0.1) {
+			this.options.unitPerPixel = 0.1;
+		}
+
+		this._createNormalizedData();
+		this._createGeometry();
 	}
 }
 

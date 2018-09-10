@@ -18,9 +18,15 @@ class RenderableView extends RenderableNode
 	}
 
 	_createCamera() {
-		let left = 0, right = 100,
-			top = 100, bottom = 0,
+		let left = 0, bottom = 0,
 			near = 0, far = 1;
+
+		let size = this.options.size,
+			view = this.options.view;
+
+		// adjust to size
+		let top = size.y * view.height,
+			right = size.x * view.width;
 
 		let camera = new THREE.OrthographicCamera(left, right, top, bottom, near, far);
 
@@ -45,26 +51,7 @@ class RenderableView extends RenderableNode
 		renderer.setScissor(left, top, width, height);
 		renderer.setScissorTest(true);
 
-		this._camera.aspect = width / height;
-		this._camera.updateProjectionMatrix();
-
 		super.render(renderer, this._camera);
-	}
-
-	moveCamera(delta)
-	{
-		this._camera.position.x += delta;
-		if (this._camera.position.x < 0) {
-			this._camera.position.x = 0;
-		}
-	}
-
-	zoomCamera(delta)
-	{
-		this._camera.scale.x += delta;
-		if (this._camera.scale.x < 1.0) {
-			this._camera.scale.x = 1.0;
-		}
 	}
 
 	updateView(size) {
@@ -73,6 +60,10 @@ class RenderableView extends RenderableNode
 		}
 
 		this.options.size = size;
+		this._camera = null;
+		this._createCamera();
+
+		this.emit('resize');
 	}
 }
 

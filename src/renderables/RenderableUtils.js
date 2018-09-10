@@ -58,7 +58,7 @@ class RenderableUtils
 		let shaderMat = new THREE.ShaderMaterial(BasicShader({
 			side: THREE.DoubleSide,
 			diffuse: color,
-			thickness: thickness
+			thickness: thickness,
 		}));
 
 		return new THREE.Mesh(geometry, shaderMat);
@@ -93,7 +93,6 @@ class RenderableUtils
 					element: foundElement,
 					size: new THREE.Vector2(foundElement.clientWidth, foundElement.clientHeight),
 				};
-
 			}
 		}
 		return elementInfo;

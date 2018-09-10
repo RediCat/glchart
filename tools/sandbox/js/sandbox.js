@@ -24,7 +24,7 @@ function main()
 				name: 'Value 1',
 				data: createRandomData(10000, 1456),
 				color: 0x0000FF,
-				unitPerPixel: 1/5,
+				unitPerPixel: 1/10,
 			}
 		]
 	});
