@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import {RenderableUtils} from "./RenderableUtils";
-import {RenderableNode} from "./RenderableNode";
+import {RenderableView} from "./RenderableView";
 
-class Dataset extends RenderableNode
+class Dataset extends RenderableView
 {
 	constructor(options)
 	{
@@ -25,6 +25,10 @@ class Dataset extends RenderableNode
 		this._calcStats();
 		this._createNormalizedData();
 		this._createGeometry();
+
+		this._camera.bottom = -10;
+		this._camera.top = 110;
+		this._camera.updateProjectionMatrix();
 	}
 
 	_calcStats()
@@ -66,7 +70,7 @@ class Dataset extends RenderableNode
 	_createGeometry()
 	{
 		let transformFunc = (point) => [point[0], point[1] * this._camera.top];
-		this.line = RenderableUtils.CreateLine(this.normalizedData.map(transformFunc), this.options.color);
+		this.line = RenderableUtils.CreateLine(this.normalizedData.map(transformFunc), this.options.color, 0.5);
 		this.add(this.line);
 	}
 }

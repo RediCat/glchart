@@ -9,9 +9,9 @@ class Font
 	constructor(opts) {
 		let required = ['font', 'texture'];
 		let defaultOptions = {
-			width: 200,
+			width: 100,
 			align: 'left',
-			color: 0xffffff
+			color: 0x000000,
 		};
 		this.options = RenderableUtils.CreateOptions(opts, required, 'Font.options', defaultOptions);
 		this.texture = null;
@@ -58,18 +58,8 @@ class Font
 
 		let mesh = new THREE.Mesh(textGeometry, material);
 		mesh.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI);
-		return new FontMesh(mesh);
+		return mesh;
 	}
 }
 
-class FontMesh extends RenderableNode
-{
-	constructor(mesh)
-	{
-		super();
-		this.mesh = mesh;
-		this.add(mesh);
-	}
-}
-
-export {Font, FontMesh};
+export {Font};

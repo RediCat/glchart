@@ -1,11 +1,11 @@
-import {RenderableNode} from "./RenderableNode";
+import {RenderableView} from "./RenderableView";
 import {RenderableUtils} from "./RenderableUtils";
-import {Dataset} from './Dataset';
 
-class Axis extends RenderableNode
+const notchDistance = 10;
+
+class Axis extends RenderableView
 {
 	// todo: make this a view controlled by data given and assumptions based on the layout
-	// todo: create grid lines geometry without the range data
 	constructor(options)
 	{
 		super(options);
@@ -16,45 +16,123 @@ class Axis extends RenderableNode
 			vertical: true,
 			steps: 2,
 			thickness: 2,
+			distanceToRight: 90,
 		};
-		this.options = RenderableUtils.CreateOptions(options, null, 'Axis.options', defaultOptions);
-		this.stats = null;
+		let required = ['fontFactory'];
+
+		this.options = RenderableUtils.CreateOptions(options, required, 'Axis.options', defaultOptions);
 
 		if (this.options.steps < 2) {
 			this.options.steps = 2;
 		}
 
-		if (this.options.vertical) {
-			this._createVerticalGrid();
-		}
-	}
-
-	_createVerticalGrid()
-	{
-		let distanceToRight = 90;
-
-		// vertical axis line
-		let verticalGridPoints = [
-			[100, 0],
-			[100, 100]
-		];
-		let verticalGrid = RenderableUtils.CreateLine(verticalGridPoints, this.options.lineColor, this.options.thickness);
-		this.add(verticalGrid);
-
-		let topLinePoints = [
-			[distanceToRight, 100],
-			[100, 100],
-		];
-		let topLine = RenderableUtils.CreateLine(topLinePoints, this.options.lineColor, this.options.thickness);
-		this.add(topLine);
-
-		let bottomLinePoints = [
-			[distanceToRight, 0],
-			[100, 0],
-		];
-		let bottomLine = RenderableUtils.CreateLine(bottomLinePoints, this.options.lineColor, this.options.thickness);
-		this.add(bottomLine);
+		this._createGrid();
+		this._createTextFields();
 	}
 }
 
-export {Axis};
+class VerticalAxis extends Axis
+{
+	_createGrid()
+	{
+		this.endPositions = [
+			0.1, 0.9
+		];
+
+		let cameraHeight = this._camera.top,
+			cameraWidth = this._camera.right,
+			lineColor = this.options.lineColor,
+			thick = this.options.thickness;
+
+		let verticalGridPoints = [
+			[cameraWidth, this.endPositions[0] * cameraHeight],
+			[cameraWidth, this.endPositions[1] * cameraHeight],
+		];
+		let verticalGrid = RenderableUtils.CreateLine(verticalGridPoints, lineColor, thick);
+		this.add(verticalGrid);
+
+		_.forEach(this.endPositions, (step) => {
+			let yPos = step * cameraHeight;
+			let points = [
+				[cameraWidth, yPos],
+				[cameraWidth - notchDistance, yPos],
+			];
+			let line = RenderableUtils.CreateLine(points, lineColor, thick);
+			this.add(line);
+		});
+	}
+
+	_createTextFields()
+	{
+		let cameraHeight = this._camera.top,
+			cameraWidth = this._camera.right;
+
+		_.forEach(this.endPositions, (step) => {
+			let yPos = step * cameraHeight;
+			let textPos = [cameraWidth - notchDistance, yPos];
+			let text = this.options.fontFactory.create('lato', '0.0');
+
+			text.geometry.computeBoundingBox();
+			let bbox = text.geometry.boundingBox;
+
+			text.scale.x = text.scale.y = 0.5;
+			text.position.x = textPos[0] - bbox.max.x / 1.5;
+			text.position.y = textPos[1] - 5;
+			this.add(text);
+		});
+	}
+}
+
+class HorizontalAxis extends Axis
+{
+	_createGrid()
+	{
+		this.endPositions = [
+			0.1, 0.9
+		];
+
+		let cameraHeight = this._camera.top,
+			cameraWidth = this._camera.right,
+			lineColor = this.options.lineColor,
+			thick = this.options.thickness;
+
+		let verticalGridPoints = [
+			[cameraWidth, this.endPositions[0] * cameraHeight],
+			[cameraWidth, this.endPositions[1] * cameraHeight],
+		];
+		let verticalGrid = RenderableUtils.CreateLine(verticalGridPoints, lineColor, thick);
+		this.add(verticalGrid);
+
+		_.forEach(this.endPositions, (step) => {
+			let yPos = step * cameraHeight;
+			let points = [
+				[cameraWidth, yPos],
+				[cameraWidth - notchDistance, yPos],
+			];
+			let line = RenderableUtils.CreateLine(points, lineColor, thick);
+			this.add(line);
+		});
+	}
+
+	_createTextFields()
+	{
+		let cameraHeight = this._camera.top,
+			cameraWidth = this._camera.right;
+
+		_.forEach(this.endPositions, (step) => {
+			let yPos = step * cameraHeight;
+			let textPos = [cameraWidth - notchDistance, yPos];
+			let text = this.options.fontFactory.create('lato', '0.0');
+
+			text.geometry.computeBoundingBox();
+			let bbox = text.geometry.boundingBox;
+
+			text.scale.x = text.scale.y = 0.5;
+			text.position.x = textPos[0] - bbox.max.x / 1.5;
+			text.position.y = textPos[1] - 5;
+			this.add(text);
+		});
+	}
+}
+
+export {VerticalAxis, HorizontalAxis};

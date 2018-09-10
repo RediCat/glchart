@@ -1,6 +1,6 @@
 import THREE from 'three';
 import Hammer from 'hammerjs';
-import {Axis} from './renderables/Axis';
+import {VerticalAxis} from './renderables/Axis';
 import {Dataset} from "./renderables/Dataset";
 import {FontFactory} from "./font/FontFactory";
 import {RenderableUtils} from "./renderables/RenderableUtils";
@@ -32,7 +32,7 @@ class Chart extends EventNode
 		// Verify given color is an instance of THREE.Color.
 		if (!options.backgroundColor instanceof THREE.Color) {
 			options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
-			Console.warn('Chart.options.backgroundColor is not of type THREE.Color, using default.')
+			Console.warn('Chart.options.backgroundColor is not of type THREE.Color, using default.');
 		}
 
 		this._datasets = {};
@@ -170,9 +170,11 @@ class Chart extends EventNode
 		let yAxisOptions = _.merge(this.globals.axis.y, {
 			view: this.views.yAxis,
 			size: this.options.size,
+			fontFactory: this._fontFactory,
 			backgroundColor: this.options.backgroundColor,
 		});
-		this._yAxis = new Axis(yAxisOptions);
+		this._yAxis = new VerticalAxis(yAxisOptions);
+		this._renderables.push(this._yAxis);
 	}
 
 	_createTitleView()
@@ -220,10 +222,8 @@ class Chart extends EventNode
 
 	render()
 	{
-		this._yAxis.render(this.renderer);
-
-		_.forEach(this._datasets, (dataset) => {
-			dataset.render(this.renderer);
+		_.forEach(this._renderables, (renderable) => {
+			renderable.render(this.renderer);
 		});
 	}
 }
