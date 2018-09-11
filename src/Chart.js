@@ -74,9 +74,8 @@ class Chart extends EventNode
 			this._createRenderer();
 			this._setupGestures();
 
-			//this._createTitleView();
-			this._createAxisViews();
 			this._createGraphViews();
+			this._createAxisViews();
 
 			this._allowRendering = true;
 			this.render();
@@ -151,18 +150,14 @@ class Chart extends EventNode
 
 	_createGraphViews()
 	{
-		_.forEach(this.globals.datasets, (datasetOptions) => {
-			let datasetOpts = _.merge(datasetOptions, {
-				view: this.views.graph,
-				size: this.options.size,
-				backgroundColor: this.options.backgroundColor,
-			});
-
-			let dataset = new Dataset(datasetOpts);
-
-			this._datasets[dataset._id] = dataset;
-			this._renderables.push(dataset);
+		let datasetOpts = _.merge(this.globals.dataset, {
+			view: this.views.graph,
+			size: this.options.size,
+			backgroundColor: this.options.backgroundColor,
 		});
+
+		this._dataset = new Dataset(datasetOpts);
+		this._renderables.push(this._dataset);
 	}
 
 	_createAxisViews()
@@ -184,11 +179,10 @@ class Chart extends EventNode
 		});
 		this._xAxis = new HorizontalAxis(xAxisOptions);
 		this._renderables.push(this._xAxis);
-	}
 
-	_createTitleView()
-	{
-
+		// update the axis range data
+		// todo: implement range calc on datasets.
+		//let visibleRange = this._d
 	}
 
 	_createFontFactory()
@@ -207,13 +201,13 @@ class Chart extends EventNode
 
 		// panning gesture
 		let panningGesture = (ev) => {
-			_.forEach(this._datasets, (dataset) => dataset.moveCamera(-ev.deltaX * 0.1));
+			this._dataset.moveCamera(-ev.deltaX * 0.1);
 			this._render();
 		};
 
 		// zooming gesture
 		let zoomGesture = (ev) => {
-			_.forEach(this._datasets, (dataset) => dataset.zoomCamera(-ev.deltaY * 0.1));
+			this._dataset.zoomCamera(-ev.deltaY * 0.1);
 			this._render();
 		};
 

@@ -18,15 +18,16 @@ function main()
 				label: 'Y'
 			},
 		},
-		// todo: make unitPerPixel be a global for all the subdatasets.
-		datasets: [
-			{
-				name: 'Value 1',
-				data: createRandomData(10000, 1456),
-				color: 0x0000FF,
-				unitPerPixel: 1/10,
-			}
-		]
+		dataset: {
+			unitPerPixel: 1/10,
+			values: [
+				{
+					name: 'Value 1',
+					data: createRandomData(10000, 1456),
+					color: 0x0000FF,
+				},
+			],
+		}
 	});
 }
 
