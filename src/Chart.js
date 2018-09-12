@@ -212,6 +212,7 @@ class Chart extends EventNode
 		// panning gesture
 		let panningGesture = (ev) => {
 			this._dataset.moveCamera(-ev.deltaX * 0.1);
+			this._xAxis.update();
 			this._updateAxisRanges();
 			this._render();
 		};
@@ -219,6 +220,7 @@ class Chart extends EventNode
 		// zooming gesture
 		let zoomGesture = (ev) => {
 			this._dataset.zoomCamera(-ev.deltaY * 0.1);
+			this._xAxis.update();
 			this._updateAxisRanges();
 			this._render();
 		};

@@ -32,13 +32,19 @@ class AxisView extends RenderableView
 		this.on('resize', () => {
 			this.empty();
 			this._createGrid();
-			//this._createTextFields();
 		});
+	}
+
+	update()
+	{
+		this.empty();
+		this._textFields = [];
+		this._createGrid();
+		this._createTextFields();
 	}
 
 	updateRange(range)
 	{
-		// todo: finish this method
 		this.options.range = range;
 		this.empty(this._textFields);
 		this._textFields = [];
@@ -154,6 +160,7 @@ class HorizontalAxis extends AxisView
 		text.position.x = 5;
 		text.position.y = cameraHeight - notchDistance - 5;
 		this.add(text);
+		this._textFields.push(text);
 
 		// draw last notch
 		textString = RenderableUtils.Lerp(
@@ -161,11 +168,17 @@ class HorizontalAxis extends AxisView
 			this.options.range.max,
 			this.endPositions[1][1]
 		).toFixed(2);
+
 		text = this.options.fontFactory.create('lato', textString);
+
+		text.geometry.computeBoundingBox();
+		let bbox = text.geometry.boundingBox;
+
 		text.scale.x = text.scale.y = 0.5;
-		text.position.x = cameraWidth - 20;
+		text.position.x = cameraWidth - bbox.max.x / 2 - 5;
 		text.position.y = cameraHeight - notchDistance - 5;
 		this.add(text);
+		this._textFields.push(text);
 	}
 }
 
