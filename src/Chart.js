@@ -145,6 +145,7 @@ class Chart extends EventNode
 		this.options.size.x = this._parentElement.clientWidth;
 		this.renderer.setSize(this.options.size.x, this.options.size.y);
 		_.forEach(this._renderables, (renderable) => renderable.updateView(this.options.size));
+		this._updateAxisRanges();
 		this.render();
 	}
 
@@ -160,29 +161,38 @@ class Chart extends EventNode
 		this._renderables.push(this._dataset);
 	}
 
+	_updateAxisRanges()
+	{
+		let visibleRange = this._dataset.visibleRange;
+		this._yAxis.updateRange(visibleRange.y);
+		this._xAxis.updateRange(visibleRange.x);
+	}
+
 	_createAxisViews()
 	{
+		let visibleRange = this._dataset.visibleRange;
+
+		// create y vertical axis
 		let yAxisOptions = _.merge(this.globals.axis.y, {
 			view: this.views.yAxis,
 			size: this.options.size,
-			fontFactory: this._fontFactory,
 			backgroundColor: this.options.backgroundColor,
+			fontFactory: this._fontFactory,
+			range: visibleRange.y,
 		});
 		this._yAxis = new VerticalAxis(yAxisOptions);
 		this._renderables.push(this._yAxis);
 
+		// create x horizontal axis
 		let xAxisOptions = _.merge(this.globals.axis.x, {
 			view: this.views.xAxis,
 			size: this.options.size,
-			fontFactory: this._fontFactory,
 			backgroundColor: this.options.backgroundColor,
+			fontFactory: this._fontFactory,
+			range: visibleRange.x,
 		});
 		this._xAxis = new HorizontalAxis(xAxisOptions);
 		this._renderables.push(this._xAxis);
-
-		// update the axis range data
-		// todo: implement range calc on datasets.
-		//let visibleRange = this._d
 	}
 
 	_createFontFactory()
@@ -202,12 +212,14 @@ class Chart extends EventNode
 		// panning gesture
 		let panningGesture = (ev) => {
 			this._dataset.moveCamera(-ev.deltaX * 0.1);
+			this._updateAxisRanges();
 			this._render();
 		};
 
 		// zooming gesture
 		let zoomGesture = (ev) => {
 			this._dataset.zoomCamera(-ev.deltaY * 0.1);
+			this._updateAxisRanges();
 			this._render();
 		};
 

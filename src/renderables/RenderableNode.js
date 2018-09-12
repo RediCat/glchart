@@ -43,12 +43,18 @@ class RenderableNode extends EventNode {
 		this._renderables = newRenderables;
 	}
 
-	empty()
+	empty(toDelete)
 	{
-		_.forEach(this._renderables, (r) => {
-			this._scene.remove(r);
-		});
-		this._renderables = {};
+		if (Array.isArray(toDelete)) {
+			_.forEach(toDelete, (r) => {
+				this._scene.remove(r);
+				delete this._renderables[r.uuid];
+			});
+
+		} else {
+			_.forEach(this._renderables, (r) => this._scene.remove(r));
+			this._renderables = {};
+		}
 	}
 
 	render(renderer, camera) {

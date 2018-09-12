@@ -17,7 +17,7 @@ class AxisView extends RenderableView
 			steps: 2,
 			thickness: 1,
 		};
-		let required = ['fontFactory'];
+		let required = ['fontFactory', 'range'];
 
 		this.options = RenderableUtils.CreateOptions(options, required, 'Axis.options', defaultOptions);
 
@@ -25,14 +25,24 @@ class AxisView extends RenderableView
 			this.options.steps = 2;
 		}
 
+		this._textFields = [];
 		this._createGrid();
 		this._createTextFields();
 
 		this.on('resize', () => {
 			this.empty();
 			this._createGrid();
-			this._createTextFields();
+			//this._createTextFields();
 		});
+	}
+
+	updateRange(range)
+	{
+		// todo: finish this method
+		this.options.range = range;
+		this.empty(this._textFields);
+		this._textFields = [];
+		this._createTextFields();
 	}
 }
 
@@ -41,7 +51,7 @@ class VerticalAxis extends AxisView
 	_createGrid()
 	{
 		this.endPositions = [
-			0.1, 0.9
+			[0.1, 0], [0.9, 1]
 		];
 
 		let cameraHeight = this._camera.top,
@@ -50,14 +60,14 @@ class VerticalAxis extends AxisView
 			thick = this.options.thickness;
 
 		let verticalGridPoints = [
-			[cameraWidth, this.endPositions[0] * cameraHeight],
-			[cameraWidth, this.endPositions[1] * cameraHeight],
+			[cameraWidth, this.endPositions[0][0] * cameraHeight],
+			[cameraWidth, this.endPositions[1][0] * cameraHeight],
 		];
 		let verticalGrid = RenderableUtils.CreateLine(verticalGridPoints, lineColor, thick);
 		this.add(verticalGrid);
 
 		_.forEach(this.endPositions, (step) => {
-			let yPos = step * cameraHeight;
+			let yPos = step[0] * cameraHeight;
 			let points = [
 				[cameraWidth, yPos],
 				[cameraWidth - notchDistance, yPos],
@@ -73,9 +83,16 @@ class VerticalAxis extends AxisView
 			cameraWidth = this._camera.right;
 
 		_.forEach(this.endPositions, (step) => {
-			let yPos = step * cameraHeight;
+			let yPos = step[0] * cameraHeight;
 			let textPos = [cameraWidth - notchDistance, yPos];
-			let text = this.options.fontFactory.create('lato', '0.0');
+
+			let textString = RenderableUtils.Lerp(
+				this.options.range.min,
+				this.options.range.max,
+				step[1]
+			).toFixed(2);
+
+			let text = this.options.fontFactory.create('lato', textString);
 
 			text.geometry.computeBoundingBox();
 			let bbox = text.geometry.boundingBox;
@@ -84,6 +101,7 @@ class VerticalAxis extends AxisView
 			text.position.x = textPos[0] - bbox.max.x / 1.5;
 			text.position.y = textPos[1] - 5;
 			this.add(text);
+			this._textFields.push(text);s
 		});
 	}
 }
@@ -92,20 +110,24 @@ class HorizontalAxis extends AxisView
 {
 	_createGrid()
 	{
+		this.endPositions = [
+			[0, 0], [1, 1]
+		];
+
 		let cameraHeight = this._camera.top,
 			cameraWidth = this._camera.right,
 			lineColor = this.options.lineColor,
 			thick = this.options.thickness;
 
-		let verticalGridPoints = [
+		let horzGridPoints = [
 			[0, cameraHeight],
 			[cameraWidth, cameraHeight],
 		];
-		let horGrid = RenderableUtils.CreateLine(verticalGridPoints, lineColor, thick);
-		this.add(horGrid);
+		let horzGrid = RenderableUtils.CreateLine(horzGridPoints, lineColor, thick);
+		this.add(horzGrid);
 
-		_.forEach([0, 1], (step) => {
-			let xPos = step * cameraWidth;
+		_.forEach(this.endPositions, (step) => {
+			let xPos = step[0] * cameraWidth;
 			let points = [
 				[xPos, cameraHeight],
 				[xPos, cameraHeight - notchDistance],
@@ -121,14 +143,25 @@ class HorizontalAxis extends AxisView
 			cameraWidth = this._camera.right;
 
 		// draw first notch
-		let text = this.options.fontFactory.create('lato', '0.0');
+		let textString = RenderableUtils.Lerp(
+			this.options.range.min,
+			this.options.range.max,
+			this.endPositions[0][1]
+		).toFixed(2);
+
+		let text = this.options.fontFactory.create('lato', textString);
 		text.scale.x = text.scale.y = 0.5;
 		text.position.x = 5;
 		text.position.y = cameraHeight - notchDistance - 5;
 		this.add(text);
 
 		// draw last notch
-		text = this.options.fontFactory.create('lato', '0.0');
+		textString = RenderableUtils.Lerp(
+			this.options.range.min,
+			this.options.range.max,
+			this.endPositions[1][1]
+		).toFixed(2);
+		text = this.options.fontFactory.create('lato', textString);
 		text.scale.x = text.scale.y = 0.5;
 		text.position.x = cameraWidth - 20;
 		text.position.y = cameraHeight - notchDistance - 5;

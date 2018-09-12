@@ -21,9 +21,11 @@ class Dataset extends RenderableView
 
 	_calcStats()
 	{
-		/**
-		 * todo: check if this algo suffers from overflow problems
-		 */
+		let globalStats = {
+			x: {min: Number.MAX_VALUE, max: Number.MIN_VALUE},
+			y: {min: Number.MAX_VALUE, max: Number.MIN_VALUE},
+		};
+
 		_.forEach(this.options.values, (value) => {
 			let lastValue = null;
 			let	deltaValueSum = 0.0;
@@ -50,7 +52,14 @@ class Dataset extends RenderableView
 
 			stats.xAvgDelta = deltaValueSum / value.data.length;
 			value.stats = stats;
+
+			globalStats.x.min = Math.min(stats.xBounds.min, globalStats.x.min);
+			globalStats.x.max = Math.max(stats.xBounds.max, globalStats.x.max);
+			globalStats.y.min = Math.min(stats.yBounds.min, globalStats.y.min);
+			globalStats.y.max = Math.max(stats.yBounds.max, globalStats.y.max);
 		});
+
+		this.options.globalStats = globalStats;
 	}
 
 	_createGeometry()
@@ -86,6 +95,17 @@ class Dataset extends RenderableView
 
 		this._createGeometry();
 	}
+
+	get visibleRange()
+	{
+		return {
+			x: {
+				min: this._camera.position.x * this.options.unitPerPixel,
+				max: (this._camera.right + this._camera.position.x) * this.options.unitPerPixel,
+			},
+			y: this.options.globalStats.y,
+		};
+	}
 }
 
-export {Dataset}
+export {Dataset};
