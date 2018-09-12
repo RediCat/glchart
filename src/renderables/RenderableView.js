@@ -60,8 +60,10 @@ class RenderableView extends RenderableNode
 		}
 
 		this.options.size = size;
+		let cameraX = this._camera.position.x;
 		this._camera = null;
 		this._createCamera();
+		this._camera.position.x = cameraX;
 
 		this.emit('resize');
 	}
