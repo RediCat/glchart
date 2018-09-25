@@ -19,7 +19,8 @@ class Chart extends EventNode
 		super();
 
 		let defaultOptions = {
-			size: null,
+			parentElement: null,
+			element: null,
 			pixelRatio: window.devicePixelRatio,
 			useAlpha: true,
 			backgroundColor: new THREE.Color(_defaultBackgroundColor),
@@ -34,7 +35,12 @@ class Chart extends EventNode
 			options.backgroundColor = new THREE.Color(_defaultBackgroundColor);
 			Console.warn('Chart.options.backgroundColor is not of type THREE.Color, using default.');
 		}
-
+		
+		// Assert that either a parent element was specified or a canvas element was provided.
+		if (_.isNil(options.parentElement) && _.isNil(options.element)) {
+			throw 'No parent element or canvas provided';
+		}
+		
 		this._datasets = {};
 		this._renderables = [];
 
@@ -85,13 +91,24 @@ class Chart extends EventNode
 
 	_calculateRendererSize()
 	{
-		// If no size was given, use the given parent element.
-		// If no parent element given, throw error.
-		let size = this.globals.chart.size;
-		if (size === null || size === undefined) {
-			let domInfo = RenderableUtils.GetElementInfo(this.globals.chart.parentElement);
+		// If parentElement given, use parentElement's size
+		// else canvas element was provided.
+		let size = null;
+
+		if (!_.isNil(this.options.parentElement)) {
+			let parentElementId = this.options.parentElement,
+				domInfo = RenderableUtils.GetElementInfo(parentElementId);
+			
+			if (_.isNil(domInfo)) {
+				throw `Element with id '${parentElementId}' not found`;
+			}
+
 			size = domInfo.size;
+		} else {
+			let canvas = this.options.element;
+			size = {x: canvas.width, y: canvas.height};
 		}
+	
 
 		// Verify minimum height is satisfied.
 		if (size.y < _minimumHeight) {
@@ -130,10 +147,9 @@ class Chart extends EventNode
 		} else {
 			this.renderer = new THREE.WebGLRenderer({
 				alpha: this.options.useAlpha,
-				antialias: true
+				antialias: true,
+				canvas: this.options.element
 			});
-			document.body.appendChild(this.renderer.domElement);
-			this.renderer.setSize(this.options.size.x, this.options.size.y, true);
 		}
 
 		this.renderer.setPixelRatio(this.options.pixelRatio);
