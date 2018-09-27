@@ -24,7 +24,8 @@ class Chart extends EventNode
 			pixelRatio: window.devicePixelRatio,
 			useAlpha: true,
 			backgroundColor: new THREE.Color(_defaultBackgroundColor),
-			fontColor: 0x000000,
+            fontColor: 0x000000,
+            disableResize: false,
 			title: '',
 		};
 
@@ -141,9 +142,6 @@ class Chart extends EventNode
 			});
 
 			this._parentElement.appendChild(canvasElem);
-
-			// If constant size given, no responsive capabilities are used.
-			RenderableUtils.AddEvent(window, 'resize', () => { this._onResizeEvent(); });
 		} else {
 			this.renderer = new THREE.WebGLRenderer({
 				alpha: this.options.useAlpha,
@@ -152,16 +150,26 @@ class Chart extends EventNode
 			});
 		}
 
+        if (!this.options.disableResize) {
+            RenderableUtils.AddEvent(window, 'resize', () => { this._onResizeEvent(); });
+        }
+        
+        this.on('resize', () => this._onResizeEvent());
 		this.renderer.setPixelRatio(this.options.pixelRatio);
 		this._domElement = this.renderer.domElement;
 	}
 
 	_onResizeEvent()
 	{
-		this.options.size.x = this._parentElement.clientWidth;
-		this.renderer.setSize(this.options.size.x, this.options.size.y);
-		_.forEach(this._renderables, (renderable) => renderable.updateView(this.options.size));
-		this._updateAxisRanges();
+        if (this.options._parentElement !== null) {
+            this.options.size.x = this._parentElement.clientWidth;
+        } else {
+            this._calculateRendererSize();
+        }
+        
+        _.forEach(this._renderables, (renderable) => renderable.updateView(this.options.size));
+        this._updateAxisRanges();
+        this.renderer.setSize(this.options.size.x, this.options.size.y);
 		this.render();
 	}
 
