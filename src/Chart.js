@@ -25,6 +25,7 @@ class Chart extends EventNode
 			useAlpha: true,
 			backgroundColor: new THREE.Color(_defaultBackgroundColor),
 			fontColor: 0x000000,
+			disbaleResize: false,
 			title: '',
 		};
 
@@ -143,7 +144,9 @@ class Chart extends EventNode
 			this._parentElement.appendChild(canvasElem);
 
 			// If constant size given, no responsive capabilities are used.
-			RenderableUtils.AddEvent(window, 'resize', () => { this._onResizeEvent(); });
+			if (!this.options.disableResize) {
+				RenderableUtils.AddEvent(window, 'resize', () => { this._onResizeEvent(); });	
+			}
 		} else {
 			this.renderer = new THREE.WebGLRenderer({
 				alpha: this.options.useAlpha,
