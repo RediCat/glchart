@@ -25,7 +25,7 @@ class Chart extends EventNode
 			useAlpha: true,
 			backgroundColor: new THREE.Color(_defaultBackgroundColor),
 			fontColor: 0x000000,
-			reisze: true,
+			resize: true,
 			title: '',
 		};
 
@@ -144,6 +144,7 @@ class Chart extends EventNode
 			});
 
 			this._parentElement.appendChild(canvasElem);
+			this._canvas = canvasElem;
 
 			// If constant size given, no responsive capabilities are used.
 			if (this.options.resize) {
@@ -155,6 +156,8 @@ class Chart extends EventNode
 				antialias: true,
 				canvas: this.options.element
 			});
+
+			this._canvas = this.options.element;
 		}
 
 		this.renderer.setPixelRatio(this.options.pixelRatio);
@@ -164,10 +167,15 @@ class Chart extends EventNode
 	_onResizeEvent()
 	{
 		this.options.size.x = this._parentElement.clientWidth;
-		this.renderer.setSize(this.options.size.x, this.options.size.y);
-		_.forEach(this._renderables, (renderable) => renderable.updateView(this.options.size));
+		this.changeRendererSize(this.options.size);
+	}
+	
+	changeRendererSize(size) {
+		this.renderer.setSize(size.x, size.y);
+		_.forEach(this._renderables, (renderable) => renderable.updateView(size));
 		this._updateAxisRanges();
 		this.render();
+		this.options.size = size;
 	}
 
 	_createGraphViews()
