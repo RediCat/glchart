@@ -25,7 +25,7 @@ class Chart extends EventNode
 			useAlpha: true,
 			backgroundColor: new THREE.Color(_defaultBackgroundColor),
 			fontColor: 0x000000,
-			disbaleResize: false,
+			reisze: true,
 			title: '',
 		};
 
@@ -127,6 +127,8 @@ class Chart extends EventNode
 		// Search for the parentElement, if selector specified
 		let parentElementInfo = RenderableUtils.GetElementInfo(this.options.parentElement);
 
+		// if parent element provided, create canvas as a child of it.
+		// else canvas element must be provided
 		if (parentElementInfo !== null) {
 			this._parentElement = parentElementInfo.element;
 
@@ -144,7 +146,7 @@ class Chart extends EventNode
 			this._parentElement.appendChild(canvasElem);
 
 			// If constant size given, no responsive capabilities are used.
-			if (!this.options.disableResize) {
+			if (this.options.resize) {
 				RenderableUtils.AddEvent(window, 'resize', () => { this._onResizeEvent(); });	
 			}
 		} else {

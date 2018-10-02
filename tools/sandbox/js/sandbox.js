@@ -7,7 +7,8 @@ function main()
 		chart: {
 			parentElement: '#chart1',
 			fontColor: 0x0000ff,
-			title: 'RandomData'
+			title: 'RandomData',
+			resize: true,
 		},
 		axis: {
 			x: {
