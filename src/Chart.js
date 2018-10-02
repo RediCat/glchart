@@ -148,7 +148,7 @@ class Chart extends EventNode
 
 			// If constant size given, no responsive capabilities are used.
 			if (this.options.resize) {
-				RenderableUtils.AddEvent(window, 'resize', () => { this._onResizeEvent(); });	
+				RenderableUtils.AddEvent(window, 'resize', () => { this._resizeWidthHandler(); });	
 			}
 		} else {
 			this.renderer = new THREE.WebGLRenderer({
@@ -164,12 +164,20 @@ class Chart extends EventNode
 		this._domElement = this.renderer.domElement;
 	}
 
-	_onResizeEvent()
+	/**
+	 * Resizes the width of the renderer with the new width of the parent
+	 * element.
+	 */
+	_resizeWidthHandler()
 	{
 		this.options.size.x = this._parentElement.clientWidth;
 		this.changeRendererSize(this.options.size);
 	}
 	
+	/**
+	 * Change the renderer to the 
+	 * @param {object} size 
+	 */
 	changeRendererSize(size) {
 		this.renderer.setSize(size.x, size.y);
 		_.forEach(this._renderables, (renderable) => renderable.updateView(size));
