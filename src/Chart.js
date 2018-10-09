@@ -148,7 +148,9 @@ class Chart extends EventNode
 
 			// If constant size given, no responsive capabilities are used.
 			if (this.options.resize) {
-				RenderableUtils.AddEvent(window, 'resize', () => { this._resizeWidthHandler(); });	
+				RenderableUtils.AddEvent(window, 'resize', () => { 
+					this._resizeWidthHandler(); 
+				});	
 			}
 		} else {
 			this.renderer = new THREE.WebGLRenderer({
@@ -170,16 +172,19 @@ class Chart extends EventNode
 	 */
 	_resizeWidthHandler()
 	{
-		this.options.size.x = this._parentElement.clientWidth;
-		this.changeRendererSize(this.options.size);
+		let size = this.options.size;
+		size.x = this._parentElement.clientWidth;
+		this.changeRendererSize(size.x, size.y);
 	}
 	
 	/**
 	 * Change the renderer to the 
-	 * @param {object} size 
+	 * @param width 
+	 * @param height
 	 */
-	changeRendererSize(size) {
-		this.renderer.setSize(size.x, size.y);
+	changeRendererSize (width, height) {
+		this.renderer.setSize(width, height);
+		let size = new THREE.Vector2(width, height);
 		_.forEach(this._renderables, (renderable) => renderable.updateView(size));
 		this._updateAxisRanges();
 		this.render();
@@ -217,6 +222,7 @@ class Chart extends EventNode
 			fontFactory: this._fontFactory,
 			range: visibleRange.y,
 		});
+		
 		this._yAxis = new VerticalAxis(yAxisOptions);
 		this._renderables.push(this._yAxis);
 
