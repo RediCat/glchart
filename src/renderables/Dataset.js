@@ -13,7 +13,8 @@ class Dataset extends RenderableView
 			unitPerPixel: 1,
 		};
 
-		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options', defaultOptions);
+		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 
+			'Dataset.options', defaultOptions);
 
 		this._calcStats();
 		this._createGeometry();
@@ -59,7 +60,7 @@ class Dataset extends RenderableView
 			globalStats.y.max = Math.max(stats.yBounds.max, globalStats.y.max);
 		});
 
-		this.options.globalStats = globalStats;
+		this.options.stats = globalStats;
 	}
 
 	_createGeometry()
@@ -68,7 +69,8 @@ class Dataset extends RenderableView
 			let normalized = [];
 			let maxValue = value.stats.yBounds.max;
 			_.forEach(value.data, (point) => {
-				normalized.push([point[0] / this.options.unitPerPixel, (point[1] / maxValue) * 80 + 10]);
+				normalized.push([point[0] / this.options.unitPerPixel, 
+					(point[1] / maxValue) * 80 + 10]);
 			});
 
 			let line = RenderableUtils.CreateLine(normalized, value.color, 0.5);
@@ -96,14 +98,28 @@ class Dataset extends RenderableView
 		this._createGeometry();
 	}
 
+	setVisibleRange(rangeMin, rangeMax)
+	{
+		// calculate delta of the complete dataset
+		let stats = this.options.stats;
+		let rootDelta = stats.x.max - stats.x.min;
+
+		// calculate min and max of x axis to be shown
+		let dataMin = stats.x.min + rangeMin * rootDelta;
+		let dataMax = stats.x.max + rangeMax * rootDelta;
+
+		// TODO: finish this method
+	}
+
 	get visibleRange()
 	{
 		return {
 			x: {
 				min: this._camera.position.x * this.options.unitPerPixel,
-				max: (this._camera.right + this._camera.position.x) * this.options.unitPerPixel,
+				max: (this._camera.right + this._camera.position.x) 
+					* this.options.unitPerPixel,
 			},
-			y: this.options.globalStats.y,
+			y: this.options.stats.y,
 		};
 	}
 }

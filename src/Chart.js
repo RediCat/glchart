@@ -42,7 +42,6 @@ class Chart extends EventNode
 			throw 'No parent element or canvas provided';
 		}
 		
-		this._datasets = {};
 		this._renderables = [];
 
 		// todo: make this views reactive.
@@ -176,20 +175,6 @@ class Chart extends EventNode
 		size.x = this._parentElement.clientWidth;
 		this.changeRendererSize(size.x, size.y);
 	}
-	
-	/**
-	 * Change the renderer to the 
-	 * @param width 
-	 * @param height
-	 */
-	changeRendererSize (width, height) {
-		this.renderer.setSize(width, height);
-		let size = new THREE.Vector2(width, height);
-		_.forEach(this._renderables, (renderable) => renderable.updateView(size));
-		this._updateAxisRanges();
-		this.render();
-		this.options.size = size;
-	}
 
 	_createGraphViews()
 	{
@@ -285,6 +270,31 @@ class Chart extends EventNode
 		_.forEach(this._renderables, (renderable) => {
 			renderable.render(this.renderer);
 		});
+	}
+
+	/**
+	 * Change the renderer to the 
+	 * @param width 
+	 * @param height
+	 */
+	changeRendererSize(width, height) 
+	{
+		this.renderer.setSize(width, height);
+		let size = new THREE.Vector2(width, height);
+		_.forEach(this._renderables, (renderable) => renderable.updateView(size));
+		this._updateAxisRanges();
+		this.render();
+		this.options.size = size;
+	}
+
+	/**
+	 * Sets the range of the dataset shown in the chart.
+	 * @param {number} min 
+	 * @param {number} max 
+	 */
+	setVisibleRange(min, max) 
+	{
+		this._dataset.setVisibleRange(min, max);
 	}
 }
 
