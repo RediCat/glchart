@@ -11,7 +11,8 @@ class RenderableView extends RenderableNode
 		let required = ['view', 'size'],
 			defaultOptions = {backgroundColor: null};
 
-		this.options = RenderableUtils.CreateOptions(options, required, 'RenderableView.options', defaultOptions);
+        this.options = RenderableUtils.CreateOptions(options, required, 
+            'RenderableView.options', defaultOptions);
 		this._renderables = {};
 
 		this._createCamera();
@@ -28,7 +29,8 @@ class RenderableView extends RenderableNode
 		let top = size.y * view.height,
 			right = size.x * view.width;
 
-		let camera = new THREE.OrthographicCamera(left, right, top, bottom, near, far);
+        let camera = new THREE.OrthographicCamera(left, right, top, bottom, 
+            near, far);
 
 		camera.up.set(0, 1, 0);
 		camera.position.set(0, 0, 1);

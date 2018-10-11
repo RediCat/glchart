@@ -13,7 +13,8 @@ class Dataset extends RenderableView
 			unitPerPixel: 1,
 		};
 
-		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 'Dataset.options', defaultOptions);
+        this.options = RenderableUtils.CreateOptions(options, requiredOptions, 
+            'Dataset.options', defaultOptions);
 
 		this._calcStats();
 		this._createGeometry();
@@ -68,7 +69,8 @@ class Dataset extends RenderableView
 			let normalized = [];
 			let maxValue = value.stats.yBounds.max;
 			_.forEach(value.data, (point) => {
-				normalized.push([point[0] / this.options.unitPerPixel, (point[1] / maxValue) * 80 + 10]);
+                normalized.push([point[0] / this.options.unitPerPixel, 
+                    (point[1] / maxValue) * 80 + 10]);
 			});
 
 			let line = RenderableUtils.CreateLine(normalized, value.color, 0.5);
