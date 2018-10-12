@@ -5,7 +5,8 @@ const notchDistance = 10;
 
 class AxisView extends RenderableView
 {
-	// todo: make this a view controlled by data given and assumptions based on the layout
+    // todo: make this a view controlled by data given and assumptions 
+    // based on the layout
 	constructor(options)
 	{
 		super(options);
@@ -19,7 +20,8 @@ class AxisView extends RenderableView
 		};
 		let required = ['fontFactory', 'range'];
 
-		this.options = RenderableUtils.CreateOptions(options, required, 'Axis.options', defaultOptions);
+        this.options = RenderableUtils.CreateOptions(options, required, 
+            'Axis.options', defaultOptions);
 
 		if (this.options.steps < 2) {
 			this.options.steps = 2;
@@ -69,7 +71,8 @@ class VerticalAxis extends AxisView
 			[cameraWidth, this.endPositions[0][0] * cameraHeight],
 			[cameraWidth, this.endPositions[1][0] * cameraHeight],
 		];
-		let verticalGrid = RenderableUtils.CreateLine(verticalGridPoints, lineColor, thick);
+        let verticalGrid = RenderableUtils.CreateLine(verticalGridPoints, 
+            lineColor, thick);
 		this.add(verticalGrid);
 
 		_.forEach(this.endPositions, (step) => {
@@ -129,7 +132,8 @@ class HorizontalAxis extends AxisView
 			[0, cameraHeight],
 			[cameraWidth, cameraHeight],
 		];
-		let horzGrid = RenderableUtils.CreateLine(horzGridPoints, lineColor, thick);
+        let horzGrid = RenderableUtils.CreateLine(horzGridPoints, 
+            lineColor, thick);
 		this.add(horzGrid);
 
 		_.forEach(this.endPositions, (step) => {

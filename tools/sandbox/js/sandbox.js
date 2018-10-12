@@ -2,35 +2,6 @@ main();
 
 function main()
 {
-	// create using parentElement
-	new glchart.Chart({
-		chart: {
-			parentElement: '#chart1',
-			fontColor: 0x0000ff,
-			title: 'RandomData',
-			resize: true,
-		},
-		axis: {
-			x: {
-				lineColor: 0xaabbff,
-				label: 'X',
-			},
-			y: {
-				lineColor: 0x000000,
-				label: 'Y'
-			},
-		},
-		dataset: {
-			unitPerPixel: 1/10,
-			values: [
-				{
-					name: 'Value 1',
-					data: createRandomData(10000, 1456),
-					color: 0x0000FF,
-				},
-			],
-		}
-	});
 
 	// create providing canvas element
 	let newCanvas = document.createElement('canvas');
@@ -38,6 +9,7 @@ function main()
 	newCanvas.width = 500;
 	newCanvas.height = 250;
 
+    
 	new glchart.Chart({
 		chart: {
 			element: newCanvas,
