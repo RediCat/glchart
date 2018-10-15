@@ -65,13 +65,16 @@ class Dataset extends RenderableView {
 	}
 
 	_createGeometry() {
+        let viewSize = this.viewSize;
+
 		_.forEach(this.options.values, value => {
 			let normalized = [];
-			let maxValue = value.stats.yBounds.max;
+            let maxValue = value.stats.yBounds.max;
+            
 			_.forEach(value.data, point => {
 				normalized.push([
 					point[0] / this.options.unitsPerPixel,
-					(point[1] / maxValue) * 80 + 10
+					((point[1] / maxValue) * viewSize.y * 0.8) + (viewSize.y * 0.1)
 				]);
 			});
 
