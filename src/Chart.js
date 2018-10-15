@@ -248,17 +248,17 @@ class Chart extends EventNode {
 
 		// panning gesture
 		let panningGesture = ev => {
-			this._dataset.moveCamera(-ev.deltaX * 0.1);
+            this._dataset.moveCamera(-ev.deltaX * 0.1);
+            this._updateAxisRanges();
 			this._xAxis.update();
-			this._updateAxisRanges();
 			this._render();
 		};
 
 		// zooming gesture
 		let zoomGesture = ev => {
-			this._dataset.zoomCamera(-ev.deltaY * 0.1);
-			this._xAxis.update();
-			this._updateAxisRanges();
+			this._dataset.addUnitsPerPixel(-ev.deltaY * 0.001);
+            this._updateAxisRanges();
+            this._xAxis.update();
 			this._render();
 		};
 
@@ -301,7 +301,10 @@ class Chart extends EventNode {
 	 */
 	setVisibleRange(min, max) 
 	{
-		this._dataset.setVisibleRange(min, max);
+        this._dataset.setVisibleRange(min, max);
+        this._updateAxisRanges();
+		this._xAxis.update();
+		this._render();
 	}
 }
 

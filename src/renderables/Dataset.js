@@ -1,47 +1,48 @@
 import _ from 'lodash';
-import {RenderableUtils} from "./RenderableUtils";
-import {RenderableView} from "./RenderableView";
+import {RenderableUtils} from './RenderableUtils';
+import {RenderableView} from './RenderableView';
 
-class Dataset extends RenderableView
-{
-	constructor(options)
-	{
+class Dataset extends RenderableView {
+	constructor(options) {
 		super(options);
 
 		let requiredOptions = ['values'];
 		let defaultOptions = {
-			unitPerPixel: 1,
+			unitsPerPixel: 1
 		};
 
-		this.options = RenderableUtils.CreateOptions(options, requiredOptions, 
-			'Dataset.options', defaultOptions);
+		this.options = RenderableUtils.CreateOptions(
+			options,
+			requiredOptions,
+			'Dataset.options',
+			defaultOptions
+		);
 
 		this._calcStats();
 		this._createGeometry();
 	}
 
-	_calcStats()
-	{
+	_calcStats() {
 		let globalStats = {
 			x: {min: Number.MAX_VALUE, max: Number.MIN_VALUE},
-			y: {min: Number.MAX_VALUE, max: Number.MIN_VALUE},
+			y: {min: Number.MAX_VALUE, max: Number.MIN_VALUE}
 		};
 
-		_.forEach(this.options.values, (value) => {
+		_.forEach(this.options.values, value => {
 			let lastValue = null;
-			let	deltaValueSum = 0.0;
+			let deltaValueSum = 0.0;
 
 			let stats = {
-				xBounds: { min: null, max: null },
-				yBounds: { min: null, max: null }
+				xBounds: {min: null, max: null},
+				yBounds: {min: null, max: null}
 			};
 
-			_.forEach(value.data, (point) => {
+			_.forEach(value.data, point => {
 				if (lastValue === null) {
 					lastValue = point[0] * 1.0;
 					deltaValueSum += lastValue;
 				} else {
-					deltaValueSum += (point[0] * 1.0) - lastValue;
+					deltaValueSum += point[0] * 1.0 - lastValue;
 					lastValue = point[0] * 1.0;
 				}
 
@@ -63,63 +64,103 @@ class Dataset extends RenderableView
 		this.options.stats = globalStats;
 	}
 
-	_createGeometry()
-	{
-		_.forEach(this.options.values, (value) => {
+	_createGeometry() {
+		_.forEach(this.options.values, value => {
 			let normalized = [];
 			let maxValue = value.stats.yBounds.max;
-			_.forEach(value.data, (point) => {
-				normalized.push([point[0] / this.options.unitPerPixel, 
-					(point[1] / maxValue) * 80 + 10]);
+			_.forEach(value.data, point => {
+				normalized.push([
+					point[0] / this.options.unitsPerPixel,
+					(point[1] / maxValue) * 80 + 10
+				]);
 			});
 
 			let line = RenderableUtils.CreateLine(normalized, value.color, 0.5);
 			this.add(line);
 		});
-	}
-
-	moveCamera(delta)
-	{
-		this._camera.position.x += delta;
-		if (this._camera.position.x < 0) {
-			this._camera.position.x = 0;
-		}
-	}
-
-	zoomCamera(delta)
-	{
-		this.empty();
-		this.options.unitPerPixel += delta * 0.01;
-
-		if (this.options.unitPerPixel < 0.1) {
-			this.options.unitPerPixel = 0.1;
+    }
+    
+    _unitsPerPixelChanged() {
+        if (this.options.unitsPerPixel < 0.1) {
+			this.options.unitsPerPixel = 0.1;
 		}
 
+        this.empty();
 		this._createGeometry();
-	}
+    }
 
-	setVisibleRange(rangeMin, rangeMax)
-	{
+    /**
+     * Moves camera based on the number given.
+     * @param {number} delta 
+     */
+	moveCamera(delta) {
+		this._camera.position.x += delta;
+		this._cameraPositionChanged();
+    }
+    
+    /**
+     * Sets the camera's x position to the given value.
+     * @param {number} pos 
+     */
+    setCameraPosition (pos) {
+        this._camera.position.x = pos;
+        this._cameraPositionChanged();
+    }
+    
+    /**
+     * Adds given delta to unitsPerPixel and recreates the geometry.
+     * @param {number} delta 
+     */
+	addUnitsPerPixel(delta) {
+		this.options.unitsPerPixel += delta;
+        this._unitsPerPixelChanged();
+    }
+    
+    /**
+     * Sets the units per pixel and recreates the geometry.
+     * @param {number} unitsPerPixel The new units per pixel.
+     */
+    setUnitsPerPixel(unitsPerPixel) {
+        this.options.unitsPerPixel = unitsPerPixel;
+        this._unitsPerPixelChanged();
+    }
+
+    /**
+     * Sets the visible range of the dataset using a range inside [0, 1].
+     * @param {number} rangeMin Value in the [0, 1] range for the left side.
+     * @param {number} rangeMax Value in the [0, 1] range for the right side.
+     */
+	setVisibleRange(rangeMin, rangeMax) {
 		// calculate delta of the complete dataset
 		let stats = this.options.stats;
-		let rootDelta = stats.x.max - stats.x.min;
+        let rootDelta = stats.x.max - stats.x.min;
 
 		// calculate min and max of x axis to be shown
 		let dataMin = stats.x.min + rangeMin * rootDelta;
-		let dataMax = stats.x.max + rangeMax * rootDelta;
+        let dataMax = stats.x.min + rangeMax * rootDelta;
 
-		// TODO: finish this method
+        // calculate units per pixel
+        let viewSize = this.viewSize;
+        let delta = dataMax - dataMin;
+        let unitsPerPixel = delta / viewSize.x;
+
+        // calculate new camera's x position
+        let newCameraX = dataMin / unitsPerPixel;
+
+        // set the new values and rerender the scene
+        this.setUnitsPerPixel(unitsPerPixel);
+        this.setCameraPosition(newCameraX);
 	}
 
-	get visibleRange()
-	{
+	get visibleRange() {
 		return {
 			x: {
-				min: this._camera.position.x * this.options.unitPerPixel,
-				max: (this._camera.right + this._camera.position.x) 
-					* this.options.unitPerPixel,
+				min: this._camera.position.x * this.options.unitsPerPixel,
+				max:
+					(this._camera.right + this._camera.position.x) *
+					this.options.unitsPerPixel
 			},
-			y: this.options.stats.y,
+			y: this.options.stats.y
 		};
 	}
 }
