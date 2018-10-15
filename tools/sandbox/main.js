@@ -8,14 +8,13 @@ let mainWindow;
 
 app.commandLine.appendSwitch('remote-debugging-port', '9222');
 
-function createWindow()
-{
+function createWindow () {
 	mainWindow = new BrowserWindow({
-        webPreferences: {
-			nodeIntegration: true,
-			webSecurity: false,
-        }
-    });
+		webPreferences: {
+			nodeIntegration: false,
+			webSecurity: false
+		}
+	});
 
 	let rootUrl = url.format({
 		pathname: '/tools/sandbox/index.html',
@@ -27,23 +26,22 @@ function createWindow()
 	mainWindow.on('closed', () => mainWindow = null);
 }
 
-function setupFileProtocol()
-{
+function setupFileProtocol () {
 	let protoRegistrationSuccess = (request, callback) => {
-        // remove the 'file://' uri scheme component
-        let url = request.url.substr(7);
+		// remove the 'file://' uri scheme component
+		let url = request.url.substr(7);
 		url = path.normalize(`${__dirname}/../../${url}`);
 
-        console.log(url);
-        callback({path: url});
-    };
+		console.log(url);
+		callback({path: url});
+	};
 
 	electron.protocol.interceptFileProtocol('file', protoRegistrationSuccess);
 }
 
 app.on('ready', () => {
 	setupFileProtocol();
-    createWindow();
+	createWindow();
 });
 
 app.on('window-all-closed', () => {
