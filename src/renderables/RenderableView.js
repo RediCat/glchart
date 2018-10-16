@@ -42,6 +42,24 @@ class RenderableView extends RenderableNode
 		}
     }
 
+    /**
+     * Moves camera based on the number given.
+     * @param {number} delta 
+     */
+	moveCamera(delta) {
+		this._camera.position.x += delta;
+		this._cameraPositionChanged();
+    }
+    
+    /**
+     * Sets the camera's x position to the given value.
+     * @param {number} pos 
+     */
+    setCameraPosition (pos) {
+        this._camera.position.x = pos;
+        this._cameraPositionChanged();
+    }
+
     get viewSize () {
         let size = this.options.size,
 			view = this.options.view;
@@ -67,6 +85,12 @@ class RenderableView extends RenderableNode
 
 		super.render(renderer, this._camera);
 	}
+
+    setCameraRange(range) {
+        let xScale = range / this.viewSize.x;
+        this._camera.scale.x = xScale;
+        this._camera.updateProjectionMatrix();
+    }
 
     /**
      * Updates the camera with the correct values based on the 

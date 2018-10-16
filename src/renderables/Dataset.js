@@ -72,13 +72,23 @@ class Dataset extends RenderableView {
             let maxValue = value.stats.yBounds.max;
             
 			_.forEach(value.data, point => {
-				normalized.push([
-					point[0] / this.options.unitsPerPixel,
-					((point[1] / maxValue) * viewSize.y * 0.8) + (viewSize.y * 0.1)
-				]);
+                // scale x axis by unitsPerPixel
+                let x = point[0] / this.options.unitsPerPixel;
+                
+                // normalize y axis to values inside [0, 1]
+                let y = point[1] / maxValue;
+                
+                // scale y axis based on padding
+                let padding = 0.2;
+                y *= viewSize.y * (1.0 - padding);
+
+                // translate y to center of rendering area based on padding
+                y += (viewSize.y * (padding / 2.0));
+
+				normalized.push([x, y]);
 			});
 
-			let line = RenderableUtils.CreateLine(normalized, value.color, 0.5);
+			let line = RenderableUtils.CreateLine(normalized, value.color, 0.8);
 			this.add(line);
 		});
     }
@@ -89,25 +99,7 @@ class Dataset extends RenderableView {
 		}
 
         this.empty();
-		this._createGeometry();
-    }
-
-    /**
-     * Moves camera based on the number given.
-     * @param {number} delta 
-     */
-	moveCamera(delta) {
-		this._camera.position.x += delta;
-		this._cameraPositionChanged();
-    }
-    
-    /**
-     * Sets the camera's x position to the given value.
-     * @param {number} pos 
-     */
-    setCameraPosition (pos) {
-        this._camera.position.x = pos;
-        this._cameraPositionChanged();
+        this._createGeometry();
     }
     
     /**
@@ -142,27 +134,25 @@ class Dataset extends RenderableView {
 		let dataMin = stats.x.min + rangeMin * rootDelta;
         let dataMax = stats.x.min + rangeMax * rootDelta;
 
-        // calculate units per pixel
-        let viewSize = this.viewSize;
+        // calculate range of data based on unitsPerPixel
+        let unitsPerPixel = this.options.unitsPerPixel;
         let delta = dataMax - dataMin;
-        let unitsPerPixel = delta / viewSize.x;
+        let pixelRange = delta / unitsPerPixel;
 
         // calculate new camera's x position
         let newCameraX = dataMin / unitsPerPixel;
 
         // set the new values and rerender the scene
-        this.setUnitsPerPixel(unitsPerPixel);
         this.setCameraPosition(newCameraX);
+        this.setCameraRange(pixelRange);
 	}
 
 	get visibleRange() {
+        let xmin = this._camera.position.x * this.options.unitsPerPixel;
+        let xmax = xmin + (this._camera.right * this.options.unitsPerPixel * this._camera.scale.x);
+
 		return {
-			x: {
-				min: this._camera.position.x * this.options.unitsPerPixel,
-				max:
-					(this._camera.right + this._camera.position.x) *
-					this.options.unitsPerPixel
-			},
+			x: {min: xmin, max: xmax},
 			y: this.options.stats.y
 		};
 	}

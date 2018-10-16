@@ -304,7 +304,7 @@ class Chart extends EventNode {
         this._dataset.setVisibleRange(min, max);
         this._updateAxisRanges();
 		this._xAxis.update();
-		this._render();
+        this._render();
 	}
 }
 
