@@ -163,7 +163,14 @@ class Dataset extends RenderableView {
         // data range based on rangeMin and rangeMax
         let {dataMin, dataMax} = this.dataMinMaxForRange(rangeMin, rangeMax);
 
-        
+        // get indexes for the x values calculated
+        let getFunc = (arr, index) => arr[index][0];
+        let values = this.options.values[0].data;
+        let binSearch = RenderableUtils.BinarySearch;
+        let minIndex = binSearch(values, dataMin, true, getFunc);
+        let maxIndex = binSearch(values, dataMax, false, getFunc);
+
+        console.log(`minIndex = ${minIndex} maxIndex = ${maxIndex}`)
     }
 
 	get visibleRange() {

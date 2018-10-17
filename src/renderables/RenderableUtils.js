@@ -121,29 +121,39 @@ class RenderableUtils {
 		}
 	}
 
-    static BinarySearch (arr, val, useFloor) {
+    static BinarySearch (arr, val, useFloor, getFunc = undefined) {
         let left = 0;
         let right = arr.length - 1;
-    
+        
+        // setup default getter func if none given
+        if (_.isNil(getFunc)) {
+            getFunc = (arr, index) => arr[index];
+        }
+        
         while (left <= right) {
             const mid = left + Math.floor((right - left) / 2);
-    
-            if (arr[mid] === val) {
+            
+            let arrMid = getFunc(arr, mid);
+
+            if (arrMid === val) {
                 return mid;
             }
     
-            if (arr[mid] < val) {
+            if (arrMid < val) {
                 left = mid + 1;
             } else {
                 right = mid - 1;
             }
         }
-    
-        if (val < arr[right] && arr[right - 1] < val) {
+        
+        let arrLeft = getFunc(arr, left);
+        let arrRight = getFunc(arr, right);
+        
+        if (val < getFunc(arr, right) && getFunc(arr, right - 1) < val) {
             return (useFloor) ? right - 1 : right;
         }
     
-        if (val < arr[left] && arr[left - 1] < val) {
+        if (val < getFunc(arr, left) && getFunc(arr, left - 1) < val) {
             return (useFloor) ? left - 1 : left;
         }
     
