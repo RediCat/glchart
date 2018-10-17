@@ -39,7 +39,7 @@ class RenderableView extends RenderableNode
         // if camera less than 0, set to 0
         if (this._camera.position.x < 0) {
 			this._camera.position.x = 0;
-		}
+        }
     }
 
     /**
@@ -53,11 +53,21 @@ class RenderableView extends RenderableNode
     
     /**
      * Sets the camera's x position to the given value.
-     * @param {number} pos 
+     * @param {number} pos The x axis position of the camera.
      */
     setCameraPosition (pos) {
         this._camera.position.x = pos;
         this._cameraPositionChanged();
+    }
+
+    /**
+     * Sets the amount of units the x axis is.
+     * @param {number} range 
+     */
+    setCameraRange(range) {
+        let xScale = range / this.viewSize.x;
+        this._camera.scale.x = xScale;
+        this._camera.updateProjectionMatrix();
     }
 
     get viewSize () {
@@ -85,12 +95,6 @@ class RenderableView extends RenderableNode
 
 		super.render(renderer, this._camera);
 	}
-
-    setCameraRange(range) {
-        let xScale = range / this.viewSize.x;
-        this._camera.scale.x = xScale;
-        this._camera.updateProjectionMatrix();
-    }
 
     /**
      * Updates the camera with the correct values based on the 

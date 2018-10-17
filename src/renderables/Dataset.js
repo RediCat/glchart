@@ -8,7 +8,8 @@ class Dataset extends RenderableView {
 
 		let requiredOptions = ['values'];
 		let defaultOptions = {
-			unitsPerPixel: 1
+            unitsPerPixel: 1,
+            thickness: 0.2
 		};
 
 		this.options = RenderableUtils.CreateOptions(
@@ -66,6 +67,7 @@ class Dataset extends RenderableView {
 
 	_createGeometry() {
         let viewSize = this.viewSize;
+        let thickness = this.options.thickness;
 
 		_.forEach(this.options.values, value => {
 			let normalized = [];
@@ -87,8 +89,8 @@ class Dataset extends RenderableView {
 
 				normalized.push([x, y]);
 			});
-
-			let line = RenderableUtils.CreateLine(normalized, value.color, 0.8);
+            
+			let line = RenderableUtils.CreateLine(normalized, value.color, thickness);
 			this.add(line);
 		});
     }
@@ -120,19 +122,26 @@ class Dataset extends RenderableView {
         this._unitsPerPixelChanged();
     }
 
-    /**
-     * Sets the visible range of the dataset using a range inside [0, 1].
-     * @param {number} rangeMin Value in the [0, 1] range for the left side.
-     * @param {number} rangeMax Value in the [0, 1] range for the right side.
-     */
-	setVisibleRange(rangeMin, rangeMax) {
-		// calculate delta of the complete dataset
+    dataMinMaxForRange(rangeMin, rangeMax) {
+        // calculate delta of the complete dataset
 		let stats = this.options.stats;
         let rootDelta = stats.x.max - stats.x.min;
 
 		// calculate min and max of x axis to be shown
 		let dataMin = stats.x.min + rangeMin * rootDelta;
         let dataMax = stats.x.min + rangeMax * rootDelta;
+
+        return {dataMin, dataMax};
+    }
+
+    /**
+     * Sets the visible range of the dataset using a range inside [0, 1].
+     * @param {number} rangeMin Value in the [0, 1] range for the left side.
+     * @param {number} rangeMax Value in the [0, 1] range for the right side.
+     */
+	setVisibleRange(rangeMin, rangeMax) {
+        // data range based on rangeMin and rangeMax
+		let {dataMin, dataMax} = this.dataMinMaxForRange(rangeMin, rangeMax);
 
         // calculate range of data based on unitsPerPixel
         let unitsPerPixel = this.options.unitsPerPixel;
@@ -145,11 +154,22 @@ class Dataset extends RenderableView {
         // set the new values and rerender the scene
         this.setCameraPosition(newCameraX);
         this.setCameraRange(pixelRange);
+
+        // adjust y axis
+        this.adjustVerticalAxisForRange(rangeMin, rangeMax);
 	}
+
+    adjustVerticalAxisForRange(rangeMin, rangeMax) {
+        // data range based on rangeMin and rangeMax
+        let {dataMin, dataMax} = this.dataMinMaxForRange(rangeMin, rangeMax);
+
+        
+    }
 
 	get visibleRange() {
         let xmin = this._camera.position.x * this.options.unitsPerPixel;
-        let xmax = xmin + (this._camera.right * this.options.unitsPerPixel * this._camera.scale.x);
+        let xmax = xmin + (this._camera.right * 
+            this.options.unitsPerPixel * this._camera.scale.x);
 
 		return {
 			x: {min: xmin, max: xmax},

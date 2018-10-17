@@ -16,7 +16,7 @@ class AxisView extends RenderableView
 			lineColor: 0xAABBFF,
 			vertical: true,
 			steps: 2,
-			thickness: 1,
+			thickness: 0.5,
 		};
 		let required = ['fontFactory', 'range'];
 
@@ -58,8 +58,15 @@ class VerticalAxis extends AxisView
 {
 	_createGrid()
 	{
-		this.endPositions = [
-			[0.1, 0], [0.9, 1]
+		this.axisSteps = [
+            {
+                posInAxis: 0.1,
+                stepIndex: 0
+            },
+            {
+                posInAxis: 0.9,
+                stepIndex: 1
+            }
 		];
 
 		let cameraHeight = this._camera.top,
@@ -68,15 +75,15 @@ class VerticalAxis extends AxisView
 			thick = this.options.thickness;
 
 		let verticalGridPoints = [
-			[cameraWidth, this.endPositions[0][0] * cameraHeight],
-			[cameraWidth, this.endPositions[1][0] * cameraHeight],
+			[cameraWidth, this.axisSteps[0].posInAxis * cameraHeight],
+			[cameraWidth, this.axisSteps[1].posInAxis * cameraHeight],
 		];
         let verticalGrid = RenderableUtils.CreateLine(verticalGridPoints, 
             lineColor, thick);
 		this.add(verticalGrid);
 
-		_.forEach(this.endPositions, (step) => {
-			let yPos = step[0] * cameraHeight;
+		_.forEach(this.axisSteps, (step) => {
+			let yPos = step.posInAxis * cameraHeight;
 			let points = [
 				[cameraWidth, yPos],
 				[cameraWidth - notchDistance, yPos],
@@ -91,14 +98,14 @@ class VerticalAxis extends AxisView
 		let cameraHeight = this._camera.top,
 			cameraWidth = this._camera.right;
 
-		_.forEach(this.endPositions, (step) => {
-			let yPos = step[0] * cameraHeight;
+		_.forEach(this.axisSteps, (step) => {
+			let yPos = step.posInAxis * cameraHeight;
 			let textPos = [cameraWidth - notchDistance, yPos];
 
 			let textString = RenderableUtils.Lerp(
 				this.options.range.min,
 				this.options.range.max,
-				step[1]
+				step.stepIndex
 			).toFixed(2);
 
 			let text = this.options.fontFactory.create('lato', textString);

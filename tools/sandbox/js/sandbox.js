@@ -24,7 +24,7 @@ function main () {
 			}
 		},
 		dataset: {
-			unitPerPixel: 100,
+			unitsPerPixel: 1,
 			values: [
 				{
 					name: 'Value 1',

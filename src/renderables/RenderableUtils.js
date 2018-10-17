@@ -75,9 +75,9 @@ class RenderableUtils {
         
         let material = new MeshLineMaterial({
             color: new THREE.Color(color),
-            resolution: new THREE.Vector2(500, 250),
+            resolution: new THREE.Vector2(1000, 250),
             lineAttenuation: !false,
-            lineWidth: 1,
+            lineWidth: 2,
             useMap: false,
             near: 0,
             far: 10
@@ -97,9 +97,7 @@ class RenderableUtils {
 
             group.add(new THREE.Mesh(line.geometry, material));
         }
-        // _.forEach(verts, (v) => {
-        //     geometry.vertices.push(new THREE.Vector3(v[0], v[1], 0));
-        // });
+
         return group;
     }
 
@@ -122,6 +120,35 @@ class RenderableUtils {
 			obj['on' + type] = cb;
 		}
 	}
+
+    static BinarySearch (arr, val, useFloor) {
+        let left = 0;
+        let right = arr.length - 1;
+    
+        while (left <= right) {
+            const mid = left + Math.floor((right - left) / 2);
+    
+            if (arr[mid] === val) {
+                return mid;
+            }
+    
+            if (arr[mid] < val) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+    
+        if (val < arr[right] && arr[right - 1] < val) {
+            return (useFloor) ? right - 1 : right;
+        }
+    
+        if (val < arr[left] && arr[left - 1] < val) {
+            return (useFloor) ? left - 1 : left;
+        }
+    
+        return -1;
+    }
 
 	static GetElementInfo(element) {
 		let elementInfo = null;
