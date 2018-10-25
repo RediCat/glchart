@@ -52,14 +52,6 @@ class FontFactory
 
 		return fontObj.createMesh(text, color, width, align);
 	}
-
-	// updateText(text)
-	// {
-	// 	this.textGeometry.update(text);
-	// 	this.remove(this.mesh);
-	// 	this.mesh = new THREE.Mesh(this.textGeometry, this.material);
-	// 	this.add(this.mesh);
-	// }
 }
 
 export {FontFactory}
