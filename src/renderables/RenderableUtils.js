@@ -68,38 +68,32 @@ class RenderableUtils {
 		return new THREE.Mesh(geometry, shaderMat);
 	}
 
-	static CreateLineV2(verts, color, thickness) {
-        if (thickness === undefined || thickness === null) {
+	static CreateLineNative(verts, color, thickness) {
+		if (thickness === undefined || thickness === null) {
 			thickness = 1;
-        }
-        
-        let material = new MeshLineMaterial({
-            color: new THREE.Color(color),
-            resolution: new THREE.Vector2(1000, 250),
-            lineAttenuation: !false,
-            lineWidth: 2,
-            useMap: false,
-            near: 0,
-            far: 10
-        });
+		}
 
-        let group = new THREE.Group();
-        
-        for (let index = 0; index < verts.length - 1; index += 1) {
-            let geometry = new THREE.Geometry();
-            let v1 = verts[index];
-            let v2 = verts[index + 1];
-            geometry.vertices.push(new THREE.Vector3(v1[0], v2[1], 1));
-            geometry.vertices.push(new THREE.Vector3(v2[0], v2[1], 1));
+		let lines = new THREE.Group();
+		
+		var material = new THREE.LineBasicMaterial({
+	        color: color,
+	        linewidth: thickness
+		});
+		
+		let geometry, line;
 
-            let line = new MeshLine();
-            line.setGeometry(geometry);
+		for (let index = 0; index < verts.length - 1; index++) {
+			geometry = new THREE.Geometry();
+			geometry.vertices = [
+				new THREE.Vector3(verts[index][0], verts[index][1], 0), 
+				new THREE.Vector3(verts[index + 1][0], verts[index + 1][1], 0)
+			];
+			line = new THREE.Line(geometry, material);
+			lines.add(line);
+		}
 
-            group.add(new THREE.Mesh(line.geometry, material));
-        }
-
-        return group;
-    }
+		return lines;
+	}
 
 	static CreateUuid() {
 		return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>

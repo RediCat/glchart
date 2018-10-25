@@ -90,7 +90,7 @@ class Dataset extends RenderableView {
 				normalized.push([x, y]);
 			});
             
-			let line = RenderableUtils.CreateLine(normalized, value.color, thickness);
+			let line = RenderableUtils.CreateLineNative(normalized, value.color, thickness);
 			this.add(line);
 		});
     }
