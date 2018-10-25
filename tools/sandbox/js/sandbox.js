@@ -4,7 +4,7 @@ function main () {
 	// create providing canvas element
 	let newCanvas = document.createElement('canvas');
 	document.getElementById('chart2').appendChild(newCanvas);
-	newCanvas.width = 500;
+	newCanvas.width = 1000;
 	newCanvas.height = 250;
 
 	let chart = new glchart.Chart({
@@ -28,8 +28,15 @@ function main () {
 			values: [
 				{
 					name: 'Value 1',
-					data: createRandomData(10000, 1456),
-					color: 0x0000ff
+					data: createPeriodicRandomData(10000, 1456)
+				},
+				{
+					name: 'Value 2',
+					data: createPeriodicRandomData(10000, 1456)
+				},
+				{
+					name: 'Value 3',
+					data: createPeriodicRandomData(10000, 1456)
 				}
 			]
 		}
@@ -66,5 +73,18 @@ function createRandomData (size, max) {
 		data.push([x, Math.random() * max]);
 	}
 
+	return data;
+}
+
+function createPeriodicRandomData(size, max) {
+	if (max === null || max === undefined) {
+		max = 1;
+	}
+
+	let data = [];
+
+	for (let x = 0; x < size; x++) {
+		data.push([x, (Math.random() * Math.cos(x / 2)) * (Math.random() * Math.sin(x * 10)) * max]);
+	}
 	return data;
 }
