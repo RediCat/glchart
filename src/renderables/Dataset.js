@@ -9,7 +9,7 @@ class Dataset extends RenderableView {
 		let requiredOptions = ['values'];
 		let defaultOptions = {
             unitsPerPixel: 1,
-            thickness: 0.2
+            thickness: 0.5
 		};
 
 		this.options = RenderableUtils.CreateOptions(
@@ -18,9 +18,13 @@ class Dataset extends RenderableView {
 			'Dataset.options',
 			defaultOptions
 		);
-
+		
+		this.vRangeCache = null;
 		this._calcStats();
+		this._assertColors();
 		this._createGeometry();
+
+		this.on('resize', () => this._createGeometry());
 	}
 
 	_calcStats() {
@@ -34,8 +38,8 @@ class Dataset extends RenderableView {
 			let deltaValueSum = 0.0;
 
 			let stats = {
-				xBounds: {min: null, max: null},
-				yBounds: {min: null, max: null}
+				x: {min: null, max: null},
+				y: {min: null, max: null}
 			};
 
 			_.forEach(value.data, point => {
@@ -47,38 +51,47 @@ class Dataset extends RenderableView {
 					lastValue = point[0] * 1.0;
 				}
 
-				stats.xBounds.min = Math.min(stats.xBounds.min, point[0]);
-				stats.xBounds.max = Math.max(stats.xBounds.max, point[0]);
-				stats.yBounds.min = Math.min(stats.yBounds.min, point[1]);
-				stats.yBounds.max = Math.max(stats.yBounds.max, point[1]);
+				stats.x.min = Math.min(stats.x.min, point[0]);
+				stats.x.max = Math.max(stats.x.max, point[0]);
+				stats.y.min = Math.min(stats.y.min, point[1]);
+				stats.y.max = Math.max(stats.y.max, point[1]);
 			});
 
 			stats.xAvgDelta = deltaValueSum / value.data.length;
 			value.stats = stats;
 
-			globalStats.x.min = Math.min(stats.xBounds.min, globalStats.x.min);
-			globalStats.x.max = Math.max(stats.xBounds.max, globalStats.x.max);
-			globalStats.y.min = Math.min(stats.yBounds.min, globalStats.y.min);
-			globalStats.y.max = Math.max(stats.yBounds.max, globalStats.y.max);
+			globalStats.x.min = Math.min(stats.x.min, globalStats.x.min);
+			globalStats.x.max = Math.max(stats.x.max, globalStats.x.max);
+			globalStats.y.min = Math.min(stats.y.min, globalStats.y.min);
+			globalStats.y.max = Math.max(stats.y.max, globalStats.y.max);
 		});
 
 		this.options.stats = globalStats;
 	}
 
+	_assertColors() {
+		_.forEach(this.options.values, (val) => {
+			// create random color of not assigned
+			if (_.isNil(val.color)) {
+				val.color = Math.floor(Math.random() * 0xFFFFFF);
+			}
+		});
+	}
 	_createGeometry() {
         let viewSize = this.viewSize;
         let thickness = this.options.thickness;
 
 		_.forEach(this.options.values, value => {
 			let normalized = [];
-            let maxValue = value.stats.yBounds.max;
-            
+            let maxValue = value.stats.y.max;
+			let minValue = value.stats.y.min;
+			
 			_.forEach(value.data, point => {
                 // scale x axis by unitsPerPixel
                 let x = point[0] / this.options.unitsPerPixel;
                 
                 // normalize y axis to values inside [0, 1]
-                let y = point[1] / maxValue;
+                let y = (point[1] - minValue) / (maxValue - minValue);
                 
                 // scale y axis based on padding
                 let padding = 0.2;
@@ -100,7 +113,8 @@ class Dataset extends RenderableView {
 			this.options.unitsPerPixel = 0.1;
 		}
 
-        this.empty();
+		this.empty();
+		this.vRangeCache = null;
         this._createGeometry();
     }
     
@@ -118,7 +132,7 @@ class Dataset extends RenderableView {
      * @param {number} unitsPerPixel The new units per pixel.
      */
     setUnitsPerPixel(unitsPerPixel) {
-        this.options.unitsPerPixel = unitsPerPixel;
+		this.options.unitsPerPixel = unitsPerPixel;
         this._unitsPerPixelChanged();
     }
 
@@ -153,35 +167,64 @@ class Dataset extends RenderableView {
 
         // set the new values and rerender the scene
         this.setCameraPosition(newCameraX);
-        this.setCameraRange(pixelRange);
-
-        // adjust y axis
-        this.adjustVerticalAxisForRange(rangeMin, rangeMax);
+		this.setCameraXRange(pixelRange);
+		this.vRangeCache = null;
+		
+		// set the vertical scaling for current visible values
+		let visibleRange = this.visibleRange;
+		let valueDelta = visibleRange.y.max - visibleRange.y.min;
+		let valuePercentage = valueDelta / (this.options.stats.y.max - this.options.stats.y.min);
+		this._camera.zoom = 1 / valuePercentage;
+		this._camera.updateProjectionMatrix();
 	}
+	
+	get visibleRange() {
+		if (this.vRangeCache !== null) {
+			return this.vRangeCache;
+		}
 
-    adjustVerticalAxisForRange(rangeMin, rangeMax) {
-        // data range based on rangeMin and rangeMax
-        let {dataMin, dataMax} = this.dataMinMaxForRange(rangeMin, rangeMax);
-
-        // get indexes for the x values calculated
+		// calculate min and max x axis visible
+		let xmin = this._camera.position.x * this.options.unitsPerPixel;
+        let xmax = xmin + (this._camera.right * 
+            this.options.unitsPerPixel * this._camera.scale.x);
+		
+		// get indexes for the x values calculated
         let getFunc = (arr, index) => arr[index][0];
         let values = this.options.values[0].data;
         let binSearch = RenderableUtils.BinarySearch;
-        let minIndex = binSearch(values, dataMin, true, getFunc);
-        let maxIndex = binSearch(values, dataMax, false, getFunc);
+		
+		let minIndex;
+		if (xmin < this.options.stats.x.min) {
+			minIndex = 0;
+		} else {
+			minIndex = binSearch(values, xmin, true, getFunc);
+		}
 
-        console.log(`minIndex = ${minIndex} maxIndex = ${maxIndex}`)
-    }
+		let maxIndex;
+		if (xmax > this.options.stats.x.max) {
+			maxIndex = values.length - 1;
+		} else {
+			maxIndex = binSearch(values, xmax, false, getFunc);
+		}
+		
+		// calc max and min y values
+		let maxVisY = Number.MIN_VALUE;
+		let minVisY = Number.MAX_VALUE;
 
-	get visibleRange() {
-        let xmin = this._camera.position.x * this.options.unitsPerPixel;
-        let xmax = xmin + (this._camera.right * 
-            this.options.unitsPerPixel * this._camera.scale.x);
+		_.forEach(this.options.values, value => {
+			for (let index = minIndex; index < maxIndex + 1; index++) {
+				let v = value.data[index][1];
+				minVisY = Math.min(minVisY, value.data[index][1]);
+				maxVisY = Math.max(maxVisY, value.data[index][1]);
+			}
+		});
 
-		return {
+		this.vRangeCache = {
 			x: {min: xmin, max: xmax},
-			y: this.options.stats.y
+			y: {min: minVisY, max: maxVisY}
 		};
+
+		return this.vRangeCache;
 	}
 }
 

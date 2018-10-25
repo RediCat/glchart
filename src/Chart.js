@@ -5,6 +5,7 @@ import { Dataset } from "./renderables/Dataset";
 import { FontFactory } from "./font/FontFactory";
 import { RenderableUtils } from "./renderables/RenderableUtils";
 import { EventNode } from "./EventNode";
+import { LegendView } from "./renderables/LegendView";
 
 const _defaultBackgroundColor = 0xffffff;
 const _minimumHeight = 200;
@@ -57,7 +58,7 @@ class Chart extends EventNode {
 
 		// todo: make this views reactive.
 		this.views = {
-			title: {
+			legend: {
 				left: 0,
 				top: 0,
 				width: 1.0,
@@ -93,6 +94,7 @@ class Chart extends EventNode {
 
 			this._createGraphViews();
 			this._createAxisViews();
+			this._createLegendView();
 
 			this._allowRendering = true;
 			this.render();
@@ -231,6 +233,23 @@ class Chart extends EventNode {
 		this._renderables.push(this._xAxis);
 	}
 
+	_createLegendView() {
+		let legendOptions = {
+			view: this.views.legend,
+			size: this.options.size,
+			fontFactory: this._fontFactory,
+			labels: []
+		};
+
+		// create legend data from dataset
+		_.forEach(this._dataset.options.values, (val) => {
+			legendOptions.labels.push({name: val.name, color: val.color});
+		});
+
+		this._legend = new LegendView(legendOptions);
+		this._renderables.push(this._legend);
+	}
+
 	_createFontFactory() {
 		return new Promise((resolve, reject) => {
 			this._fontFactory = new FontFactory();
@@ -287,11 +306,10 @@ class Chart extends EventNode {
 	changeRendererSize(width, height) 
 	{
 		this.renderer.setSize(width, height);
-		let size = new THREE.Vector2(width, height);
+		let size = this.options.size = new THREE.Vector2(width, height);
 		_.forEach(this._renderables, (renderable) => renderable.updateView(size));
 		this._updateAxisRanges();
 		this.render();
-		this.options.size = size;
 	}
 
 	/**

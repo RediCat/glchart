@@ -61,14 +61,14 @@ class RenderableView extends RenderableNode
     }
 
     /**
-     * Sets the amount of units the x axis is.
-     * @param {number} range 
+     * Sets the amount of units of the x axis is shown.
+     * @param {number} range range of values to show on x axis
      */
-    setCameraRange(range) {
+    setCameraXRange(range) {
         let xScale = range / this.viewSize.x;
         this._camera.scale.x = xScale;
         this._camera.updateProjectionMatrix();
-    }
+	}
 
     get viewSize () {
         let size = this.options.size,
@@ -110,9 +110,11 @@ class RenderableView extends RenderableNode
         
 		this.options.size = size;
 		let cameraX = this._camera.position.x;
+		let cameraScale = this._camera.scale.x;
 		this._camera = null;
 		this._createCamera();
 		this._camera.position.x = cameraX;
+		this._camera.scale.x = cameraScale;
 
 		this.emit('resize');
     }
