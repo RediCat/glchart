@@ -16,6 +16,8 @@ function createWindow () {
 		}
 	});
 
+	mainWindow.setSize(1100, 350);
+
 	let rootUrl = url.format({
 		pathname: '/tools/sandbox/index.html',
 		protocol: 'file:',
