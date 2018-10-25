@@ -117,7 +117,7 @@ class VerticalAxis extends AxisView
 			text.position.x = textPos[0] - bbox.max.x / 1.5;
 			text.position.y = textPos[1] - 5;
 			this.add(text);
-			this._textFields.push(text);s
+			this._textFields.push(text);
 		});
 	}
 }
