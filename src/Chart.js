@@ -28,6 +28,7 @@ class Chart extends EventNode {
 			backgroundColor: new THREE.Color(_defaultBackgroundColor),
 			fontColor: 0x000000,
 			resize: true,
+			zoomEnabled: false,
 			title: '',
 			cursorPosition: 0
 		};
@@ -199,8 +200,16 @@ class Chart extends EventNode {
 
 	_updateAxisRanges() {
 		let visibleRange = this._dataset.visibleRange;
-		this._yAxis.updateRange(visibleRange.y);
+
+		if (this.options.zoomEnabled) {
+			this._yAxis.updateRange(visibleRange.y);
+		} else {
+			this._yAxis.updateRange(this._dataset.options.stats.y);
+		}
+
 		this._xAxis.updateRange(visibleRange.x);
+		this._xAxis.update();
+		this._yAxis.update();
 	}
 
 	_createAxisViews() {
@@ -307,7 +316,6 @@ class Chart extends EventNode {
 	{
         this._dataset.setVisibleRange(min, max);
         this._updateAxisRanges();
-		this._xAxis.update();
         this._render();
         this.emit('visibleChanged', {min, max});
     }

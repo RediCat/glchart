@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import {RenderableUtils} from './RenderableUtils';
 import {RenderableView} from './RenderableView';
+import {RMMQHelper} from './RMMQ';
 
 class Dataset extends RenderableView {
 	constructor(options) {
@@ -35,38 +36,32 @@ class Dataset extends RenderableView {
 	}
 
 	_calcStats() {
+		// TODO: integrate with RMMQ helper class
 		let globalStats = {
 			x: {min: Number.MAX_VALUE, max: Number.MIN_VALUE},
 			y: {min: Number.MAX_VALUE, max: Number.MIN_VALUE}
 		};
 
 		_.forEach(this.options.values, value => {
-			let lastValue = null;
-			let deltaValueSum = 0.0;
+			let rmmqHelperX = new RMMQHelper(value.data, (arr, i) => arr[i][0]);
+			let rmmqHelperY = new RMMQHelper(value.data, (arr, i) => arr[i][1]);
+			rmmqHelperY.precomputeRMMQ();
+			rmmqHelperX.precomputeRMMQ();
 
-			let stats = {
-				x: {min: null, max: null},
-				y: {min: null, max: null}
+			let stats = value.stats = {
+				x: {
+					min: rmmqHelperX.min(0, value.data.length - 1),
+					max: rmmqHelperX.max(0, value.data.length - 1)
+				},
+				y: {
+					min: rmmqHelperY.min(0, value.data.length - 1),
+					max: rmmqHelperY.max(0, value.data.length - 1)
+				}
 			};
 
-			_.forEach(value.data, point => {
-				if (lastValue === null) {
-					lastValue = point[0] * 1.0;
-					deltaValueSum += lastValue;
-				} else {
-					deltaValueSum += point[0] * 1.0 - lastValue;
-					lastValue = point[0] * 1.0;
-				}
-
-				stats.x.min = Math.min(stats.x.min, point[0]);
-				stats.x.max = Math.max(stats.x.max, point[0]);
-				stats.y.min = Math.min(stats.y.min, point[1]);
-				stats.y.max = Math.max(stats.y.max, point[1]);
-			});
-
-			stats.xAvgDelta = deltaValueSum / value.data.length;
-            value.stats = stats;
-
+			value.stats.x.rmmqHelper = rmmqHelperX;
+			value.stats.y.rmmqHelper = rmmqHelperY;
+			
 			globalStats.x.min = Math.min(stats.x.min, globalStats.x.min);
 			globalStats.x.max = Math.max(stats.x.max, globalStats.x.max);
 			globalStats.y.min = Math.min(stats.y.min, globalStats.y.min);
@@ -221,11 +216,8 @@ class Dataset extends RenderableView {
 		let minVisY = Number.MAX_VALUE;
 
 		_.forEach(this.options.values, value => {
-			for (let index = minIndex; index < maxIndex + 1; index++) {
-				let v = value.data[index][1];
-				minVisY = Math.min(minVisY, value.data[index][1]);
-				maxVisY = Math.max(maxVisY, value.data[index][1]);
-			}
+			minVisY = Math.min(minVisY, value.stats.x.rmmqHelper.min(minIndex, maxIndex));
+			maxVisY = Math.max(maxVisY, value.stats.y.rmmqHelper.max(minIndex, maxIndex));
 		});
 
 		this.vRangeCache = {
