@@ -20,6 +20,8 @@ class Dataset extends RenderableView {
 		);
 		
 		this.vRangeCache = null;
+        this.lines = null;
+
 		this._calcStats();
 		this._assertColors();
 		this._createGeometry();
@@ -103,8 +105,8 @@ class Dataset extends RenderableView {
 				normalized.push([x, y]);
 			});
             
-			let line = RenderableUtils.CreateLineNative(normalized, value.color, thickness);
-			this.add(line);
+			this.line = RenderableUtils.CreateLineNative(normalized, value.color, thickness);
+			this.add(this.line);
 		});
     }
     

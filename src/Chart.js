@@ -6,6 +6,7 @@ import { FontFactory } from "./font/FontFactory";
 import { RenderableUtils } from "./renderables/RenderableUtils";
 import { EventNode } from "./EventNode";
 import { LegendView } from "./renderables/LegendView";
+import { MiniGraph } from './renderables/MiniGraph';
 
 const _defaultBackgroundColor = 0xffffff;
 const _minimumHeight = 200;
@@ -323,7 +324,30 @@ class Chart extends EventNode {
         this._updateAxisRanges();
 		this._xAxis.update();
         this._render();
-	}
+    }
+    
+    createMiniGraph(options) {
+        // return null
+        // if options not given or
+        // if empty object given
+        if (_.isNil(options)) return null;
+        if (_.isEqual(options, {})) return null;
+
+        // add ref to dataset obj and glchart obj
+        options = _.extend(options, {
+            dataset: this._dataset,
+            glchart: this,
+        });
+
+        // create minigraph obj and keep ref to it
+        try {
+            let minigraph = this._minigraph = new MiniGraph(options);
+            return minigraph;
+        } catch (e) {
+            this._minigraph = null;
+            return null;
+        }
+    }
 }
 
 export { Chart };
