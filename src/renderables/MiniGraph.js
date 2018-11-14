@@ -1,19 +1,17 @@
 import THREE from 'three';
 import { EventNode } from '../EventNode';
 import { RenderableUtils } from './RenderableUtils';
+import { request } from 'http';
 
 class MiniGraph extends EventNode {
 	constructor(options) {
         super();
 		let required = ['dataset', 'glchart', 'size'];
-		let defaults = {};
-		this.options = RenderableUtils.CreateOptions(
-			options,
-			required,
-			'MiniGraph.options',
-			defaults
-        );
+		RenderableUtils.AssertRequiredFields(options, required, 'MiniGraph.options');
         
+        // create shallow copy of options since we're only reading
+        this.options = _.clone(options);
+
         this.loaded = false;
 
         // init when the stack clears, so we let users to 
@@ -23,7 +21,7 @@ class MiniGraph extends EventNode {
             let height = this.options.size.y;
             
             // set renderer size
-            this.renderer = new THREE.WebGlRenderer();
+            this.renderer = new THREE.WebGLRenderer();
             this.renderer.setSize(width, height);
 
             // get dataset geometry and add it to our scene
@@ -40,26 +38,39 @@ class MiniGraph extends EventNode {
             this.camera.updateProjectionMatrix();
             
             // create THREE helper objs
-            this.graphBuffer = new THREE.WebGLBufferRenderer(width, height);
-            this.scene = new THREE.Scene();
+            this.graphBuffer = new THREE.WebGLRenderTarget(width, height, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter});
+            this.scene = new THREE.Scene(); 
 
             // let ui render before starting to render the graph buffer
             setTimeout(() =>{
                 // create plane geometry to render the graph to
                 this.planeGeom = new THREE.PlaneGeometry(width, height);
-                this.graphMat = new THREE.MeshBasicMaterial({map: this.graphBuffer});
+                this.graphMat = new THREE.MeshBasicMaterial({map: this.graphBuffer.texture});
                 this.graphObj = new THREE.Mesh(this.planeGeom, this.graphMat);
                 this.scene.add(this.graphObj);
 
+                // adjust graph plane to fill screen
+                this.graphObj.position.x = width / 2;
+                this.graphObj.position.y = height / 2;
+                
                 // render graph to texture
-                let scaleXCache = this.camera.scale.x;
-                this.camera.scale.x = dataset._camera.scale.x;
-                this.renderer.render(dataset._scene, this.camera, this.graphBuffer);
-                this.camera.scale = scaleXCache;
+                this.renderer.render(dataset._scene, dataset._camera, this.graphBuffer);
+                this.renderer.setClearColor(0xccffff);
 
                 setTimeout(() => {
                     this.renderer.render(this.scene, this.camera);
+
                     this.emit('load');
+
+                    let lastFrame = performance.now();
+                    let animate = (timestamp) => {
+                        let delta = (timestamp - lastFrame) / 1000;
+                        //this.graphObj.rotateY(1 * delta);
+                        this.renderer.render(this.scene, this.camera);
+                        lastFrame = timestamp;
+                        requestAnimationFrame(animate);
+                    };
+                    requestAnimationFrame(animate);
                 });
             });
         });

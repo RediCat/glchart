@@ -344,6 +344,7 @@ class Chart extends EventNode {
             let minigraph = this._minigraph = new MiniGraph(options);
             return minigraph;
         } catch (e) {
+            console.error(e);
             this._minigraph = null;
             return null;
         }
