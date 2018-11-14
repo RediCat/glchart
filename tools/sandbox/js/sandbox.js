@@ -3,7 +3,7 @@ main();
 function main () {
 	// create providing canvas element
 	let newCanvas = document.createElement('canvas');
-	document.getElementById('chart2').appendChild(newCanvas);
+	document.getElementById('chart').appendChild(newCanvas);
 	newCanvas.width = 1000;
 	newCanvas.height = 250;
 
@@ -44,10 +44,10 @@ function main () {
 		chart.setVisibleRange(0, 1);
 
 		let miniGraph = chart.createMiniGraph({
-			size: {x: 500, y: 100}
+			size: {x: 1000, y: 60}
 		});
 		miniGraph.on('load', () => {
-			document.getElementById('chart2').appendChild(miniGraph.domElement);
+			document.getElementById('slider').appendChild(miniGraph.domElement);
 		});
 	});
 
@@ -69,38 +69,38 @@ function main () {
 	});
 }
 
-function createRandomData (size, max) {
-	if (max === null || max === undefined) {
-		max = 1;
-	}
+// function createRandomData (size, max) {
+// 	if (max === null || max === undefined) {
+// 		max = 1;
+// 	}
 
-	let data = [];
+// 	let data = [];
 
-	for (let x = 0; x < size; x++) {
-		data.push([x, Math.random() * max]);
-	}
+// 	for (let x = 0; x < size; x++) {
+// 		data.push([x, Math.random() * max]);
+// 	}
 
-	return data;
-}
+// 	return data;
+// }
 
-function createPeriodicRandomData (size, max) {
-	if (max === null || max === undefined) {
-		max = 1;
-	}
+// function createPeriodicRandomData (size, max) {
+// 	if (max === null || max === undefined) {
+// 		max = 1;
+// 	}
 
-	let data = [];
+// 	let data = [];
 
-	for (let x = 0; x < size; x++) {
-		data.push([
-			x,
-			Math.random() *
-				Math.cos(x / 2) *
-				(Math.random() * Math.sin(x * 10)) *
-				max
-		]);
-	}
-	return data;
-}
+// 	for (let x = 0; x < size; x++) {
+// 		data.push([
+// 			x,
+// 			Math.random() *
+// 				Math.cos(x / 2) *
+// 				(Math.random() * Math.sin(x * 10)) *
+// 				max
+// 		]);
+// 	}
+// 	return data;
+// }
 
 function createLinearGraph (size, max) {
 	let yStep = max / 3;

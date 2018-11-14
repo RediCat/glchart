@@ -172,7 +172,10 @@ class Dataset extends RenderableView {
         this.setCameraPosition(newCameraX);
 		this.setCameraXRange(pixelRange);
 		this.vRangeCache = null;
-		
+        
+        // remember requested values
+        this.reqRangeCache = {reqmin: rangeMin, reqmax: rangeMax};
+
 		if (this.options.zoom) {
             // set the vertical scaling for current visible values
             let visibleRange = this.visibleRange;
@@ -225,7 +228,7 @@ class Dataset extends RenderableView {
 		});
 
 		this.vRangeCache = {
-			x: {min: xmin, max: xmax},
+			x: {min: xmin, max: xmax, requested: _.clone(this.reqRangeCache)},
 			y: {min: minVisY, max: maxVisY}
 		};
 

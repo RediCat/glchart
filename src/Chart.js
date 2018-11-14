@@ -324,9 +324,11 @@ class Chart extends EventNode {
         this._updateAxisRanges();
 		this._xAxis.update();
         this._render();
+        this.emit('visibleChanged', {min, max});
     }
     
-    createMiniGraph(options) {
+    createMiniGraph(options) 
+    {
         // return null
         // if options not given or
         // if empty object given
