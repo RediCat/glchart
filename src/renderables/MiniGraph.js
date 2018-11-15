@@ -56,7 +56,12 @@ class MiniGraph extends EventNode {
         this.graphObj.position.z = 0;
         
         // render graph to texture
+        let reqCache = dataset.reqRangeCache;
+        dataset.setVisibleRange(0, 1);
         this.renderer.render(dataset._scene, dataset._camera, this.graphBuffer);
+        dataset.setVisibleRange(reqCache.reqmin, reqCache.reqmax);
+
+        // set clear color to blue to facilitate debugging
         this.renderer.setClearColor(0xccffff);
 
         // crate range indicator
@@ -88,11 +93,11 @@ class MiniGraph extends EventNode {
         this.domElement.addEventListener('mousedown', (e) => {
             this.active = true;
             this.initPos = e.clientX;
-        }, false);
+        });
 
         this.domElement.addEventListener('mouseup', (e) => {
             this.active = false;
-        }, false);
+        });
 
         this.domElement.addEventListener('mousemove', (e) => {
             if (this.active) {
@@ -100,7 +105,7 @@ class MiniGraph extends EventNode {
                 this.emit('positionChanged', delta);
                 this.initPos = e.clientX;
             }
-        }, false);
+        });
         this.emit('load');
     }
 

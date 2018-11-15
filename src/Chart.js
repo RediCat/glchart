@@ -339,6 +339,7 @@ class Chart extends EventNode {
         newMin = Math.max(newMin, 0);
         newMax = Math.min(newMax, 1);
         this.setVisibleRange(newMin, newMax);
+        return {newMin, newMax};
     }
 
     move(delta) {
