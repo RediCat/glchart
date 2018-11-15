@@ -7,7 +7,7 @@ import string from 'rollup-plugin-string';
 
 export default {
 	input: 'src/glchart.js',
-	external: ['three', 'lodash', 'hammerjs'],
+	external: ['three', 'lodash'],
 	plugins: [
 		commonJS({
 			include: 'node_modules/**'
@@ -34,8 +34,7 @@ export default {
 			sourcemap: true,
 			globals: {
 				'three': 'THREE',
-				'lodash': '_',
-				'hammerjs': 'Hammer'
+				'lodash': '_'
 			},
 		}
 	]
