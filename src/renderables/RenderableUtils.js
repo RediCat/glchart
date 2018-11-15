@@ -72,27 +72,18 @@ class RenderableUtils {
 		if (thickness === undefined || thickness === null) {
 			thickness = 1;
 		}
-
-		let lines = new THREE.Group();
 		
 		var material = new THREE.LineBasicMaterial({
 	        color: color,
 	        linewidth: thickness
 		});
 		
-		let geometry, line;
-
-		for (let index = 0; index < verts.length - 1; index++) {
-			geometry = new THREE.Geometry();
-			geometry.vertices = [
-				new THREE.Vector3(verts[index][0], verts[index][1], 0), 
-				new THREE.Vector3(verts[index + 1][0], verts[index + 1][1], 0)
-			];
-			line = new THREE.Line(geometry, material);
-			lines.add(line);
+		let geometry = new THREE.Geometry();
+		for (let index = 0; index < verts.length; index++) {
+			geometry.vertices.push(new THREE.Vector3(verts[index][0], verts[index][1]));    
 		}
 
-		return lines;
+		return new THREE.Line(geometry, material);
 	}
 
 	static CreateUuid() {
@@ -139,9 +130,6 @@ class RenderableUtils {
                 right = mid - 1;
             }
         }
-        
-        let arrLeft = getFunc(arr, left);
-        let arrRight = getFunc(arr, right);
         
         if (val < getFunc(arr, right) && getFunc(arr, right - 1) < val) {
             return (useFloor) ? right - 1 : right;
