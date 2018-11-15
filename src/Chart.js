@@ -336,12 +336,17 @@ class Chart extends EventNode {
         let newMin = ((oldMax + oldMin) * 0.5) - (newDelta * 0.5);
         let newMax = ((oldMax + oldMin) * 0.5) + (newDelta * 0.5);
 
+        newMin = Math.max(newMin, 0);
+        newMax = Math.min(newMax, 1);
         this.setVisibleRange(newMin, newMax);
     }
 
     move(delta) {
         let visRange = this._dataset.reqRangeCache;
-		this.setVisibleRange(visRange.reqmin + delta, visRange.reqmax + delta);
+        let newMin = visRange.reqmin + delta;
+        let newMax = visRange.reqmax + delta;
+        if (newMin < 0 || newMax > 1) return;
+		this.setVisibleRange(newMin, newMax);
     }
 }
 
