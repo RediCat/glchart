@@ -1,5 +1,4 @@
 import THREE from "three";
-import Hammer from "hammerjs";
 import { HorizontalAxis, VerticalAxis } from "./renderables/Axis";
 import { Dataset } from "./renderables/Dataset";
 import { FontFactory } from "./font/FontFactory";
@@ -91,7 +90,6 @@ class Chart extends EventNode {
 
 		this._createFontFactory().then(() => {
 			this._createRenderer();
-			this._setupGestures();
 
 			this._createGraphViews();
 			this._createAxisViews();
@@ -263,29 +261,6 @@ class Chart extends EventNode {
 		});
 	}
 
-	_setupGestures() {
-		this.hammer = new Hammer(this._domElement);
-
-		// panning gesture
-		let panningGesture = ev => {
-            this._dataset.moveCamera(-ev.deltaX * 0.1);
-            this._updateAxisRanges();
-			this._xAxis.update();
-			this._render();
-		};
-
-		// zooming gesture
-		let zoomGesture = ev => {
-			this._dataset.addUnitsPerPixel(-ev.deltaY * 0.001);
-            this._updateAxisRanges();
-            this._xAxis.update();
-			this._render();
-		};
-
-		this.hammer.on("panright panleft", panningGesture);
-		this.hammer.on("panup pandown", zoomGesture);
-	}
-
 	_render() {
 		if (!this._allowRendering) {
 			return;
@@ -350,6 +325,23 @@ class Chart extends EventNode {
             this._minigraph = null;
             return null;
         }
+    }
+
+    zoom(percent) {
+        percent = Math.min(percent, 1);
+        percent = Math.max(percent, -1);
+        let oldMin = this._dataset.reqRangeCache.reqmin;
+        let oldMax = this._dataset.reqRangeCache.reqmax;
+        let newDelta = (oldMax - oldMin) * (1 + (0.5 * percent));
+        let newMin = ((oldMax + oldMin) * 0.5) - (newDelta * 0.5);
+        let newMax = ((oldMax + oldMin) * 0.5) + (newDelta * 0.5);
+
+        this.setVisibleRange(newMin, newMax);
+    }
+
+    move(delta) {
+        let visRange = this._dataset.reqRangeCache;
+		this.setVisibleRange(visRange.reqmin + delta, visRange.reqmax + delta);
     }
 }
 

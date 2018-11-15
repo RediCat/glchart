@@ -12,7 +12,7 @@ class RenderableView extends RenderableNode
 			defaultOptions = {backgroundColor: null};
 
         this.options = RenderableUtils.CreateOptions(options, required, 
-            'RenderableView.options', defaultOptions);
+            'RenderableView.options', defaultOptions);s
 		this._renderables = {};
 
 		this._createCamera();

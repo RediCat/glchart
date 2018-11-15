@@ -28,7 +28,7 @@ function main () {
 			values: [
 				{
 					name: 'Value 1',
-					data: createLinearGraph(10000, 1456)
+					data: createLinearGraph(100000, 1456)
 				}
 				// {
 				// 	name: 'Value 2',
@@ -48,6 +48,11 @@ function main () {
 		});
 		miniGraph.on('load', () => {
 			document.getElementById('slider').appendChild(miniGraph.domElement);
+		}).on('zoomChanged', (delta) => {
+			let scale = 0.001;
+			chart.zoom(delta * scale);
+		}).on('positionChanged', (delta) => {
+			chart.move(delta);
 		});
 	});
 

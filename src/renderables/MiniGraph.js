@@ -1,7 +1,7 @@
 import THREE from 'three';
 import { EventNode } from '../EventNode';
 import { RenderableUtils } from './RenderableUtils';
-import { request } from 'http';
+import { addWheelListener } from 'wheel';
 
 class MiniGraph extends EventNode {
 	constructor(options) {
@@ -78,6 +78,29 @@ class MiniGraph extends EventNode {
             this.visibleRangeChanged(args.min, args.max);
         });
 
+        // add wheel event for zooming
+        addWheelListener(this.domElement, (event) => {
+            this.emit('zoomChanged', event.deltaY);
+        });
+        
+        // add mouse events for dragging
+        this.active = false;
+        this.domElement.addEventListener('mousedown', (e) => {
+            this.active = true;
+            this.initPos = e.clientX;
+        }, false);
+
+        this.domElement.addEventListener('mouseup', (e) => {
+            this.active = false;
+        }, false);
+
+        this.domElement.addEventListener('mousemove', (e) => {
+            if (this.active) {
+                let delta = (e.clientX - this.initPos) / width;
+                this.emit('positionChanged', delta);
+                this.initPos = e.clientX;
+            }
+        }, false);
         this.emit('load');
     }
 
