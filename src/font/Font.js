@@ -9,7 +9,7 @@ class Font
 	constructor(opts) {
 		let required = ['font', 'texture'];
 		let defaultOptions = {
-			width: 100,
+			width: null,
 			align: 'left',
 			color: 0x000000,
 		};
