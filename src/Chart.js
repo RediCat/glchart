@@ -29,6 +29,7 @@ class Chart extends EventNode {
 			fontColor: 0x000000,
 			resize: true,
 			title: '',
+			cursorPosition: 0
 		};
 
 		let options = RenderableUtils.CreateOptions(
@@ -192,7 +193,8 @@ class Chart extends EventNode {
 		let datasetOpts = _.merge(this.globals.dataset, {
 			view: this.views.graph,
 			size: this.options.size,
-			backgroundColor: this.options.backgroundColor
+			backgroundColor: this.options.backgroundColor,
+			currentPosition: this.options.currentPosition
 		});
 
 		this._dataset = new Dataset(datasetOpts);
@@ -348,7 +350,17 @@ class Chart extends EventNode {
         let newMax = visRange.reqmax + delta;
         if (newMin < 0 || newMax > 1) return;
 		this.setVisibleRange(newMin, newMax);
-    }
+	}
+	
+	setCurrentPosition(position) {
+		this.options.currentPosition = position;
+		this._dataset.setCurrentPosition(position);
+		this._render();
+	}
+
+	get currentPosition() {
+		return this.options.cursorPosition;
+	}
 }
 
 export { Chart };

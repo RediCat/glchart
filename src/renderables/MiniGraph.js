@@ -58,13 +58,17 @@ class MiniGraph extends EventNode {
         // render graph to texture
         let reqCache = dataset.reqRangeCache;
         dataset.setVisibleRange(0, 1);
-        this.renderer.render(dataset._scene, dataset._camera, this.graphBuffer);
-        dataset.setVisibleRange(reqCache.reqmin, reqCache.reqmax);
+		this.renderer.render(dataset._scene, dataset._camera, this.graphBuffer);
+
+		// if visible range was provided before, restore those values
+		if (reqCache) {
+			dataset.setVisibleRange(reqCache.reqmin, reqCache.reqmax);
+		}
 
         // set clear color to blue to facilitate debugging
         this.renderer.setClearColor(0xccffff);
 
-        // crate range indicator
+        // create range indicator
         let sliderGeom = new THREE.PlaneGeometry(width, height);
         let sliderMat = new THREE.MeshBasicMaterial({color: 0xbbbbbb, transparent: true, opacity: 0.5});
         let sliderObj = new THREE.Mesh(sliderGeom, sliderMat);
@@ -73,10 +77,15 @@ class MiniGraph extends EventNode {
         this.sliderObj = sliderObj;
         this.scene.add(this.sliderObj);
 
-        // set pos and scale based on min, max visible
-        let min = dataset.reqRangeCache.reqmin;
-        let max = dataset.reqRangeCache.reqmax;
-        this.visibleRangeChanged(min, max);
+		// set pos and scale based on min, max visible
+		if (!dataset.reqCache) {
+			dataset.setVisibleRange(0, 1);
+			this.visibleRangeChanged(0, 1);
+		} else {
+			let min = dataset.reqRangeCache.reqmin;
+			let max = dataset.reqRangeCache.reqmax;
+			this.visibleRangeChanged(min, max);
+		}
 
         // subscribe to visible changed events
         this.options.glchart.on('visibleChanged', (args) => {

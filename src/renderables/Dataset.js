@@ -9,8 +9,7 @@ class Dataset extends RenderableView {
 		let requiredOptions = ['values'];
 		let defaultOptions = {
             unitsPerPixel: 1,
-            thickness: 0.5,
-            zoom: false
+			thickness: 0.5,
 		};
 
 		this.options = RenderableUtils.CreateOptions(
@@ -21,7 +20,11 @@ class Dataset extends RenderableView {
 		);
 		
 		this.vRangeCache = null;
-        this.lines = null;
+		this.lines = null;
+
+		// data used for the current track position line
+		this._currentPos = null;
+		this._positionLine = null;
 
 		this._calcStats();
 		this._assertColors();
@@ -84,6 +87,8 @@ class Dataset extends RenderableView {
         let viewSize = this.viewSize;
         let thickness = this.options.thickness;
 
+		// iterate the provided datasets to normalize and
+		// create the geometry from that
 		_.forEach(this.options.values, value => {
 			let normalized = [];
             let maxValue = value.stats.y.max;
@@ -109,6 +114,12 @@ class Dataset extends RenderableView {
 			this.line = RenderableUtils.CreateLineNative(normalized, value.color, thickness);
 			this.add(this.line);
 		});
+
+		// create the track position line from floor of rendering aread to 
+		// the top of it
+		let trackVerts = [[0, 0], [0, viewSize.y]];
+		this._positionLine = RenderableUtils.CreateLineNative(trackVerts, new THREE.Color(0xFF0000));
+		this.add(this._positionLine);
     }
     
     _unitsPerPixelChanged() {
@@ -172,18 +183,13 @@ class Dataset extends RenderableView {
         this.setCameraPosition(newCameraX);
 		this.setCameraXRange(pixelRange);
 		this.vRangeCache = null;
-        
-        // remember requested values
-        this.reqRangeCache = {reqmin: rangeMin, reqmax: rangeMax};
-
-		if (this.options.zoom) {
-            // set the vertical scaling for current visible values
-            let visibleRange = this.visibleRange;
-            let valueDelta = visibleRange.y.max - visibleRange.y.min;
-            let valuePercentage = valueDelta / (this.options.stats.y.max - this.options.stats.y.min);
-            this._camera.zoom = 1 / valuePercentage;
-            this._camera.updateProjectionMatrix();
-        }
+		
+		// set the vertical scaling for current visible values
+		let visibleRange = this.visibleRange;
+		let valueDelta = visibleRange.y.max - visibleRange.y.min;
+		let valuePercentage = valueDelta / (this.options.stats.y.max - this.options.stats.y.min);
+		this._camera.zoom = 1 / valuePercentage;
+		this._camera.updateProjectionMatrix();
 	}
 	
 	get visibleRange() {
@@ -228,11 +234,16 @@ class Dataset extends RenderableView {
 		});
 
 		this.vRangeCache = {
-			x: {min: xmin, max: xmax, requested: _.clone(this.reqRangeCache)},
+			x: {min: xmin, max: xmax},
 			y: {min: minVisY, max: maxVisY}
 		};
 
 		return this.vRangeCache;
+	}
+
+	setCurrentPosition(position) {
+		this._currentPosition = position;
+		
 	}
 }
 
