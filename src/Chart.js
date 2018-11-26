@@ -354,7 +354,15 @@ class Chart extends EventNode {
 	
 	setCurrentPosition(position) {
 		this.options.currentPosition = position;
-		this._dataset.setCurrentPosition(position);
+		if (this._dataset) {
+			this._dataset.setCurrentPosition(position); 	
+		}
+		
+		// also update minigraph if created
+		if (this._minigraph) {
+			this._minigraph.setCurrentPosition(position);
+		}
+
 		this._render();
 	}
 

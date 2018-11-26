@@ -46,45 +46,47 @@ function main () {
 		let miniGraph = chart.createMiniGraph({
 			size: {x: 1000, y: 60}
 		});
-		miniGraph.on('load', () => {
-			document.getElementById('slider').appendChild(miniGraph.domElement);
-		}).on('zoomChanged', (delta) => {
-			let scale = 0.001;
-			chart.zoom(delta * scale);
-		}).on('positionChanged', (delta) => {
-			chart.move(delta);
-		});
+
+		// add event handlers to user input in minigraph
+		miniGraph
+			.on('load', () => {
+				document.getElementById('slider').appendChild(miniGraph.domElement);
+			})
+			.on('zoomChanged', delta => {
+				let scale = 0.001;
+				chart.zoom(delta * scale);
+			})
+			.on('positionChanged', delta => {
+				chart.move(delta);
+			});
+
+		// start dummy playback of time.
+		requestAnimationFrame(runFrame);
 	});
 
-	// create range slider
-	let maxRangeVal = 1000;
+	let start = null;
+	function runFrame (timestamp) {
+		if (!start) {
+			start = timestamp;
+		}
 
-	let slider = new Slider('#inputRange', {
-		min: 0,
-		max: maxRangeVal,
-		step: 1,
-		value: [0, maxRangeVal]
-	});
+		let currentTime = timestamp - start;
+		chart.setCurrentPosition(currentTime);
 
-	slider.on('change', () => {
-		let sliderVal = slider.getValue();
-		let min = sliderVal[0] / maxRangeVal;
-		let max = sliderVal[1] / maxRangeVal;
-		chart.setVisibleRange(min, max);
-	});
+		requestAnimationFrame(runFrame);
+	}
+
+	requestAnimationFrame(runFrame);
 }
 
 // function createRandomData (size, max) {
 // 	if (max === null || max === undefined) {
 // 		max = 1;
 // 	}
-
 // 	let data = [];
-
 // 	for (let x = 0; x < size; x++) {
 // 		data.push([x, Math.random() * max]);
 // 	}
-
 // 	return data;
 // }
 
@@ -98,10 +100,7 @@ function createPeriodicRandomData (size, max) {
 	for (let x = 0; x < size; x++) {
 		data.push([
 			x,
-			Math.random() *
-				Math.cos(x / 2) *
-				(Math.random() * Math.sin(x * 10)) *
-				max
+			Math.random() * Math.cos(x / 2) * (Math.random() * Math.sin(x * 10)) * max
 		]);
 	}
 	return data;
@@ -114,9 +113,9 @@ function createLinearGraph (size, max) {
 
 	for (let x = 0; x < size; x++) {
 		if (Math.floor(x / xStep) < 3) {
-			data.push([x, yStep * (Math.floor((x / xStep)) + 1)]);
+			data.push([x, yStep * (Math.floor(x / xStep) + 1)]);
 		} else {
-			data.push([x, yStep * (Math.floor((x / xStep)) - 2)]);
+			data.push([x, yStep * (Math.floor(x / xStep) - 2)]);
 		}
 	}
 

@@ -13,6 +13,7 @@ class MiniGraph extends EventNode {
         this.options = _.clone(options);
 
         this.loaded = false;
+		this._currentPosition = null;
 
         // init when the stack clears, so we let users to 
         // subscribe to 'load' event
@@ -57,8 +58,12 @@ class MiniGraph extends EventNode {
         
         // render graph to texture
         let reqCache = dataset.reqRangeCache;
-        dataset.setVisibleRange(0, 1);
-		this.renderer.render(dataset._scene, dataset._camera, this.graphBuffer);
+		dataset.setVisibleRange(0, 1);
+		let positionLine = dataset._currentPositionLine;
+		let datasetScene = dataset._scene;
+		datasetScene.remove(positionLine);
+		this.renderer.render(datasetScene, dataset._camera, this.graphBuffer);
+		datasetScene.add(positionLine);
 
 		// if visible range was provided before, restore those values
 		if (reqCache) {
@@ -114,7 +119,15 @@ class MiniGraph extends EventNode {
                 this.emit('positionChanged', delta);
                 this.initPos = e.clientX;
             }
-        });
+		});
+
+		// create red line representing the current time position
+		let verts = [[0, 0], [0, height]];
+		this._currentPositionLine = RenderableUtils.CreateLineNative(verts, new THREE.Color(0xFF0000));
+		this._currentPositionLine.position.z = 1;
+		this.scene.add(this._currentPositionLine);
+
+		this.loaded = true;
         this.emit('load');
     }
 
@@ -132,7 +145,13 @@ class MiniGraph extends EventNode {
     get domElement() {
         if (_.isNil(this.renderer)) return null;
         return this.renderer.domElement;
-    }
+	}
+	
+	setCurrentPosition(position) {
+		if (!this.loaded) return;
+		this._currentPosition = position;
+		this._currentPositionLine.position.x = position;
+	}
 }
 
 export {MiniGraph};

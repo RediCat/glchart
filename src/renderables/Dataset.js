@@ -20,11 +20,11 @@ class Dataset extends RenderableView {
 		);
 		
 		this.vRangeCache = null;
-		this.lines = null;
+		this.lines = [];
 
 		// data used for the current track position line
 		this._currentPos = null;
-		this._positionLine = null;
+		this._currentPositionLine = null;
 
 		this._calcStats();
 		this._assertColors();
@@ -84,7 +84,9 @@ class Dataset extends RenderableView {
 		});
 	}
 	_createGeometry() {
-        let viewSize = this.viewSize;
+		let viewSize = this.viewSize;
+
+		// TODO: add support for the thickness option (how this did happen?!?!)
         let thickness = this.options.thickness;
 
 		// iterate the provided datasets to normalize and
@@ -110,16 +112,18 @@ class Dataset extends RenderableView {
 
 				normalized.push([x, y]);
 			});
-            
-			this.line = RenderableUtils.CreateLineNative(normalized, value.color, thickness);
-			this.add(this.line);
+
+			let line = RenderableUtils.CreateLineNative(normalized, value.color, thickness);
+			this.add(line);
+			this.lines.push(line);
 		});
 
 		// create the track position line from floor of rendering aread to 
 		// the top of it
 		let trackVerts = [[0, 0], [0, viewSize.y]];
-		this._positionLine = RenderableUtils.CreateLineNative(trackVerts, new THREE.Color(0xFF0000));
-		this.add(this._positionLine);
+		this._currentPositionLine = RenderableUtils.CreateLineNative(trackVerts, new THREE.Color(0xFF0000));
+		this._currentPositionLine.position.z = 1;
+		this.add(this._currentPositionLine);
     }
     
     _unitsPerPixelChanged() {
@@ -243,7 +247,7 @@ class Dataset extends RenderableView {
 
 	setCurrentPosition(position) {
 		this._currentPosition = position;
-		
+		this._currentPositionLine.position.x = position;
 	}
 }
 
