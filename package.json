@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rollup -c",
     "sandbox": "npm run build && electron ./tools/sandbox/main.js",
-    "docs": "documentation build src/Chart.js -f \"md\" -o docs/Chart.md"
+    "docs": "mkdir -p docs && documentation build src/Chart.js -f \"md\" -o docs/Chart.md"
   },
   "author": "chrisvm",
   "license": "ISC",

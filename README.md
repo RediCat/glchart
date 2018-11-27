@@ -13,3 +13,14 @@ GPU powered charts.
 3. Start the electron sandbox
 
         npm run sandbox
+
+### Creating ther documentation
+
+Running the following command:
+
+        npm run docs
+
+on the root dir will create documentation files in the `docs` directory. 
+The documentation is created using documentationjs and relies on the comments
+in the code. This means that it neads to be recreated any time changes are
+pulled from the repo.
