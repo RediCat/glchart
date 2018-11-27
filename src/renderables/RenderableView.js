@@ -43,6 +43,7 @@ class RenderableView extends RenderableNode
     }
 
     /**
+     * @private
      * Moves camera based on the number given.
      * @param {number} delta 
      */
@@ -52,6 +53,7 @@ class RenderableView extends RenderableNode
     }
     
     /**
+     * @private
      * Sets the camera's x position to the given value.
      * @param {number} pos The x axis position of the camera.
      */
@@ -61,6 +63,7 @@ class RenderableView extends RenderableNode
     }
 
     /**
+     * @private
      * Sets the amount of units of the x axis is shown.
      * @param {number} range range of values to show on x axis
      */
@@ -97,6 +100,7 @@ class RenderableView extends RenderableNode
 	}
 
     /**
+     * @private
      * Updates the camera with the correct values based on the 
      * size given.
      * @param {{x: number, y: number}} size 

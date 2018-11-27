@@ -137,6 +137,7 @@ class Dataset extends RenderableView {
     }
     
     /**
+     * @private
      * Adds given delta to unitsPerPixel and recreates the geometry.
      * @param {number} delta 
      */
@@ -146,6 +147,7 @@ class Dataset extends RenderableView {
     }
     
     /**
+     * @private
      * Sets the units per pixel and recreates the geometry.
      * @param {number} unitsPerPixel The new units per pixel.
      */
@@ -167,6 +169,7 @@ class Dataset extends RenderableView {
     }
 
     /**
+     * @private 
      * Sets the visible range of the dataset using a range inside [0, 1].
      * @param {number} rangeMin Value in the [0, 1] range for the left side.
      * @param {number} rangeMax Value in the [0, 1] range for the right side.

@@ -98,7 +98,7 @@ class Chart extends EventNode {
 
 			this._allowRendering = true;
 			this.render();
-			this.emit("load");
+			this.emit('load');
 		});
 	}
 
@@ -179,6 +179,7 @@ class Chart extends EventNode {
 	}
 
 	/**
+     * @private
 	 * Resizes the width of the renderer with the new width of the parent
 	 * element.
 	 */
@@ -270,6 +271,11 @@ class Chart extends EventNode {
 		this.render();
 	}
 
+    //#region Public API
+    /**
+     * Renders all the renderable views in chart. Generally this means the 
+     * dataset, x axis, y axis and title view.
+     */
 	render() {
 		_.forEach(this._renderables, renderable => {
 			renderable.render(this.renderer);
@@ -277,9 +283,9 @@ class Chart extends EventNode {
 	}
 
 	/**
-	 * Change the renderer to the 
-	 * @param width 
-	 * @param height
+	 * Change the renderer's size to the given width and height in pixels.
+	 * @param {number} width The new renderer's width in px.
+	 * @param {number} height The new renderer's height in px.
 	 */
 	changeRendererSize(width, height) 
 	{
@@ -291,9 +297,12 @@ class Chart extends EventNode {
 	}
 
 	/**
-	 * Sets the range of the dataset shown in the chart.
+	 * Sets the range of the dataset shown in the chart. After updating the
+     * state of the graph, 'visibleChanged' event is emitted. This event has 
+     * one argument, an object with properties 'min' and 'max', the minimum and 
+     * maximum visible range in the [0, 1] range.
 	 * @param {number} min 
-	 * @param {number} max 
+	 * @param {number} max
 	 */
 	setVisibleRange(min, max) 
 	{
@@ -304,6 +313,12 @@ class Chart extends EventNode {
         this.emit('visibleChanged', {min, max});
     }
     
+    /**
+     * Creates a minigraph representation, with sliding and zooming options.
+     * @param {'size': {x: number, y: number}, *} options Required size and other
+     * arguments. 
+     * @return {MiniGraph} A MiniGraph instance of this chart.
+     */
     createMiniGraph(options) 
     {
         // return null
@@ -351,9 +366,15 @@ class Chart extends EventNode {
         if (newMin < 0 || newMax > 1) return;
 		this.setVisibleRange(newMin, newMax);
 	}
-	
+    
+    /**
+     * Set the current position of the track in dataset's units.
+     * @param {number} position 
+     */
 	setCurrentPosition(position) {
-		this.options.currentPosition = position;
+        this.options.currentPosition = position;
+        
+        // chack if already wed
 		if (this._dataset) {
 			this._dataset.setCurrentPosition(position); 	
 		}
@@ -366,9 +387,14 @@ class Chart extends EventNode {
 		this._render();
 	}
 
+    /**
+     * @property currentPosition
+     * @return {number} The current position of the track for this graph.
+     */
 	get currentPosition() {
 		return this.options.cursorPosition;
-	}
+    }
+    //#endregion
 }
 
 export { Chart };

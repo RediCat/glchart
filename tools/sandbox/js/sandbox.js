@@ -1,3 +1,4 @@
+/* global $ */
 main();
 
 function main () {
@@ -50,7 +51,9 @@ function main () {
 		// add event handlers to user input in minigraph
 		miniGraph
 			.on('load', () => {
-				document.getElementById('slider').appendChild(miniGraph.domElement);
+				document
+					.getElementById('slider')
+					.appendChild(miniGraph.domElement);
 			})
 			.on('zoomChanged', delta => {
 				let scale = 0.001;
@@ -72,6 +75,7 @@ function main () {
 
 		let currentTime = timestamp - start;
 		chart.setCurrentPosition(currentTime);
+		displayNumber(currentTime);
 
 		requestAnimationFrame(runFrame);
 	}
@@ -100,10 +104,17 @@ function createPeriodicRandomData (size, max) {
 	for (let x = 0; x < size; x++) {
 		data.push([
 			x,
-			Math.random() * Math.cos(x / 2) * (Math.random() * Math.sin(x * 10)) * max
+			Math.random() *
+				Math.cos(x / 2) *
+				(Math.random() * Math.sin(x * 10)) *
+				max
 		]);
 	}
 	return data;
+}
+
+function displayNumber (number) {
+	$('#numberDisplay').text(number);
 }
 
 function createLinearGraph (size, max) {
