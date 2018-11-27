@@ -8,12 +8,14 @@
   "main": "build/glchart.js",
   "scripts": {
     "build": "rollup -c",
-    "sandbox": "npm run build && electron ./tools/sandbox/main.js"
+    "sandbox": "npm run build && electron ./tools/sandbox/main.js",
+    "docs": "documentation build src/Chart.js -f \"md\" -o docs/Chart.md"
   },
   "author": "chrisvm",
   "license": "ISC",
   "devDependencies": {
     "adaptive-bezier-curve": "^1.0.3",
+    "documentation": "^8.1.2",
     "electron": "^2.0.8",
     "electron-serve": "^0.2.0",
     "eslint": "^5.7.0",
