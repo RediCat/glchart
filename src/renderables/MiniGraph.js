@@ -57,6 +57,7 @@ class MiniGraph extends EventNode {
         this.graphObj.position.z = 0;
         
         // render graph to texture
+        // TODO: fix this break in the encapsulation of Dataset (we're using is private data)
         let reqCache = dataset.reqRangeCache;
 		dataset.setVisibleRange(0, 1);
 		let positionLine = dataset._currentPositionLine;

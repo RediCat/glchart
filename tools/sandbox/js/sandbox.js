@@ -67,6 +67,22 @@ function main () {
 		requestAnimationFrame(runFrame);
 	});
 
+	// set click handler for #disableGraph button to toggle subset
+	let buttonId = '#disableGraph';
+	$(buttonId).click(function () {
+		let subsetName = 'Value 1';
+
+		let oldValue = chart.subsetStatus(subsetName);
+		console.log(oldValue);
+		if (oldValue) {
+			$(this).html(`Show '${subsetName}'`);
+		} else {
+			$(this).html(`Hide '${subsetName}'`);
+		}
+
+		chart.subsetStatus(subsetName, !oldValue);
+	});
+
 	let start = null;
 	function runFrame (timestamp) {
 		if (!start) {
@@ -80,7 +96,7 @@ function main () {
 		requestAnimationFrame(runFrame);
 	}
 
-	requestAnimationFrame(runFrame);
+	// requestAnimationFrame(runFrame);
 }
 
 // function createRandomData (size, max) {

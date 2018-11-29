@@ -20,12 +20,12 @@ class Dataset extends RenderableView {
 		);
 		
 		this.vRangeCache = null;
-		this.lines = [];
+        this.lines = {};
 
 		// data used for the current track position line
 		this._currentPos = null;
 		this._currentPositionLine = null;
-
+        
 		this._calcStats();
 		this._assertColors();
 		this._createGeometry();
@@ -64,7 +64,7 @@ class Dataset extends RenderableView {
 			});
 
 			stats.xAvgDelta = deltaValueSum / value.data.length;
-			value.stats = stats;
+            value.stats = stats;
 
 			globalStats.x.min = Math.min(stats.x.min, globalStats.x.min);
 			globalStats.x.max = Math.max(stats.x.max, globalStats.x.max);
@@ -82,7 +82,8 @@ class Dataset extends RenderableView {
 				val.color = Math.floor(Math.random() * 0xFFFFFF);
 			}
 		});
-	}
+    }
+    
 	_createGeometry() {
 		let viewSize = this.viewSize;
 
@@ -115,7 +116,7 @@ class Dataset extends RenderableView {
 
 			let line = RenderableUtils.CreateLineNative(normalized, value.color, thickness);
 			this.add(line);
-			this.lines.push(line);
+			this.lines[value.name] = {geometry: line, status: true};
 		});
 
 		// create the track position line from floor of rendering aread to 
@@ -251,7 +252,26 @@ class Dataset extends RenderableView {
 	setCurrentPosition(position) {
 		this._currentPosition = position;
 		this._currentPositionLine.position.x = position;
-	}
+    }
+    
+    subsetStatus(name, value) {
+        // if name not given or not found, return null
+        if (_.isNil(name)) return null;
+        if (!_.has(this.lines, name)) return null;
+
+        // if only name given, return current subset status
+        if (_.isNil(value)) return this.lines[name].status;
+        
+        // cache the given status
+        this.lines[name].status = value;
+
+        // add/remove the geometry from the scene based on the new value
+        if (value) {
+            this._scene.add(this.lines[name].geometry);
+        } else {
+            this._scene.remove(this.lines[name].geometry);
+        }
+    }
 }
 
 export {Dataset};

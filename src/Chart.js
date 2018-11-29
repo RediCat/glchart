@@ -87,7 +87,7 @@ class Chart extends EventNode {
 
 		this._allowRendering = false;
 		this.globals = globalOptions;
-		this.options = options;
+        this.options = options;
 
 		this._createFontFactory().then(() => {
 			this._createRenderer();
@@ -393,6 +393,28 @@ class Chart extends EventNode {
      */
 	get currentPosition() {
 		return this.options.cursorPosition;
+    }
+
+    /**
+     * 
+     * @param {string} name Name of the subset to set/get the status.
+     * @param {boolean} value Value to set to the specified subset.
+     * @returns {boolean|null} The current status of the subset if only the 
+     * name is specified. If both parameters are given or the subset is not 
+     * found, void is returned.
+     */
+    subsetStatus(name, value) {
+        if (this._dataset) {
+            let ret = this._dataset.subsetStatus(name, value);
+
+            // if call didn't return anything, setter called and maybe we've
+            // a dirty screen, render just in case
+            if (_.isNil(ret)) {
+                this.render();
+                return;
+            }
+            return ret;
+        }
     }
     //#endregion
 }
