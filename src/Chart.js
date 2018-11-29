@@ -272,7 +272,9 @@ class Chart extends EventNode {
 	}
 
     //#region Public API
+
     /**
+     * @public
      * Renders all the renderable views in chart. Generally this means the 
      * dataset, x axis, y axis and title view.
      */
@@ -283,6 +285,7 @@ class Chart extends EventNode {
 	}
 
 	/**
+     * @public
 	 * Change the renderer's size to the given width and height in pixels.
 	 * @param {number} width The new renderer's width in px.
 	 * @param {number} height The new renderer's height in px.
@@ -297,6 +300,7 @@ class Chart extends EventNode {
 	}
 
 	/**
+     * @public
 	 * Sets the range of the dataset shown in the chart. After updating the
      * state of the graph, 'visibleChanged' event is emitted. This event has 
      * one argument, an object with properties 'min' and 'max', the minimum and 
@@ -314,6 +318,7 @@ class Chart extends EventNode {
     }
     
     /**
+     * @public
      * Creates a minigraph representation, with sliding and zooming options.
      * @param {'size': {x: number, y: number}, *} options Required size and other
      * arguments. 
@@ -368,6 +373,7 @@ class Chart extends EventNode {
 	}
     
     /**
+     * @public
      * Set the current position of the track in dataset's units.
      * @param {number} position 
      */
@@ -388,6 +394,7 @@ class Chart extends EventNode {
 	}
 
     /**
+     * @public
      * @property currentPosition
      * @return {number} The current position of the track for this graph.
      */
@@ -396,7 +403,7 @@ class Chart extends EventNode {
     }
 
     /**
-     * 
+     * @public
      * @param {string} name Name of the subset to set/get the status.
      * @param {boolean} value Value to set to the specified subset.
      * @returns {boolean|null} The current status of the subset if only the 

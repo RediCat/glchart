@@ -14,13 +14,13 @@ GPU powered charts.
 
         npm run sandbox
 
-### Creating ther documentation
+### Creating the documentation
 
 Running the following command:
 
-        npm run docs
+        npm run docs_md
 
-on the root dir will create documentation files in the `docs` directory. 
-The documentation is created using documentationjs and relies on the comments
-in the code. This means that it neads to be recreated any time changes are
-pulled from the repo.
+on the root dir will create documentation files in the `docs` directory. The 
+main documentation file is name `DOCS.md`. The documentation is created using 
+documentationjs and relies on the comments in the code. This means that it 
+needs to be recreated any time changes are pulled from the repo.
