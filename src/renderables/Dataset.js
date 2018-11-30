@@ -138,21 +138,11 @@ class Dataset extends RenderableView {
         this._createGeometry();
     }
     
-    /**
-     * @private
-     * Adds given delta to unitsPerPixel and recreates the geometry.
-     * @param {number} delta 
-     */
 	addUnitsPerPixel(delta) {
 		this.options.unitsPerPixel += delta;
         this._unitsPerPixelChanged();
     }
     
-    /**
-     * @private
-     * Sets the units per pixel and recreates the geometry.
-     * @param {number} unitsPerPixel The new units per pixel.
-     */
     setUnitsPerPixel(unitsPerPixel) {
 		this.options.unitsPerPixel = unitsPerPixel;
         this._unitsPerPixelChanged();
@@ -170,12 +160,6 @@ class Dataset extends RenderableView {
         return {dataMin, dataMax};
     }
 
-    /**
-     * @private 
-     * Sets the visible range of the dataset using a range inside [0, 1].
-     * @param {number} rangeMin Value in the [0, 1] range for the left side.
-     * @param {number} rangeMax Value in the [0, 1] range for the right side.
-     */
 	setVisibleRange(rangeMin, rangeMax) {
         // data range based on rangeMin and rangeMax
 		let {dataMin, dataMax} = this.dataMinMaxForRange(rangeMin, rangeMax);

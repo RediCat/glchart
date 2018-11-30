@@ -178,11 +178,6 @@ class Chart extends EventNode {
 		this._domElement = this.renderer.domElement;
 	}
 
-	/**
-     * @private
-	 * Resizes the width of the renderer with the new width of the parent
-	 * element.
-	 */
 	_resizeWidthHandler()
 	{
 		let size = this.options.size;
@@ -349,6 +344,11 @@ class Chart extends EventNode {
         }
     }
 
+    /**
+     * Change the 'zoom', the amount of visibility in the x axis.
+     * @param {number} percent Number between [0, 1] that represents the 
+     * change in visibility.
+     */
     zoom(percent) {
         percent = Math.min(percent, 1);
         percent = Math.max(percent, -1);
@@ -364,6 +364,10 @@ class Chart extends EventNode {
         return {newMin, newMax};
     }
 
+    /**
+     * Change the visible range in the x position.
+     * @param {number} delta Change in the x position.
+     */
     move(delta) {
         let visRange = this._dataset.reqRangeCache;
         let newMin = visRange.reqmin + delta;
