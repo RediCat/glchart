@@ -9,7 +9,8 @@ class Dataset extends RenderableView {
 		let requiredOptions = ['values'];
 		let defaultOptions = {
             unitsPerPixel: 1,
-			thickness: 0.5,
+            thickness: 0.5,
+            zoom: false
 		};
 
 		this.options = RenderableUtils.CreateOptions(
@@ -192,12 +193,14 @@ class Dataset extends RenderableView {
 		this.setCameraXRange(pixelRange);
 		this.vRangeCache = null;
 		
-		// set the vertical scaling for current visible values
-		let visibleRange = this.visibleRange;
-		let valueDelta = visibleRange.y.max - visibleRange.y.min;
-		let valuePercentage = valueDelta / (this.options.stats.y.max - this.options.stats.y.min);
-		this._camera.zoom = 1 / valuePercentage;
-		this._camera.updateProjectionMatrix();
+        // set the vertical scaling for current visible values
+        if (this.options.zoom) {
+            let visibleRange = this.visibleRange;
+            let valueDelta = visibleRange.y.max - visibleRange.y.min;
+            let valuePercentage = valueDelta / (this.options.stats.y.max - this.options.stats.y.min);
+            this._camera.zoom = 1 / valuePercentage;
+            this._camera.updateProjectionMatrix();
+        }
 	}
 	
 	get visibleRange() {
