@@ -174,7 +174,10 @@ class Dataset extends RenderableView {
 
         // set the new values and rerender the scene
         this.setCameraPosition(newCameraX);
-		this.setCameraXRange(pixelRange);
+        this.setCameraXRange(pixelRange);
+        
+        // Note: setting vRangeCache to null makes the lazy loading 
+        // to kick in and recalculate the min max for the visible range.
 		this.vRangeCache = null;
 		
         // set the vertical scaling for current visible values
