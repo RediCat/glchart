@@ -36,18 +36,23 @@ class Dataset extends RenderableView {
 	}
 
 	_calcStats() {
-		// TODO: integrate with RMMQ helper class
 		let globalStats = {
 			x: {min: Number.MAX_VALUE, max: Number.MIN_VALUE},
 			y: {min: Number.MAX_VALUE, max: Number.MIN_VALUE}
 		};
 
 		_.forEach(this.options.values, value => {
+            // create the rmmq helper with the getter for the way the dataset
+            // is setup. If the structure of the incoming data changes, this 
+            // getter should change too. 
 			let rmmqHelperX = new RMMQHelper(value.data, (arr, i) => arr[i][0]);
 			let rmmqHelperY = new RMMQHelper(value.data, (arr, i) => arr[i][1]);
-			rmmqHelperY.precomputeRMMQ();
-			rmmqHelperX.precomputeRMMQ();
-
+            
+            // Precomputation of ranges. We only do this once and reused, where
+            // the computation gains come from.
+            rmmqHelperX.precomputeRMMQ();
+            rmmqHelperY.precomputeRMMQ();
+            
 			let stats = value.stats = {
 				x: {
 					min: rmmqHelperX.min(0, value.data.length - 1),
