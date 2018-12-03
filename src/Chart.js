@@ -86,7 +86,8 @@ class Chart extends EventNode {
 			}
 		};
 
-		this._allowRendering = false;
+        this._allowRendering = false;
+        this._lastVisibleRange = null;
 		this.globals = globalOptions;
         this.options = options;
 
@@ -96,8 +97,11 @@ class Chart extends EventNode {
 			this._createGraphViews();
 			this._createAxisViews();
 			this._createLegendView();
+            
+            // set default visibility to whole graph
+            this.setVisibleRange(0, 1);
 
-			this._allowRendering = true;
+            this._allowRendering = true;
 			this.render();
 			this.emit('load');
 		});
@@ -317,6 +321,7 @@ class Chart extends EventNode {
         this._dataset.setVisibleRange(min, max);
         this._updateAxisRanges();
         this._render();
+        this._lastVisibleRange = {min, max};
         this.emit('visibleChanged', {min, max});
     }
     
@@ -360,8 +365,8 @@ class Chart extends EventNode {
     zoom(percent) {
         percent = Math.min(percent, 1);
         percent = Math.max(percent, -1);
-        let oldMin = this._dataset.reqRangeCache.reqmin;
-        let oldMax = this._dataset.reqRangeCache.reqmax;
+        let oldMin = this._lastVisibleRange.min;
+        let oldMax = this._lastVisibleRange.max;
         let newDelta = (oldMax - oldMin) * (1 + (0.5 * percent));
         let newMin = ((oldMax + oldMin) * 0.5) - (newDelta * 0.5);
         let newMax = ((oldMax + oldMin) * 0.5) + (newDelta * 0.5);
@@ -377,9 +382,8 @@ class Chart extends EventNode {
      * @param {number} delta Change in the x position.
      */
     move(delta) {
-        let visRange = this._dataset.reqRangeCache;
-        let newMin = visRange.reqmin + delta;
-        let newMax = visRange.reqmax + delta;
+        let newMin = this._lastVisibleRange.min + delta;
+        let newMax = this._lastVisibleRange.max + delta;
         if (newMin < 0 || newMax > 1) return;
 		this.setVisibleRange(newMin, newMax);
 	}
