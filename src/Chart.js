@@ -87,7 +87,6 @@ class Chart extends EventNode {
 		};
 
         this._allowRendering = false;
-        this._lastVisibleRange = null;
 		this.globals = globalOptions;
         this.options = options;
 
