@@ -5,7 +5,7 @@ import {RMMQHelper} from './RMMQ';
 
 class Dataset extends RenderableView {
 	constructor(options) {
-		super(options);
+		super(options); 
 
 		let requiredOptions = ['values'];
 		let defaultOptions = {
@@ -238,7 +238,11 @@ class Dataset extends RenderableView {
 
 	setCurrentPosition(position) {
 		this._currentPosition = position;
-		this._currentPositionLine.position.x = position;
+        this._currentPositionLine.position.x = position;
+        
+        if (this._isFollowing) {
+            // TODO: adjust the view when following the current position
+        }
     }
     
     subsetStatus(name, value) {
@@ -258,6 +262,10 @@ class Dataset extends RenderableView {
         } else {
             this._scene.remove(this.lines[name].geometry);
         }
+    }
+
+    set isFollowing(value) {
+        this._isFollowing = value;
     }
 }
 

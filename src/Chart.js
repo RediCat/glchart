@@ -87,6 +87,7 @@ class Chart extends EventNode {
 		};
 
         this._allowRendering = false;
+        this._isFollowing = false;
 		this.globals = globalOptions;
         this.options = options;
 
@@ -97,8 +98,9 @@ class Chart extends EventNode {
 			this._createAxisViews();
 			this._createLegendView();
             
-            // set default visibility to whole graph
+            // set default starting values
             this.setVisibleRange(0, 1);
+            this.followCurrentPosition = false;
 
             this._allowRendering = true;
 			this.render();
@@ -395,9 +397,9 @@ class Chart extends EventNode {
 	setCurrentPosition(position) {
         this.options.currentPosition = position;
         
-        // chack if already wed
+        // check if we already inited.
 		if (this._dataset) {
-			this._dataset.setCurrentPosition(position); 	
+			this._dataset.setCurrentPosition(position);
 		}
 		
 		// also update minigraph if created
@@ -438,6 +440,26 @@ class Chart extends EventNode {
             return ret;
         }
     }
+
+    /**
+     * Set/set the follow status. When true, the view follows the current 
+     * position.
+     * @param {boolean} value
+     */
+    set followCurrentPosition(value) {
+        this._isFollowing = value;
+        this._dataset.isFollowing = value;
+    }
+
+    /**
+     * Set/set the follow status. When true, the view follows the current 
+     * position.
+     * @return {boolean}
+     */
+    get followCurrentPosition() {
+        return this._isFollowing;
+    }
+
     //#endregion
 }
 
