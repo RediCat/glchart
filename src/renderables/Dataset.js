@@ -241,7 +241,74 @@ class Dataset extends RenderableView {
         this._currentPositionLine.position.x = position;
         
         if (this._isFollowing) {
-            // TODO: adjust the view when following the current position
+            // get the min and max of the graph in world coordinates
+            graph_range = this.options.stats.x;
+
+            // get half of the center of the screen
+            half_range = (this.visibleRange.x.max - this.visibleRange.x.min);
+            half_range *= 0.5;
+            
+            // if the distance between the current position and the end of 
+            // the graph is less than half the screen then we're at the end 
+            // of the graph. Just assert that the current position line is 
+            // visible.
+            if (position < half_range) {
+                this.assert_line_shown();
+                return;
+            }
+            
+            // if the distance between the current position and the end of 
+            // the graph is less than half the screen then we're at the end 
+            // of the graph. Just assert that the current position line is 
+            // visible.
+            if ((graph_range.max - current_position) < half_range) {
+                this.assert_line_shown();
+                return;
+            }
+
+            // if the distance between the current position and the end of 
+            // the graph is less than half the screen then we're at the end 
+            // of the graph. Just assert that the current position line is 
+            // visible. If the current position + half the screen is less 
+            // than the end of the graph then we just move the camera such 
+            // that the current position line is at the center of the screen.
+            if ((position + half_range) < graph_range.max) {
+                this.center_camera();
+                return;
+            }
+        }
+    }
+
+    /**
+     * @private
+     * Sets the camera's x position such that the current position line sits 
+     * at the center of the renderable area. This method doesn't verify if 
+     * the current position is past the bounds of the graph. 
+     */
+    center_camera() {
+        // TODO: implement this method.
+    }
+
+    /**
+     * @private
+     * This make sure that the line is shown if it can be shown. This is done
+     * when the playing starts without the line in the visible area of the 
+     * screen.
+     */
+    assert_line_shown() {
+        let graph_range = this.options.stats.x;
+
+        // if the line is already visible, do nothing and return
+        let greaterThanMin = this._currentPosition > graph_range.min;
+        let lessThanMax = this._currentPosition < graph_range.max;
+        if (greaterThanMin && lessThanMax) return;
+
+        // TODO: correctly check if current position is able to be shown with current zoom
+        let ableToShow;
+        
+        // if able, just center camera and return
+        if (ableToShow) {
+            this.center_camera();
         }
     }
     
