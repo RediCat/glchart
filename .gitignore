@@ -10,3 +10,4 @@ build/
 docs/DOCS.md
 docs/DOCS_html/
 docs/info_md/
+npm-debug.log
