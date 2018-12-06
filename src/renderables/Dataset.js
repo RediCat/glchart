@@ -179,7 +179,7 @@ class Dataset extends RenderableView {
         // Note: setting vRangeCache to null makes the lazy loading 
         // to kick in and recalculate the min max for the visible range.
 		this.vRangeCache = null;
-		
+        
         // set the vertical scaling for current visible values
         if (this.options.zoom) {
             let visibleRange = this.visibleRange;
@@ -286,7 +286,40 @@ class Dataset extends RenderableView {
      * the current position is past the bounds of the graph. 
      */
     center_camera() {
-        // TODO: implement this method.
+        // calculate half_screen in world coords
+        let stats = this.options.stats.x;
+        let unitsPerPixel = this.options.unitsPerPixel;
+        let viewWidthInUnits = this.viewSize.x * unitsPerPixel;
+
+        // check whether at ends or at the center of the graph
+        let atStart = (this._currentPosition - stats.x.min) < viewWidthInUnits;
+        let atEnd = (stats.x.max - this._currentPosition) < viewWidthInUnits;
+        
+        // calculate min and max x axis visible
+		let xmin = this._camera.position.x * this.options.unitsPerPixel;
+        let xmax = xmin + (this._camera.right * 
+            this.options.unitsPerPixel * this._camera.scale.x);
+        let statsDelta = stats.x.max - stats.x.min;
+        let xminNormalized = (xmin - stats.x.min) / statsDelta;
+        let xmaxNormalized = (xmax - stats.x.min) / statsDelta;
+        let currentCoverage = xmaxNormalized - xminNormalized;
+
+        // if at endpoints, move the most possible to to that side.
+        if (atStart) {
+            this.setVisibleRange(0, currentCoverage);
+            return;
+        }
+
+        if (atEnd) {
+            this.setVisibleRange(1 - currentCoverage, 1);
+            return;
+        }
+
+        // move the camera with the same zoom but with the current position 
+        // line in the middle. 
+        let currentPositionNormalized = (this._currentPosition - stats.x.min) / statsDelta;
+        let halfCurrentCoverage = currentCoverage / 2;
+        this.setVisibleRange(currentPositionNormalized - halfCurrentCoverage, currentPositionNormalized + halfCurrentCoverage);
     }
 
     /**
@@ -299,12 +332,13 @@ class Dataset extends RenderableView {
         let graph_range = this.options.stats.x;
 
         // if the line is already visible, do nothing and return
-        let greaterThanMin = this._currentPosition > graph_range.min;
-        let lessThanMax = this._currentPosition < graph_range.max;
+        let greaterThanMin = this._currentPosition > this.visibleRange.x.min;
+        let lessThanMax = this._currentPosition < this.visibleRange.x.max;
         if (greaterThanMin && lessThanMax) return;
 
         // TODO: correctly check if current position is able to be shown with current zoom
-        let ableToShow;
+        let ableToShow = this._currentPosition > graph_range.x.min &&
+            this._currentPosition < graph_range.x.max;
         
         // if able, just center camera and return
         if (ableToShow) {
