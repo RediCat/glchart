@@ -101,6 +101,7 @@ class MiniGraph extends EventNode {
         // add wheel event for zooming
         addWheelListener(this.domElement, (event) => {
             this.emit('zoomChanged', event.deltaY);
+            event.preventDefault();
         });
         
         // add mouse events for dragging
