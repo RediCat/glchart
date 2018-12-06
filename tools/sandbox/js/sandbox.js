@@ -42,7 +42,7 @@ function main () {
 			]
 		}
 	}).on('load', () => {
-		chart.setVisibleRange(0, 1);
+		chart.followCurrentPosition = true;
 
 		let miniGraph = chart.createMiniGraph({
 			size: {x: 1000, y: 60}
@@ -73,7 +73,6 @@ function main () {
 		let subsetName = 'Value 1';
 
 		let oldValue = chart.subsetStatus(subsetName);
-		console.log(oldValue);
 		if (oldValue) {
 			$(this).html(`Show '${subsetName}'`);
 		} else {

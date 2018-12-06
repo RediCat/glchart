@@ -242,10 +242,10 @@ class Dataset extends RenderableView {
         
         if (this._isFollowing) {
             // get the min and max of the graph in world coordinates
-            graph_range = this.options.stats.x;
+            let graph_range = this.options.stats.x;
 
             // get half of the center of the screen
-            half_range = (this.visibleRange.x.max - this.visibleRange.x.min);
+            let half_range = (this.visibleRange.x.max - this.visibleRange.x.min);
             half_range *= 0.5;
             
             // if the distance between the current position and the end of 
@@ -261,7 +261,7 @@ class Dataset extends RenderableView {
             // the graph is less than half the screen then we're at the end 
             // of the graph. Just assert that the current position line is 
             // visible.
-            if ((graph_range.max - current_position) < half_range) {
+            if ((graph_range.max - position) < half_range) {
                 this.assert_line_shown();
                 return;
             }
@@ -287,7 +287,7 @@ class Dataset extends RenderableView {
      */
     center_camera() {
         // calculate half_screen in world coords
-        let stats = this.options.stats.x;
+        let stats = this.options.stats;
         let unitsPerPixel = this.options.unitsPerPixel;
         let viewWidthInUnits = this.viewSize.x * unitsPerPixel;
 
@@ -329,7 +329,6 @@ class Dataset extends RenderableView {
      * screen.
      */
     assert_line_shown() {
-        let graph_range = this.options.stats.x;
 
         // if the line is already visible, do nothing and return
         let greaterThanMin = this._currentPosition > this.visibleRange.x.min;
@@ -337,8 +336,9 @@ class Dataset extends RenderableView {
         if (greaterThanMin && lessThanMax) return;
 
         // TODO: correctly check if current position is able to be shown with current zoom
-        let ableToShow = this._currentPosition > graph_range.x.min &&
-            this._currentPosition < graph_range.x.max;
+        let graph_range = this.options.stats.x;
+        let ableToShow = this._currentPosition > graph_range.min &&
+            this._currentPosition < graph_range.max;
         
         // if able, just center camera and return
         if (ableToShow) {
