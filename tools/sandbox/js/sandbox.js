@@ -35,10 +35,6 @@ function main () {
 					name: 'Value 2',
 					data: createPeriodicRandomData(10000, 1456)
 				}
-				// {
-				// 	name: 'Value 3',
-				// 	data: createPeriodicRandomData(10000, 1456)
-				// }
 			]
 		}
 	}).on('load', () => {
@@ -97,17 +93,6 @@ function main () {
 
 	// requestAnimationFrame(runFrame);
 }
-
-// function createRandomData (size, max) {
-// 	if (max === null || max === undefined) {
-// 		max = 1;
-// 	}
-// 	let data = [];
-// 	for (let x = 0; x < size; x++) {
-// 		data.push([x, Math.random() * max]);
-// 	}
-// 	return data;
-// }
 
 function createPeriodicRandomData (size, max) {
 	if (max === null || max === undefined) {

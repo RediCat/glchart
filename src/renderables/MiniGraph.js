@@ -14,7 +14,7 @@ class MiniGraph extends EventNode {
 
         this.loaded = false;
 		this._currentPosition = null;
-
+        
         // init when the stack clears, so we let users to 
         // subscribe to 'load' event
         setTimeout(() => this._init());
@@ -83,15 +83,9 @@ class MiniGraph extends EventNode {
         this.sliderObj = sliderObj;
         this.scene.add(this.sliderObj);
 
-		// set pos and scale based on min, max visible
-		if (!dataset.reqCache) {
-			dataset.setVisibleRange(0, 1);
-			this.visibleRangeChanged(0, 1);
-		} else {
-			let min = dataset.reqRangeCache.reqmin;
-			let max = dataset.reqRangeCache.reqmax;
-			this.visibleRangeChanged(min, max);
-		}
+        // set pos and scale based on min, max visible
+        let range = this.options.glchart.getVisibleRange();
+        this.visibleRangeChanged(range.min, range.max);
 
         // subscribe to visible changed events
         this.options.glchart.on('visibleChanged', (args) => {

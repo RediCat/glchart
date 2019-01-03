@@ -24,13 +24,12 @@ class LegendView extends RenderableView {
 	}
 	 
 	init() {
-		this.on('resize', () => this.sizeInPixelsCache = null);
 		let size = this.viewSize;
 		let labels = this.options.labels;
 		let fontFactory = this.options.fontFactory;
 
 		// split horz space in numbers of labels
-		let labelWidth = size.x / labels.length;
+		let labelWidth = (size.x / labels.length);
 		for (let index = 0; index < labels.length; index++) {
 			let plane = this.createPlane(labelWidth, size.y, labels[index].color);
 			plane.up = new THREE.Vector3(0, 1, 0);
@@ -54,7 +53,13 @@ class LegendView extends RenderableView {
 			text.scale.x = text.scale.y = 0.75;
 			this.add(text);
 		}
-	}
+    }
+    
+    updateSize(size) {
+        this.updateView(size);
+        this.empty();
+        this.init();
+    }
 
 	createPlane(width, height, color) {
 		var geometry = new THREE.PlaneGeometry(width, height);
