@@ -261,6 +261,10 @@ class Chart extends EventNode {
 		this._renderables.push(this._legend);
 	}
 
+    _updateLegend() {
+        this._legend.updateSize(this.options.size);
+    }
+
 	_createFontFactory() {
 		return new Promise((resolve, reject) => {
 			this._fontFactory = new FontFactory();
@@ -304,7 +308,8 @@ class Chart extends EventNode {
 		this.renderer.setSize(width, height);
 		let size = this.options.size = new THREE.Vector2(width, height);
 		_.forEach(this._renderables, (renderable) => renderable.updateView(size));
-		this._updateAxisRanges();
+        this._updateAxisRanges();
+        this._updateLegend();
 		this.render();
 	}
 
