@@ -326,6 +326,10 @@ class Chart extends EventNode {
         this.emit('visibleChanged', {min, max});
     }
     
+    getVisibleRange() {
+        return _.clone(this._lastVisibleRange);
+    }
+
     /**
      * @public
      * Creates a minigraph representation, with sliding and zooming options.
