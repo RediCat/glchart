@@ -32,7 +32,10 @@ class Dataset extends RenderableView {
 		this._assertColors();
 		this._createGeometry();
 
-		this.on('resize', () => this._createGeometry());
+		this.on('resize', () => {
+            this.empty();
+            this._createGeometry();
+        });
 	}
 
 	_calcStats() {
@@ -365,6 +368,10 @@ class Dataset extends RenderableView {
         }
     }
 
+    get subsetNames() {
+        return _.keys(this.lines);
+    }
+    
     set isFollowing(value) {
         this._isFollowing = value;
     }
